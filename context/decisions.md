@@ -279,3 +279,66 @@ Plan v1.0 (archived: `context/implementation-plan.v1.md`) misread the app's purp
 - Phase: all (P3–P9)
 - Decided by: Manager
 - Decision: "complete the plan, end to end. implement everything it outlines fully, from the first to the last steps ... taking pauses to ask me things if it ever needs it, or if something arises that needs me, between phases - otherwise it is totally fine if the work finishes without my input at all." This is the launch authorisation for every phase and the **install authorisation** for P3 (Node, PyPy 3.8 + tools venv, both skills, private repo `et-ccc`) and P4 (npm deps in `main-app/`, Playwright browsers, Lighthouse), all under §9 containment. Manager gates in the plan (session restart after P3, Vercel link, look & feel, voice/pilot approval, DMOJ checklist, final acceptance) still pause for the Manager; the main session asks at those points.
+
+### D-032-A1 — Hard cap: at most 3 worker spawns per phase (Manager, 2026-09-23)
+- Date: 2026-09-23
+- Phase: P4 onward (P3 already within it: 1 worker)
+- Decided by: Manager
+- Decision: "future phases are each capped at exactly 3 subagent spawns each, and no more" — clarified by the Manager: the orchestrator is not counted; it may spawn **at most 3 workers per phase**; the Manager report agent is separate. No contingency spawns above 3; lost workers are replaced only from the same 3, otherwise the orchestrator finishes the work or asks the Manager. Plan amended to **v2.2** by the main session: P4 = app & QA engineer (Sonnet), design lead (Opus), visualization engineer (Opus), with the orchestrator doing the review; P6/P7/P8 = 2 authors + 1 Opus reviewer each (longer contiguous runs, continued via SendMessage); P5 and P9 unchanged. Total ≈32 spawns (was 41). `operating-rules.md` §2 updated.
+- Rationale: the Manager judged P3's usage excessive and wants a strict ceiling on agent usage.
+
+### D-033 — Local Node pinned to v24.21.0 (SPIKE S-1 result)
+- Date: 2026-09-23
+- Phase: 3
+- Decided by: setup-orchestrator
+- Decision: Vercel builds and Functions support Node 24.x (default), 22.x and 20.x; 26.x exists only on Vercel Sandboxes; 20.x is deprecated on 2026-10-01. The workspace Node is the official `node-v24.21.0-darwin-arm64` tarball (SHA-256 checked) in `.tooling/node/`. P4 sets `"engines": { "node": "24.x" }` in `main-app/package.json`. Evidence: `work/03-setup/spike-S1.md`.
+- Rationale: Plan §4.2 / R-9: local builds must use the same major as Vercel's build image.
+
+### D-034 — Containment proof tooling and allow-list policy
+- Date: 2026-09-23
+- Phase: 3
+- Decided by: setup-orchestrator
+- Decision: `.tooling/bin/contain-snapshot before|after|diff|classify` implements plan §9.4: stat snapshots of 56 watched global locations, then a backstop `find $HOME -newer marker` (pruning the workspace case-insensitively, `~/Library/CloudStorage` and `~/.Trash`). Every changed path is classified: tool-named paths hard-fail. Three narrow exemption classes exist, each documented with a reason. (a) `collision`: Apple-owned names that contain a tool token, e.g. `~/Library/Biome` or the system WebKit caches. (b) A **content-verified** harness exemption: `~/.npm/_logs/*-debug-0.log` passes only when the log proves it is Homebrew npm running exactly `npm --global config get prefix`. That is the Claude Code harness's periodic probe, seen at 22:01 before P3 began. (c) The `allow` globs for OS, harness and the Manager's own apps. Everything else fails. The idle calibration run and the P3 run both PASS.
+- Rationale: A raw `find -newer` over `$HOME` returns hundreds of OS/browser/harness writes per minute, so without a precise allow-list the proof could never be clean. Hard-fail-first ordering means no allow-list entry can hide a write that is named after one of our tools.
+
+### D-035 — Wrappers and guard scope
+- Date: 2026-09-23
+- Phase: 3
+- Decided by: setup-orchestrator
+- Decision: Wrappers `.tooling/bin/{node,npm,pypy38,ruff,vermin,pw,gh,git}` (plan §9.2) plus `impeccable`, `tools-pip` (tools venv only), `check-secrets` (G-SECRETS), `contain-snapshot` and `guard-test`. Each wrapper sources `env.sh` and refuses to run a binary whose realpath is not under its expected prefix. The wrappers also refuse dangerous forms themselves, as defence in depth: `npm -g`, `npm exec` without `--no`, `gh auth login|logout|refresh|setup-git|switch|token`, `gh config set`, gh extensions and aliases, `git config --global|--system`, `--no-verify`, and force or delete pushes. The PreToolUse guard (`guard-bash`, system perl, no project tool) lexes each command into segments, so quoted arguments and quoted heredoc bodies are never commands. It blocks bare project tools in any command position (including inside `$( )`, backticks, `bash -c` and `eval`), **including bare `git` and `gh`**, as `00-START-HERE.md` requires. Regression battery: `.tooling/guard-cases.tsv`, run by `.tooling/bin/guard-test`.
+- Rationale: Plan §9.2, R-12. Bare `gh` would miss the XDG cache redirect; bare `git` is harmless but inconsistent with the "wrappers only" rule. Finding: the harness hot-loaded `.claude/settings.json` hooks mid-session (the env block still needs the restart). The first guard version falsely blocked a quoted heredoc, which led to the lexer rewrite and the battery.
+
+### D-036 — `.gitignore` additions beyond plan §10.3
+- Date: 2026-09-23
+- Phase: 3
+- Decided by: setup-orchestrator
+- Decision: Also track `.tooling/npmrc`, `.tooling/requirements-tools.txt` and `.tooling/guard-cases.tsv` (config and tests needed to rebuild and verify the tooling from a clean clone). Also ignore `.claude/settings.local.json`, `.impeccable/config.local.json`, `.impeccable/hook.cache.json`, `.impeccable/hook.pending.json` and `*.tsbuildinfo` (machine-local or generated).
+- Rationale: A fresh clone must be able to reproduce the exact tool setup; local caches must never be committed.
+
+### D-037 — Impeccable installed at project scope, hooks in `.claude/settings.json`, no subagent definitions
+- Date: 2026-09-23
+- Phase: 3
+- Decided by: setup-orchestrator
+- Decision: skill-v4.3.1 (commit `cd12f866`) copied from the tag tarball into `.claude/skills/impeccable/`; the engine 0.1.5 was downloaded by its own checksum-verifying launcher into `IMPECCABLE_HOME=.tooling/impeccable-home`. The PostToolUse(Edit|Write) and Stop hooks use the upstream launcher command, so the engine's hook detection recognises them, prefixed with `export IMPECCABLE_HOME=… IMPECCABLE_NO_TELEMETRY=1`. They live in the project `.claude/settings.json` (upstream uses `settings.local.json`; the engine accepts either). `.impeccable/config.json`: hook enabled and consent accepted; `context/`, `research/`, `work/`, `manager-reports/`, `.tooling/` and `.claude/` are ignored by the detector. Telemetry is off via `IMPECCABLE_NO_TELEMETRY=1` and `DO_NOT_TRACK=1`. The upstream `.claude/agents/impeccable-*.md` subagent definitions were **not** installed.
+- Rationale: Plan §9.5. Workers must never spawn subagents (rules §2), so the skill must do its asset, doc and review flows inline.
+
+### D-038 — Python toolchain and the G-PY-38 split
+- Date: 2026-09-23
+- Phase: 3
+- Decided by: setup-orchestrator
+- Decision: PyPy 3.8 v7.3.11 arm64 (native, no Rosetta). The tools venv is built from it, with ruff 0.16.8 and vermin 1.8.0 installed through `pip --require-hashes --only-binary=:all:` against PyPI digests (`.tooling/requirements-tools.txt`). Finding for P4: vermin running on PyPy 3.8 cannot parse 3.9+ syntax; it prints "Not enough evidence" and **exits 0**. G-PY-38 therefore treats `py_compile` under PyPy 3.8 as the syntax gate and vermin as the API gate, fails if either fails, and its `bad38` fixture covers both. ruff 0.16's defaults include `I` and `YTT` rules even with `--isolated`, so P4 must configure ruff's rules explicitly.
+- Rationale: Plan §4.5 and D-025. A gate that silently passes 3.10 syntax would defeat R-1.
+
+### D-039 — Containment incident: pip wrote to the Manager's `~/Library/Caches/pip` (remediated)
+- Date: 2026-09-23
+- Phase: 3
+- Decided by: setup-orchestrator
+- Decision: The first `pip install` into the tools venv was run as `.tooling/venvs/tools/bin/python -m pip`, bypassing `env.sh`. pip therefore used its default cache and wrote 6 files and 20 directories into the Manager's pre-existing `~/Library/Caches/pip`. Remediation: every entry born after the phase marker was removed; the recorded mtimes of `http/` and `selfcheck/` were restored from the before snapshot; one pre-existing dir mtime was reset to its birth time. Net trace: one stale HTTP cache entry that pip had replaced in place is gone from the Manager's pip cache (a cache, not state). Prevention: the `.tooling/bin/tools-pip` wrapper (asserts the pip redirects); the guard blocks bare or direct `pip`/`python`; the re-run through the wrapper cached in `.tooling/xdg/cache/pip`. Log: `work/03-setup/containment/pip-cache-cleanup.txt`.
+- Rationale: Operating-rules §7 requires every trace to be proved or disclosed. This one is disclosed, and its cause is fixed.
+
+### D-040 — G-STYLE import form for avoid-ai-writing
+- Date: 2026-09-23
+- Phase: 3
+- Decided by: setup-orchestrator
+- Decision: avoid-ai-writing v3.35.0 @ `fc979c6` is installed at `.claude/skills/avoid-ai-writing/`, with the full tarball in `.tooling/avoid-ai-writing-src/`. `detector/patterns.js` and `validate.js` are CommonJS with a **static** API. `tools/style/detect.mjs` (P4/P5) must therefore `import AIDetector from '<rel>/.claude/skills/avoid-ai-writing/detector/patterns.js'` (default import) and call `AIDetector.analyzeText(text, { context })`. The validator runs as `.tooling/bin/node .claude/skills/avoid-ai-writing/detector/validate.js <orig> <new>` (exit 0 PASS, 1 FAIL). Verified by the P3 smoke test.
+- Rationale: Plan §6.3 asks P3 to confirm the import path.

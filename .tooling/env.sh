@@ -54,3 +54,7 @@ export GIT_TERMINAL_PROMPT=0
 
 # --- PATH: workspace Node first, so npm scripts and shebangs resolve to it -------------------------
 case ":$PATH:" in *":$ET_T/node/bin:"*) ;; *) export PATH="$ET_T/node/bin:$PATH";; esac
+
+# --- Impeccable telemetry off (engine honours either; concept "ping" to impeccable.style) ----------
+export IMPECCABLE_NO_TELEMETRY=1
+export DO_NOT_TRACK=1

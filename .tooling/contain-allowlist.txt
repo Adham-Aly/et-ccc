@@ -8,6 +8,11 @@
 # "collision" = a macOS/third-party path whose NAME contains a project-tool token (e.g. Apple's
 # "Biome" framework vs the Biome linter). It exempts that path from the tool-name hard fail and
 # must name the unrelated owner.
+#
+# Scope note (audit A-1): a trailing "*" matches the whole subtree, deliberately. This is safe only
+# because classification is hard-fail-first: any path whose name contains a project-tool token
+# fails before the allow list is consulted. Entries are added only for churn actually observed
+# (fail closed); unobserved speculative entries such as Keychains and Xcode were removed.
 
 # --- Claude Code harness (acknowledged, D-030 Q-13) --------------------------------------------
 allow .claude                                 # harness dir mtime
@@ -132,9 +137,9 @@ allow Library/Biome*                          # Apple Biome
 allow Library/IdentityServices*               # iMessage/FaceTime identity
 allow Library/IntelligencePlatform*           # Apple Intelligence
 allow Library/DuetExpertCenter*               # Siri suggestions
-allow Library/Daemon?Containers*              # sandboxed Apple daemons
-allow Library/Group?Containers*               # app group containers (sandboxed apps)
-allow Library/Containers*                     # sandboxed app containers
+allow Library/Daemon?Containers/*               # sandboxed Apple daemons (UUID-named containers owned by launchd services)
+allow Library/Group?Containers/group.com.apple.*  # Apple app-group containers
+allow Library/Containers/com.apple.*    # Apple sandboxed app containers
 allow Library/com.apple.AppleMediaServices*   # App Store
 allow Library/AppleMediaServices*             # App Store
 allow Library/StatusKit*                      # Focus status
@@ -152,7 +157,6 @@ allow Library/Assistant*                      # Siri
 allow Library/Suggestions*                    # Siri suggestions
 allow Library/Trial*                          # Apple experiments framework
 allow Library/PersonalizationPortrait*        # Siri
-allow Library/Keychains*                      # macOS keychain (gh token is READ from it only, §9.7)
 allow Library/Calendars*                      # Calendar sync
 allow Library/Mail*                           # Mail
 allow Library/Messages*                       # Messages
@@ -171,7 +175,6 @@ allow Library/ContainerManager*               # macOS
 allow Library/CoreFollowUp*                   # macOS
 allow Library/FrontBoard*                     # macOS
 allow Library/Frameworks                      # dir mtime
-allow Library/Developer*                      # Xcode (Manager's)
 allow Library/Caches/com.microsoft*           # Manager's Microsoft apps
 allow Library/Caches/com.spotify*             # Manager's apps
 allow Library/Application?Support/Spotify*    # Manager's apps
@@ -204,3 +207,10 @@ allow Library/Application?Support/networkserviceproxy*  # macOS network service 
 allow .agents/skills/synced*                  # Claude harness: claude.ai-synced skills manifest, rewritten every few minutes
 allow .agents/skills                          # dir mtime (sync above)
 allow .agents                                 # dir mtime (sync above)
+allow /Users/adham                            # $HOME dir mtime (harness atomic writes of ~/.claude.json.tmp.*)
+allow .config/herdr*                          # Manager's herdr session manager (hosts this Claude session)
+allow Library/HomeKit*                        # macOS HomeKit metrics counters
+allow Library/Keychains                       # dir mtime (securityd)
+allow Library/Keychains/login.keychain-db     # securityd updates the login keychain for every app (browsers, iCloud); gh only reads its token
+allow Pictures/Photos?Library.photoslibrary/private/com.apple.photoanalysisd/*  # Photos analysis daemon
+allow Downloads                               # dir mtime only (browsers create+delete temp entries); no subtree: any new file there still fails

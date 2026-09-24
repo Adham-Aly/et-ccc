@@ -1,0 +1,6 @@
+#!/bin/bash
+# pip for the tools venv ONLY (ruff, vermin), with env.sh sourced so its cache/config stay in .tooling/.
+# Usage: .tooling/bin/tools-pip install --require-hashes --only-binary=:all: -r .tooling/requirements-tools.txt
+. "$(dirname "$0")/_wrap.sh"
+[ "$PIP_CONFIG_FILE" = /dev/null ] && [ "$PIP_CACHE_DIR" = "$ET_T/xdg/cache/pip" ] || wrap_die "pip redirects missing"
+wrap_exec "$ET_T" "$ET_T/venvs/tools/bin/python" -m pip "$@"

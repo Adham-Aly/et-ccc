@@ -1,0 +1,5 @@
+#!/bin/bash
+# Impeccable launcher (project-scope skill) with IMPECCABLE_HOME inside .tooling/ (plan §9.5).
+. "$(dirname "$0")/_wrap.sh"
+[ "$IMPECCABLE_HOME" = "$ET_T/impeccable-home" ] || wrap_die "IMPECCABLE_HOME not redirected"
+wrap_exec "$ET_CCC_ROOT/.claude/skills/impeccable" "$ET_CCC_ROOT/.claude/skills/impeccable/scripts/impeccable" "$@"

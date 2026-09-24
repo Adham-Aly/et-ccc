@@ -1,0 +1,22 @@
+{
+  "detector": {
+    "ignoreRules": [],
+    "ignoreFiles": [
+      "context/**",
+      "research/**",
+      "work/**",
+      "manager-reports/**",
+      ".tooling/**",
+      ".claude/**"
+    ],
+    "ignoreValues": []
+  },
+  "hook": {
+    "enabled": true,
+    "consent": "accepted",
+    "limits": {
+      "maxFindings": 5,
+      "maxChars": 8000
+    }
+  }
+}

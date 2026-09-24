@@ -1,6 +1,6 @@
 # et-ccc Implementation Plan
 
-**Status:** v2.1, APPROVED. v2.0 was approved by the Manager as the single source of truth and amended in place, in this file, by the Manager's answers to every open question (D-030, 2026-09-23) → v2.1 (plan-amender, same day; D-031). v1.0 remains archived as `context/implementation-plan.v1.md` and is **superseded in full**.
+**Status:** v2.2, APPROVED. v2.0 was approved by the Manager as the single source of truth and amended in place, in this file, by the Manager's answers to every open question (D-030, 2026-09-23) → v2.1 (plan-amender, same day; D-031) → v2.2 (Manager's hard spawn cap: **at most 3 worker spawns per phase**, D-032-A1, applied by the main session, same day). v1.0 remains archived as `context/implementation-plan.v1.md` and is **superseded in full**.
 **Authority:** this file is the single source of truth for the whole build (D-011). What gets built, and what does not, depends only on this file. Changes need Manager approval and a row in §1 Changelog.
 
 ---
@@ -28,7 +28,7 @@
 1. Read `progress.md` and find the phase marked `IN PROGRESS` or `REDO REQUESTED`.
 2. Read that phase in §12, its checklist in `progress.md`, and, for content phases, `work/NN-<name>/ledger.generated.md` and `defects.md` (§13.3).
 3. Continue from the first unchecked item. Never redo an item marked done unless its output file is missing or fails its gate; if that happens, log it.
-4. Agent IDs don't survive a session restart. If a worker you would have continued with SendMessage is gone, spawn **one** replacement of the same role and model, give it the item's files and its `defects.md` entries, and log the handover. Replacements count against the phase's spawn cap (§11.4).
+4. Agent IDs don't survive a session restart. If a worker you would have continued with SendMessage is gone, a replacement is allowed **only if the phase has not yet used its 3 worker spawns** (§11.4, v2.2); give it the item's files and its `defects.md` entries, and log the handover. If all 3 are used, the orchestrator finishes the item itself or stops and asks the Manager through the main session. Never exceed 3.
 5. A half-written module (files present, `status` still `planned` or `drafted`) goes to the replacement author, who reads the files, decides to continue or restart, and logs the choice.
 6. Stop stale background servers recorded in `work/NN-<name>/_run/*.pid` (§4.10) before starting new ones.
 7. Run `git status` on the phase branch. Uncommitted work is normal mid-phase; never discard it.
@@ -52,6 +52,7 @@
 | v1.0 | 2026-09-23 | planning-orchestrator (Phase 2) | First version: static export, in-browser Python (Pyodide), exercises with autograding, mastery and review, 16 build phases. | Rejected by D-020 |
 | v2.0 | 2026-09-23 | plan-reviser (Phase 2 redo) | Full rewrite after Manager critique D-020, plus the Manager's mid-redo instruction D-021 (extensive visuals and animations). See §1.1. All sections changed; §4.11 is new. | Approved, amended by v2.1 |
 | v2.1 | 2026-09-23 | plan-amender | Amends v2.0 with the Manager's answers to every v2.0 open question (D-030). See §1.2. No section untouched; the biggest changes are: all problem walkthroughs, editorials, solution pages and per-problem hints removed; all system/environment setup content removed (M0.2, M0.3 dropped); M7.14 (C++ bridge) kept, stripped of setup and scoring framing; practice links capped at CCC 2014–2026 with a permanent post-2026 rejection; Vercel previews and production both public, no bypass secret; §15 reduced to a resolved-questions pointer. | Approved (D-030 is itself the approval) |
+| v2.2 | 2026-09-23 | main session | Manager's hard cap (D-032-A1): **every phase from P4 on spawns at most 3 workers, and no more** — the orchestrator itself is not counted; the Manager report agent is spawned separately by the main session and not counted; no contingency spawns above 3. Rosters of P4, P6, P7, P8 cut to 3 workers; P5, P9 unchanged (3 and 2). Total ≈32 spawns (was 41). See §11.4, §11.5, §12. | Approved (Manager instruction) |
 
 ### 1.1 v2.0: the Manager's critique and what changed
 
@@ -513,7 +514,7 @@ Every content prompt quotes this list: the stage "Contest payoff" column; pacing
 
 ### 6.1 Units of work
 
-- **Module task:** one module's lessons, examples, visuals and `module.yaml`. No walkthroughs (D-030 Q-20). Authors get **contiguous runs of modules** (about 7–9 per author per content phase), so each author keeps one arc and one voice across related modules.
+- **Module task:** one module's lessons, examples, visuals and `module.yaml`. No walkthroughs (D-030 Q-20). Authors get **contiguous runs of modules** (about 14–21 per author per content phase, 2 authors per phase under the v2.2 spawn cap), so each author keeps one arc and one voice across related modules.
 - **Foundations (P5):** registry and verification, `course.yaml`, `glossary.yaml`, `concepts.yaml`, the house skeleton, the style guide, `ui/strings.yaml`, the WMOJ-first module→problem mapping, and the three pilots.
 
 ### 6.2 Item pipeline (P5–P8)
@@ -805,28 +806,30 @@ Deleting the workspace removes all local state. The private repo and the Vercel 
 
 ### 11.4 Caps, continuation and approvals
 
-- Each phase has a **spawn cap** (§11.5). The cap includes one contingency replacement; going above it needs the Manager's approval through the main session.
-- Fix loops **continue the same worker with SendMessage**. A replacement is spawned only if the worker is gone (§0.3).
+- **Hard cap (v2.2, D-032-A1): each phase spawns at most 3 workers, and no more.** The orchestrator itself and the main session's Manager report agent are not counted. There is **no contingency above 3**: replacements for lost workers come out of the same 3; if all 3 are used, the orchestrator does the remaining work itself or stops and asks the Manager. Going above 3 is not allowed.
+- Fix loops, extra batches and follow-up tasks **continue the same worker with SendMessage** (a continuation is not a spawn). A replacement is spawned only if the worker is gone and the phase still has an unused spawn (§0.3).
 - The first module of each content phase runs alone as a calibration item before other authors start.
-- Every phase needs the main session's launch; install phases need install authorisation (rules §2). No phase needs swarm approval, because no phase has more than 3 concurrent workers or more than 7 spawns (8 with the contingency).
+- Every phase needs the main session's launch; install phases need install authorisation (rules §2). No phase needs swarm approval, because no phase has more than 3 workers in total.
 
 ### 11.5 Agent budget per phase
 
-| Phase | Orchestrator | Workers (model) | Spawns | Cap |
+| Phase | Orchestrator | Workers (model) — max 3 per phase (v2.2) | Worker spawns | Cap |
 |---|---|---|---|---|
-| P3 Setup | Opus (does installs and repo itself) | containment auditor (Sonnet) | 2 | 3 |
-| P4 App | Opus | app engineer (Sonnet), design lead (Opus, Impeccable), visualization engineer (Opus), QA engineer (Sonnet), reviewer: code + visual (Opus) | 6 | 7 |
-| P5 Voice, registry, pilot | Opus | registry & data (Sonnet), voice & pilot author (Opus), pilot reviewer (Opus) | 4 | 5 |
-| P6 Content A: Stages 0–2 (31 modules) | Sonnet | 4 authors (Sonnet, ≈7–8 modules each), reviewer (Opus) | 6 | 7 |
-| P7 Content B: Stages 3–4 (28 modules) | Sonnet | 4 authors (Sonnet, ≈7 each), reviewer (Opus) | 6 | 7 |
-| P8 Content C: Stages 5–7 (42 modules) | Opus | 5 authors (Opus, ≈8 each), reviewer (Opus) | 7 | 8 |
-| P9 Review & release | Opus | final reviewer: course + visual (Opus), release QA (Sonnet) | 3 | 4 |
-| Manager reports | — | 1 per phase (Sonnet) | 7 | 7 |
-| **Total** | | | **41** (19 Opus, 22 Sonnet) | 48 |
+| P3 Setup | Opus (does installs and repo itself) | containment auditor (Sonnet) | 1 | 3 |
+| P4 App | Opus (also does the architecture, code and pixel/motion **review** itself) | app & QA engineer (Sonnet: scaffold, pipeline, registry code, gates, E2E/visual/a11y/perf suites, deployed-URL tooling), design lead (Opus, Impeccable), visualization engineer (Opus) | 3 | 3 |
+| P5 Voice, registry, pilot | Opus | registry & data (Sonnet), voice & pilot author (Opus), pilot reviewer (Opus) | 3 | 3 |
+| P6 Content A: Stages 0–2 (31 modules) | Sonnet | 2 authors (Sonnet, ≈15–16 modules each), reviewer (Opus) | 3 | 3 |
+| P7 Content B: Stages 3–4 (28 modules) | Sonnet | 2 authors (Sonnet, ≈14 each), reviewer (Opus) | 3 | 3 |
+| P8 Content C: Stages 5–7 (42 modules) | Opus | 2 authors (Opus, ≈21 each), reviewer (Opus) | 3 | 3 |
+| P9 Review & release | Opus | final reviewer: course + visual (Opus), release QA (Sonnet) | 2 | 3 |
+| Manager reports | — (main session) | 1 per phase (Sonnet), not counted in the per-phase cap | 7 | 7 |
+| **Total** | 7 orchestrators (5 Opus, 2 Sonnet) | 18 workers + 7 reports | **≈32** (15 Opus, 17 Sonnet) | — |
 
-**Compared with v1:** v1 planned about **294 spawns** (278 in 16 build phases plus 16 reports), up to 5 concurrent, with Opus in most writing and review roles and per-item author → verifier → critic triples. v2.0 planned **about 41** (cap 48), about **7× fewer**, over 7 phases with at most 3 concurrent. The biggest savings: no runtime/exercise phases (v1 P5–P7), content in 3 phases instead of 8, contiguous module runs per author instead of one author per module, one reviewer per phase instead of per-batch verifiers and critics, Sonnet for Stages 0–4, and no audit swarm (v1 P17). D-021's visuals add one spawn (the P4 visualization engineer); content visuals are made by the existing authors.
+**v2.2 (D-032-A1):** the Manager capped every phase at 3 worker spawns after seeing P3's usage. Headcount drops from 41 to ≈32. Authors now carry longer contiguous runs (14–21 modules) and are continued with SendMessage batch by batch instead of being replaced; the calibration module still runs alone first. Wall-clock time per content phase goes up (at most 2 authors in parallel); quality controls (Opus reviewer per content phase, gates, calibration) are unchanged.
 
-**v2.1 recomputation (D-030):** module counts shift slightly — P6 loses M0.2 and M0.3 (33 → 31 modules), P8 gains M7.14 back (41 → 42 modules) — but stay within each phase's existing per-author range (≈7–9 modules), so **author headcounts, spawns and the cap are unchanged: 41 total (19 Opus, 22 Sonnet), cap 48.** What shrinks is token cost per module, not headcount: no walkthrough sections, no `solutions/` files, no CEMC-data fetching or checking (P5), no `hint` field. Token use is now dominated by ≈240k–260k words of content and its ≈400–550 visuals (both down from v2.0's ≈300k words); P5 still measures tokens per module and recalibrates this table through a changelog entry if the reduction changes the picture.
+**Compared with v1 (historical; numbers superseded by v2.2 above):** v1 planned about **294 spawns** (278 in 16 build phases plus 16 reports), up to 5 concurrent, with Opus in most writing and review roles and per-item author → verifier → critic triples. v2.0 planned **about 41** (cap 48), about **7× fewer**, over 7 phases with at most 3 concurrent. The biggest savings: no runtime/exercise phases (v1 P5–P7), content in 3 phases instead of 8, contiguous module runs per author instead of one author per module, one reviewer per phase instead of per-batch verifiers and critics, Sonnet for Stages 0–4, and no audit swarm (v1 P17). D-021's visuals add one spawn (the P4 visualization engineer); content visuals are made by the existing authors.
+
+**v2.1 recomputation (D-030; historical, superseded by v2.2):** module counts shift slightly — P6 loses M0.2 and M0.3 (33 → 31 modules), P8 gains M7.14 back (41 → 42 modules) — but stay within each phase's existing per-author range (≈7–9 modules), so **author headcounts, spawns and the cap are unchanged: 41 total (19 Opus, 22 Sonnet), cap 48.** What shrinks is token cost per module, not headcount: no walkthrough sections, no `solutions/` files, no CEMC-data fetching or checking (P5), no `hint` field. Token use is now dominated by ≈240k–260k words of content and its ≈400–550 visuals (both down from v2.0's ≈300k words); P5 still measures tokens per module and recalibrates this table through a changelog entry if the reduction changes the picture.
 
 ### 11.6 Manager reports (after every phase)
 
@@ -886,7 +889,7 @@ Deleting the workspace removes all local state. The private repo and the Vercel 
   9. The other §4.8 client features; E2E, visual baselines (including the gallery), G-PAGE, G-PERF budgets (including the visual chunk); `scripts/deployed-url.mjs`.
 - **Entry:** P3 done; session restarted; Vercel linked per D-030 Q-18 (previews and production both public, no protection).
 - **Read first:** §4 (including §4.11), §7, §8, §9.3, §10.5; `w1-tech-stack.md` §1, §2, §6–§8 only (the rest is about the removed runtime); `w4-links-and-qa.md` Part A.
-- **Agents:** app engineer (Sonnet: scaffold, pipeline, registry code, gates); design lead (Opus: Impeccable, design record including the visual language, tokens, layout, components); visualization engineer (Opus: §4.11 library, player, tracer and recorder, gallery); QA engineer (Sonnet: E2E, visual, a11y, perf, deployed-URL tooling); reviewer (Opus: architecture, code, pixel and motion review). At most 3 at once: scaffold first; then design lead, app engineer and visualization engineer in parallel (the visualization engineer starts from the design lead's tokens and visual language draft); then QA; then review.
+- **Agents (v2.2: 3 workers max):** app & QA engineer (Sonnet: scaffold, pipeline, registry code, gates, then E2E, visual, a11y, perf and deployed-URL tooling); design lead (Opus: Impeccable, design record including the visual language, tokens, layout, components); visualization engineer (Opus: §4.11 library, player, tracer and recorder, gallery); **review** (architecture, code, pixel and motion) is done by the orchestrator (Opus) itself, with fixes by the workers continued via SendMessage. At most 3 at once: scaffold first; then design lead, app engineer and visualization engineer in parallel (the visualization engineer starts from the design lead's tokens and visual language draft); then the app & QA engineer (continued) builds the suites; then the orchestrator reviews.
 - **Deliverables:** `main-app/**`, `PRODUCT.md`, `DESIGN.md`, the Vercel project, `work/04-app/{p3-verification.md,spike-S2.md,design-review.md,containment/}`.
 - **Exit:** `verify:full` green locally on the fixture content; all suites green on the Vercel preview; the first WMOJ automated verification run over the 119 stubs is recorded; reviewer signs off.
 - **Manager checkpoint:** approve the look and feel **and the visual/animation style** on the live preview URL (the lesson fixtures and the `/dev/viz` gallery), plus the report screenshots and a short screen recording of a step-through. A redo is cheap here.
@@ -910,15 +913,15 @@ Deleting the workspace removes all local state. The private repo and the Vercel 
 
 | Phase | Scope | Authors | Suggested author split |
 |---|---|---|---|
-| P6 Content A | Stage 0 (**M0.1, M0.4–M0.7**; M0.2 and M0.3 dropped, D-030 Q-19), Stage 1 (M1.2–M1.15), Stage 2 (M2.1–M2.9), C.1, C.2, C.10: **31 modules** | 4 Sonnet | A1: M0.1, M0.4–M0.7 + C.1 · A2: M1.2–M1.8 · A3: M1.9–M1.15 · A4: M2.1–M2.9 + C.2 + C.10 |
-| P7 Content B | Stage 3 (M3.1–M3.10), Stage 4 (M4.1–M4.15 minus M4.13), C.3, C.4, C.6, C.7: 28 modules | 4 Sonnet | B1: M3.1–M3.7 · B2: M3.8–M3.10 + C.4 + C.6 + M4.1–M4.2 · B3: M4.3–M4.9 · B4: M4.10–M4.15 (not M4.13) + C.3 + C.7 |
-| P8 Content C | Stage 5 (M5.1–M5.13), Stage 6 (M6.2–M6.13), Stage 7 (**M7.1–M7.14**; M7.14 kept, D-030 Q-10), C.5, C.8, C.9: **42 modules** | 5 Opus | C1: M5.1–M5.7 + C.5 · C2: M5.8–M5.13 + C.8 · C3: M6.2–M6.8 · C4: M6.9–M6.13 + M7.1–M7.3 · **C5: M7.4–M7.14 + C.9** |
+| P6 Content A | Stage 0 (**M0.1, M0.4–M0.7**; M0.2 and M0.3 dropped, D-030 Q-19), Stage 1 (M1.2–M1.15), Stage 2 (M2.1–M2.9), C.1, C.2, C.10: **31 modules** | 2 Sonnet | A1: M0.1, M0.4–M0.7 + C.1 + M1.2–M1.11 · A2: M1.12–M1.15 + M2.1–M2.9 + C.2 + C.10 |
+| P7 Content B | Stage 3 (M3.1–M3.10), Stage 4 (M4.1–M4.15 minus M4.13), C.3, C.4, C.6, C.7: 28 modules | 2 Sonnet | B1: M3.1–M3.10 + C.4 + C.6 + M4.1–M4.2 · B2: M4.3–M4.15 (not M4.13) + C.3 + C.7 |
+| P8 Content C | Stage 5 (M5.1–M5.13), Stage 6 (M6.2–M6.13), Stage 7 (**M7.1–M7.14**; M7.14 kept, D-030 Q-10), C.5, C.8, C.9: **42 modules** | 2 Opus | C1: M5.1–M5.13 + C.5 + C.8 + M6.2–M6.6 · C2: M6.7–M6.13 + M7.1–M7.14 + C.9 |
 
-The orchestrator may rebalance the split in its brief without changing the author count. M7.14 is written with no setup content and no scoring framing (D-030 Q-10; §5.3).
+The orchestrator may rebalance the split in its brief without changing the author count (2 authors + 1 reviewer = the phase's 3 worker spawns, v2.2). Authors work in batches and are continued with SendMessage; they are never replaced while alive. M7.14 is written with no setup content and no scoring framing (D-030 Q-10; §5.3).
 
 - **Entry:** previous phase done and approved; P5 hard gate passed. For P8, the first task re-checks any grader change for the latest CCC year and updates the registry.
 - **Read first:** §4.11, §5, §6, §7; `work/05-pilot/prompt-templates/` (including the visual-authoring guide); the style guide and pilot modules; the `/dev/viz` gallery; the previous content phase's "lessons learned" in `defects.md`; this phase's ledger and `defects.md` if resuming.
-- **Flow:** brief → calibration module alone → remaining modules (≤ 3 authors at once) → reviewer per batch → fixes → acceptance → cross-module continuity pass (the reviewer, continued) → `verify:full` → commit and push → preview suites → report assets.
+- **Flow:** brief → calibration module alone → remaining modules (the 2 authors in parallel, reviewer alongside) → reviewer per batch → fixes → acceptance → cross-module continuity pass (the reviewer, continued) → `verify:full` → commit and push → preview suites → report assets.
 - **Exit:** every module in scope `accepted` with its visuals; zero open defects; `verify:full` and preview suites green.
 - **Manager checkpoint:** sample review on the preview (lessons and visuals). After approval, the main session merges to `main`, and production shows the new stages.
 
@@ -989,7 +992,7 @@ Per operating-rules §6: the old log becomes `.v<k>`; superseded artefacts go to
 | R-12 | Containment leak through bare tool calls | Wrappers, npm-script guard, PreToolUse hook, backstop, session restart and verification. |
 | R-13 | Flaky E2E, especially against a remote preview | Wait for the deployment to be ready; retry-free burn-in; zero tolerance; network-independent assertions. |
 | R-14 | Baselines drift | Local fonts, pinned browsers, one machine, strict `maxDiffPixels`, Opus note for every update. |
-| R-15 | Token cost of content phases | Sonnet for Stages 0–4; one reviewer per phase; P5 measurement and recalibration; spawn caps. |
+| R-15 | Token cost of content phases | Sonnet for Stages 0–4; one reviewer per phase; P5 measurement and recalibration; hard cap of 3 worker spawns per phase (v2.2). |
 | R-16 | CEMC licensing | Paraphrase, attribution, free app; no official CEMC test data is fetched or shipped at all (D-030 Q-20). |
 | R-17 | The grader changes for CCC 2027 | P10 seasonal check; 3.8 rules live in one place (§4.5). |
 | R-18 | Next.js security releases | Exact pins; patch bumps in P9 and P10; no server code to exploit. |

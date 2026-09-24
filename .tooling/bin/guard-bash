@@ -1,0 +1,266 @@
+#!/usr/bin/perl
+# guard-bash — project PreToolUse hook for the Bash tool (plan §9.2 layer 3).
+#
+# Reads the hook JSON on stdin. Blocks (exit 2, reason on stderr) when a command:
+#   * calls a project tool bare (node, npm, npx, pip, python3, pypy, brew, playwright, vercel, git, gh, …)
+#     instead of through .tooling/bin/<wrapper>: in command position after ; && || | & ( newline,
+#     inside $( ) and backticks (wherever the shell expands them), and inside bash -c / sh -c / eval;
+#   * writes global git config (git config --global|--system);
+#   * touches the gh login (gh auth login|logout|refresh|setup-git|switch|token);
+#   * force- or delete-pushes, or passes --no-verify.
+# All checks run on lexed command segments, so quoted arguments, single-quoted strings and quoted
+# heredoc bodies (<<'EOF') are data, never commands. Unquoted heredoc bodies are data too, but $( )
+# and backticks inside them are checked because the shell expands them.
+# Anything else passes (exit 0); unparseable input passes. Only system perl + core JSON::PP.
+use strict;
+use warnings;
+use JSON::PP;
+
+my $raw = do { local $/; <STDIN> } // '';
+my $in = eval { decode_json($raw) };
+exit 0 unless $in && ref $in eq 'HASH';
+exit 0 unless ($in->{tool_name} // '') eq 'Bash';
+my $cmd = $in->{tool_input}{command} // '';
+exit 0 if $cmd eq '';
+
+my @why;
+my %wrapper = (
+  node => '.tooling/bin/node', nodejs => '.tooling/bin/node',
+  npm  => '.tooling/bin/npm (e.g. `.tooling/bin/npm run <script>`)',
+  npx  => '`.tooling/bin/npm exec --no -- <bin>` (local pinned devDependencies only; never remote packages)',
+  corepack => 'nothing (npm only)', yarn => '.tooling/bin/npm', pnpm => '.tooling/bin/npm', bun => '.tooling/bin/npm',
+  pip => '.tooling/bin/tools-pip (tools venv only; see .tooling/README.md)',
+  pipx => 'nothing (not used)', uv => 'nothing (uv is not used, plan §4.2)', uvx => 'nothing (uv is not used)',
+  python3 => '.tooling/bin/pypy38', pypy => '.tooling/bin/pypy38',
+  ruff => '.tooling/bin/ruff', vermin => '.tooling/bin/vermin',
+  brew => 'nothing: Homebrew is never used (operating-rules §7)',
+  playwright => '.tooling/bin/pw or `.tooling/bin/npm run …`',
+  vercel => 'nothing: the Vercel CLI is not used (plan §4.1)',
+  next => '`.tooling/bin/npm run …`', tsc => '`.tooling/bin/npm run …`', biome => '`.tooling/bin/npm run …`',
+  vitest => '`.tooling/bin/npm run …`', lighthouse => '`.tooling/bin/npm run …`', cspell => '`.tooling/bin/npm run …`',
+  git => '.tooling/bin/git', gh => '.tooling/bin/gh',
+);
+
+sub base { my ($w) = @_; (my $b = $w) =~ s{.*/}{}; return lc $b; }
+sub banned_name {
+  my $b = base($_[0]);
+  return 'python3' if $b =~ /^python[23]?(?:\.\d+)*$/;
+  return 'pip'     if $b =~ /^pip[23]?(?:\.\d+)*$/;
+  return 'pypy'    if $b =~ /^pypy[23]?(?:\.\d+)*(?:-c)?$/;
+  return 'node'    if $b eq 'nodejs';
+  return exists $wrapper{$b} ? $b : undef;
+}
+sub is_wrapper_path { return lc($_[0]) =~ m{(?:^|/)\.tooling/bin/[a-z0-9._-]+$}; }
+
+# ---- lexer ---------------------------------------------------------------------------------------------
+# Returns the text inside a $( ... ) that starts at $i (pointing just after "$("), and the index after ")".
+sub take_paren {
+  my ($s, $i) = @_;
+  my $n = length $s; my $depth = 1; my $start = $i;
+  while ($i < $n) {
+    my $c = substr($s, $i, 1);
+    if ($c eq "\\") { $i += 2; next; }
+    if ($c eq "'") { my $j = index($s, "'", $i + 1); $i = $j < 0 ? $n : $j + 1; next; }
+    if ($c eq '"') { $i++; while ($i < $n && substr($s, $i, 1) ne '"') { $i += substr($s, $i, 1) eq "\\" ? 2 : 1; } $i++; next; }
+    if ($c eq '(') { $depth++; }
+    elsif ($c eq ')') { $depth--; return (substr($s, $start, $i - $start), $i + 1) if $depth == 0; }
+    $i++;
+  }
+  return (substr($s, $start), $n);
+}
+sub take_backtick {
+  my ($s, $i) = @_;   # $i just after the opening backtick
+  my $n = length $s; my $start = $i;
+  while ($i < $n) { my $c = substr($s, $i, 1); if ($c eq "\\") { $i += 2; next; } return (substr($s, $start, $i - $start), $i + 1) if $c eq '`'; $i++; }
+  return (substr($s, $start), $n);
+}
+# Scans an unquoted-heredoc body (or any expanding text) for $( ) and backticks only.
+sub scan_expansions {
+  my ($s, $subs) = @_;
+  my $n = length $s; my $i = 0;
+  while ($i < $n) {
+    my $c = substr($s, $i, 1);
+    if ($c eq "\\") { $i += 2; next; }
+    if ($c eq '$' && substr($s, $i + 1, 1) eq '(') { my ($t, $j) = take_paren($s, $i + 2); push @$subs, $t; $i = $j; next; }
+    if ($c eq '`') { my ($t, $j) = take_backtick($s, $i + 1); push @$subs, $t; $i = $j; next; }
+    $i++;
+  }
+}
+
+sub lex {
+  my ($s, $subs) = @_;
+  my @segs; my @words; my $cur = ''; my $have = 0; my @heredocs;
+  my $i = 0; my $n = length $s;
+  my $fw = sub { push @words, $cur if $have; $cur = ''; $have = 0; };
+  my $fs = sub { $fw->(); push @segs, [@words] if @words; @words = (); };
+  while ($i < $n) {
+    my $ch = substr($s, $i, 1);
+    if ($ch eq "\\") { if (substr($s, $i + 1, 1) ne "\n") { $cur .= substr($s, $i + 1, 1); $have = 1; } $i += 2; next; }
+    if ($ch eq "'") { my $j = index($s, "'", $i + 1); $j = $n if $j < 0; $cur .= substr($s, $i + 1, $j - $i - 1); $have = 1; $i = $j + 1; next; }
+    if ($ch eq '"') {
+      $i++; $have = 1;
+      while ($i < $n && substr($s, $i, 1) ne '"') {
+        my $c = substr($s, $i, 1);
+        if ($c eq "\\") { $cur .= substr($s, $i + 1, 1); $i += 2; next; }
+        if ($c eq '$' && substr($s, $i + 1, 1) eq '(') { my ($t, $j) = take_paren($s, $i + 2); push @$subs, $t; $cur .= '$(…)'; $i = $j; next; }
+        if ($c eq '`') { my ($t, $j) = take_backtick($s, $i + 1); push @$subs, $t; $cur .= '`…`'; $i = $j; next; }
+        $cur .= $c; $i++;
+      }
+      $i++; next;
+    }
+    if ($ch eq '$' && substr($s, $i + 1, 1) eq '(') { my ($t, $j) = take_paren($s, $i + 2); push @$subs, $t; $cur .= '$(…)'; $have = 1; $i = $j; next; }
+    if ($ch eq '`') { my ($t, $j) = take_backtick($s, $i + 1); push @$subs, $t; $cur .= '`…`'; $have = 1; $i = $j; next; }
+    if ($ch eq '#' && !$have) { my $j = index($s, "\n", $i); $i = $j < 0 ? $n : $j; next; }
+    if ($ch eq '<' && substr($s, $i, 2) eq '<<' && substr($s, $i, 3) ne '<<<') {
+      $fw->();
+      my $rest = substr($s, $i + 2);
+      if ($rest =~ /^(-?)[ \t]*(?:'([^'\n]*)'|"([^"\n]*)"|(\\?)([A-Za-z0-9_.-]+))/) {
+        my $quoted = defined($2) || defined($3) || ($4 // '') eq "\\";
+        my $delim = defined $2 ? $2 : defined $3 ? $3 : $5;
+        push @heredocs, [$delim, $1 eq '-', $quoted];
+        $i += 2 + length($&); next;
+      }
+      $i += 2; next;
+    }
+    if ($ch eq "\n") {
+      $fs->(); $i++;
+      while (my $h = shift @heredocs) {
+        my ($delim, $tabs, $quoted) = @$h; my $body = '';
+        while ($i < $n) {
+          my $j = index($s, "\n", $i); $j = $n if $j < 0;
+          my $line = substr($s, $i, $j - $i); $i = $j + 1;
+          (my $cmp = $line) =~ s/^\t+// if $tabs; $cmp = $line unless $tabs;
+          last if $cmp eq $delim;
+          $body .= "$line\n";
+        }
+        scan_expansions($body, $subs) unless $quoted;
+      }
+      next;
+    }
+    if ($ch =~ /[;&|()]/) { $fs->(); $i++; next; }
+    if ($ch =~ /[ \t\r]/) { $fw->(); $i++; next; }
+    if ($ch eq '>' || $ch eq '<') {          # redirection: drop operator and its target word
+      $cur = '' if $have && $cur =~ /^\d+$/; $have = 0 if $cur eq '';
+      $fw->(); $i++; $i++ while $i < $n && substr($s, $i, 1) =~ /[>&|]/;
+      $i++ while $i < $n && substr($s, $i, 1) =~ /[ \t]/;
+      if ($i < $n && substr($s, $i, 1) eq '(') { next; }   # process substitution <( … ): lexed as a subshell
+      while ($i < $n && substr($s, $i, 1) !~ /[ \t\n;&|()]/) {
+        my $c = substr($s, $i, 1);
+        if ($c eq "'") { my $j = index($s, "'", $i + 1); $i = $j < 0 ? $n : $j + 1; next; }
+        if ($c eq '"') { $i++; $i++ while $i < $n && substr($s, $i, 1) ne '"'; $i++; next; }
+        $i++;
+      }
+      next;
+    }
+    $cur .= $ch; $have = 1; $i++;
+  }
+  $fs->();
+  return @segs;
+}
+
+# ---- checks -------------------------------------------------------------------------------------------
+my %prefix = map { $_ => 1 } qw(sudo command builtin exec time nohup nice then do else elif if while until ! { } timeout caffeinate);
+my $depth = 0;
+
+sub check_cmdline {
+  my ($s) = @_;
+  return if $depth > 8;
+  $depth++;
+  my @subs;
+  my @segs = lex($s, \@subs);
+  check_segment(@$_) for @segs;
+  check_cmdline($_) for @subs;
+  $depth--;
+}
+
+sub subcommand {   # first non-option word after the command, skipping git's option arguments
+  my @w = @_; my $skip = 0;
+  for my $x (@w) {
+    if ($skip) { $skip = 0; next; }
+    if ($x =~ /^(?:-C|-c|--git-dir|--work-tree|--namespace|--exec-path|--config-env|-R|--repo|--hostname)$/) { $skip = 1; next; }
+    next if $x =~ /^-/;
+    return $x;
+  }
+  return '';
+}
+
+sub check_segment {
+  my @w = @_;
+  while (@w) {
+    if ($w[0] =~ /^[A-Za-z_][A-Za-z0-9_]*=/) { shift @w; next; }
+    return if $w[0] eq 'command' && @w > 1 && $w[1] =~ /^-[vV]$/;   # `command -v node` is a lookup
+    if ($prefix{$w[0]}) { my $p = shift @w; if ($p eq 'timeout' || $p eq 'nice') { shift @w while @w && $w[0] =~ /^-/; shift @w if @w && $w[0] =~ /^\d/; } shift @w while @w && $w[0] =~ /^-/; next; }
+    if ($w[0] eq 'env') { shift @w; while (@w && ($w[0] =~ /^-/ || $w[0] =~ /^[A-Za-z_][A-Za-z0-9_]*=/)) { my $o = shift @w; shift @w if $o =~ /^-[uSC]$/; } next; }
+    if ($w[0] eq 'xargs') { shift @w; while (@w && $w[0] =~ /^-/) { my $o = shift @w; shift @w if $o =~ /^-[IELnPsdJR]$/; } next; }
+    last;
+  }
+  return unless @w;
+  my $c = $w[0];
+  my $b = base($c);
+  # find -exec/-execdir/-ok/-okdir <cmd> … ; or +  : the <cmd> runs as a command
+  if ($b eq 'find') {
+    for my $i (1 .. $#w) {
+      next unless $w[$i] =~ /^-(?:exec|execdir|ok|okdir)$/;
+      my @sub; for my $j ($i + 1 .. $#w) { last if $w[$j] eq ';' || $w[$j] eq '+'; push @sub, $w[$j]; }
+      check_segment(@sub) if @sub;
+    }
+  }
+  # C-1: a command name built from a variable, substitution or xargs/find placeholder is opaque.
+  if (($c =~ /\$|`…`/ || $c =~ /^\{\}$/) && !is_wrapper_path($c)) {
+    push @why, "Dynamic command name `$c` is not allowed (the guard cannot see what it runs). Call the tool by its literal .tooling/bin/* path.";
+    return;
+  }
+  # C-2: shells that read a script file, stdin or a pipe hide their commands from the guard.
+  if ($b =~ /^(?:ba|z|da|k|c|tc|fi)?sh$/) {
+    for my $i (1 .. $#w) { if ($w[$i] =~ /^-[a-z]*c[a-z]*$/ && defined $w[$i + 1]) { check_cmdline($w[$i + 1]); return; } }
+    return if grep { /^-[a-z]*n[a-z]*$/ } @w[1 .. $#w];    # bash -n: syntax check only, runs nothing
+    push @why, "`$b` without -c (script file, stdin or pipe) is not allowed: the guard cannot see the commands inside. Use `$b -c '…'`, or run a tracked script by its path.";
+    return;
+  }
+  if ($b eq 'source' || $b eq '.') {
+    return if @w >= 2 && $w[1] =~ m{(?:^|/)\.tooling/(?:env\.sh|bin/_wrap\.sh)$};
+    push @why, "`$b` of a script is not allowed (the guard cannot see what it runs). Only .tooling/env.sh may be sourced.";
+    return;
+  }
+  # C-3: aliases that point at a project tool.
+  if ($b eq 'alias') {
+    for my $a (@w[1 .. $#w]) {
+      next unless $a =~ /^[^=]+=(.*)$/s;
+      my ($first) = split ' ', $1;
+      push @why, "alias to a project tool (`$a`) is not allowed; call .tooling/bin/* directly." if defined $first && banned_name($first) && !is_wrapper_path($first);
+    }
+    return;
+  }
+  if ($b eq 'eval') { check_cmdline(join ' ', @w[1 .. $#w]); return; }
+  my @args = @w[1 .. $#w];
+  push @why, '--no-verify is forbidden (plan §10.4).' if grep { $_ eq '--no-verify' } @args;
+  if ($b eq 'git') {
+    my $sub = subcommand(@args);
+    push @why, 'git config --global/--system is forbidden: the Manager\'s global git config is read-only (plan §10.2).'
+      if $sub eq 'config' && grep { /^--(?:global|system)$/ } @args;
+    if ($sub eq 'push') {
+      push @why, 'Force or destructive pushes are forbidden (plan §10.4).'
+        if grep { /^(?:-f|--force|--force-with-lease(?:=.*)?|--force-if-includes|--mirror|--delete|-d|--prune)$/ || /^\+/ || /^-[a-zA-Z]*f[a-zA-Z]*$/ || /^:[^\/]/ } @args;
+    }
+  }
+  if ($b eq 'gh') {
+    my @pos = grep { !/^-/ } @args;
+    push @why, 'gh auth login/logout/refresh/setup-git/switch/token is forbidden: it changes or exposes the Manager\'s login. If gh auth is broken, ask the Manager to run `gh auth login` in their own terminal (plan §10.2).'
+      if @pos >= 2 && $pos[0] eq 'auth' && $pos[1] =~ /^(?:login|logout|refresh|setup-git|switch|token)$/;
+    push @why, 'gh config/extension/alias writes are forbidden (they change ~/.config/gh or the user data dir).'
+      if @pos >= 2 && (($pos[0] eq 'config' && $pos[1] =~ /^(?:set|clear-cache)$/) || $pos[0] =~ /^(?:extension|extensions|ext)$/ || ($pos[0] eq 'alias' && $pos[1] =~ /^(?:set|delete|import)$/));
+  }
+  return if is_wrapper_path($c);
+  my $bn = banned_name($c) or return;
+  push @why, "Bare `$bn` is not allowed: call tools only through .tooling/bin/* (npm scripts: `.tooling/bin/npm run …`), plan §9.2. Use $wrapper{$bn} instead.";
+}
+
+check_cmdline($cmd);
+
+if (@why) {
+  my %seen; my @u = grep { !$seen{$_}++ } @why;
+  print STDERR "Blocked by the et-ccc guard (.tooling/bin/guard-bash):\n", map({ "  - $_\n" } @u),
+    "Wrappers: .tooling/bin/{node,npm,pypy38,ruff,vermin,pw,gh,git,impeccable,tools-pip}. See CLAUDE.md and .tooling/README.md.\n";
+  exit 2;
+}
+exit 0;

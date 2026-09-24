@@ -1,0 +1,36 @@
+# Cleanup of pip writes to ~/Library/Caches/pip (incident 2026-09-23 22:33, see phase log)
+# marker mtime 1790216901; removed = entries with birthtime >= marker
+1790217180 Regular File /Users/adham/Library/Caches/pip/selfcheck/a7461ed1326bcd91fe5b4020eb66a6f5d3ab54e6b4de908eaffd76d4
+1790217179 Regular File /Users/adham/Library/Caches/pip/http/d/4/1/b/e/d41beeaedcd5613da0a5356868627913419e0c774b406515a378886d
+1790217180 Regular File /Users/adham/Library/Caches/pip/http/a/1/9/5/3/a19537d3cf37c122db841d6fe4cd322bc10d1a558bb00d146b85cb9a
+1790217179 Regular File /Users/adham/Library/Caches/pip/http/7/d/3/f/6/7d3f63e663449babdad9c86b801f2ffd38080b24aa35e610efc643f0
+1790217177 Regular File /Users/adham/Library/Caches/pip/http/5/b/e/6/4/5be64dddf357efe8e015c621695508a39823691e4777c7d90558ec8b
+1790217179 Regular File /Users/adham/Library/Caches/pip/http/1/5/c/7/8/15c7835926c003f80bcd46def9c837405078136b34814f63027b6eba
+1790217179 Directory /Users/adham/Library/Caches/pip/http/d/4/1/b/e
+1790217179 Directory /Users/adham/Library/Caches/pip/http/d/4/1/b
+1790217179 Directory /Users/adham/Library/Caches/pip/http/d/4/1
+1790217179 Directory /Users/adham/Library/Caches/pip/http/d/4
+1790217179 Directory /Users/adham/Library/Caches/pip/http/d
+1790217179 Directory /Users/adham/Library/Caches/pip/http/7/d/3/f/6
+1790217179 Directory /Users/adham/Library/Caches/pip/http/7/d/3/f
+1790217179 Directory /Users/adham/Library/Caches/pip/http/7/d/3
+1790217179 Directory /Users/adham/Library/Caches/pip/http/7/d
+1790217179 Directory /Users/adham/Library/Caches/pip/http/7
+1790217177 Directory /Users/adham/Library/Caches/pip/http/5/b/e/6/4
+1790217177 Directory /Users/adham/Library/Caches/pip/http/5/b/e/6
+1790217177 Directory /Users/adham/Library/Caches/pip/http/5/b/e
+1790217177 Directory /Users/adham/Library/Caches/pip/http/5/b
+1790217177 Directory /Users/adham/Library/Caches/pip/http/5
+1790217179 Directory /Users/adham/Library/Caches/pip/http/1/5/c/7/8
+1790217179 Directory /Users/adham/Library/Caches/pip/http/1/5/c/7
+1790217179 Directory /Users/adham/Library/Caches/pip/http/1/5/c
+1790217179 Directory /Users/adham/Library/Caches/pip/http/1/5
+1790217179 Directory /Users/adham/Library/Caches/pip/http/1
+# Removed the 6 files and 20 directories above (all born after the marker). Restored mtimes of ~/Library/Caches/pip/http and ~/Library/Caches/pip/selfcheck from the before snapshot. Residual: mtime of pre-existing dir ~/Library/Caches/pip/http/a/1/9/5/3 (below the snapshot depth, original value unknown); its contents are unchanged.
+# Update: ~/Library/Caches/pip/http/a/1/9/5/3 was born 2026-09-08 10:05:48 (the Manager's own pip cache) and
+# held a cached HTTP response that our pip run REPLACED (atomic rename) for the same URL; deleting our replacement
+# means that one stale cache entry is gone (pip refetches it on demand; a cache, not state). Its dir mtime was reset
+# to 2026-09-08 10:05:48 (equal to its birth time and its siblings'). Net effect on the Manager's machine: one
+# pip HTTP cache entry fewer. Root cause: the venv's pip was run directly instead of with env.sh sourced.
+# Fix: .tooling/bin/tools-pip wrapper (sources env.sh, PIP_CONFIG_FILE=/dev/null, PIP_CACHE_DIR in .tooling);
+# guard-bash blocks any bare pip/python; the auditor re-checks this path.

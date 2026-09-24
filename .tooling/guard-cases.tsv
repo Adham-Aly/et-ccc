@@ -1,0 +1,98 @@
+# guard-bash regression cases: EXPECT<TAB>command   (EXPECT = block|pass; "\n" in a command = newline)
+# Run: .tooling/bin/guard-test
+block	npm -v
+block	node x.js
+block	npx cowsay
+block	cd main-app && npm run build
+block	FOO=1 npm test
+block	env -i PATH=x node -v
+block	ls | xargs -I{} node {}
+block	bash -c "pip install x"
+block	sh -c 'npm i'
+block	eval "npm i"
+block	echo $(python3 -V)
+block	echo "$(python3 -V)"
+block	echo `node -v`
+block	python3.12 -m venv v
+block	pip3.11 install x
+block	pypy3.8 -V
+block	/opt/homebrew/bin/node -v
+block	.tooling/node/bin/node -v
+block	.tooling/venvs/tools/bin/python -m pip list
+block	brew install foo
+block	git status
+block	gh repo view
+block	sudo npm i -g x
+block	time npm test
+block	nohup node server.js
+block	timeout 5 node x.js
+block	(cd x; npm i)
+block	true || npm i
+block	a & npm i
+block	.tooling/bin/git config --global user.name x
+block	.tooling/bin/git -C . config --system core.x y
+block	.tooling/bin/gh auth refresh
+block	.tooling/bin/gh auth token
+block	.tooling/bin/gh config set editor vim
+block	.tooling/bin/gh extension install x/y
+block	.tooling/bin/git commit --no-verify -m x
+block	.tooling/bin/git push --force origin main
+block	.tooling/bin/git push -f origin main
+block	.tooling/bin/git push origin +main
+block	.tooling/bin/git push --force-with-lease origin main
+block	.tooling/bin/git push origin --delete old
+block	.tooling/bin/git push origin :old
+block	cat <<EOF\n$(npm -v)\nEOF
+block	cat <<EOF\n`node -v`\nEOF
+block	playwright test
+block	vercel deploy
+block	uvx ruff
+block	ruff check .
+block	vermin -t=3.8 x.py
+pass	.tooling/bin/npm -v
+pass	/Users/adham/Developer/et-ccc/.tooling/bin/node -v
+pass	cd main-app && ../.tooling/bin/npm run build
+pass	grep -rn "npm install" context/
+pass	echo "use node"
+pass	echo 'npm -v; node x'
+pass	cat <<EOF > f.txt\nnpm install\nnode x\nEOF\nls
+pass	cat <<'EOF' >> context/decisions.md\n- Decision: `.tooling/bin/contain-snapshot` and `npm -g` and `git config --global` and `gh auth login` mentioned in prose; `$(npm -v)`\nEOF\necho ok
+pass	cat > f <<-"X"\n\tpip install foo\n\tX
+pass	.tooling/bin/git commit -m "Phase 3: set up node and npm; git config --global is never used"
+pass	ls -la ~/.npm 2>&1
+pass	.tooling/bin/git push origin main
+pass	.tooling/bin/git push -u origin phase-04-app
+pass	which node
+pass	type -a git
+pass	.tooling/bin/gh api user --jq .login
+pass	.tooling/bin/gh auth status --hostname github.com
+pass	.tooling/bin/git config --local core.hooksPath x
+pass	.tooling/bin/git log --grep="--no-verify"
+pass	/usr/bin/perl -e 'print 1'
+pass	ls node_modules/.bin 2>/dev/null | head
+pass	echo npm > /dev/null
+pass	.tooling/bin/pypy38 -c "import sys; print(sys.version)"
+pass	.tooling/bin/node -e 'console.log(require("./x"))' # node comment
+# auditor findings C-1..C-3 (2026-09-23)
+block	BIN=/opt/homebrew/bin/node; $BIN -v
+block	BIN=node; "$BIN" -v
+block	CMD=node; exec "$CMD" -v
+block	printf "npm -v" | sh
+block	bash < script.sh
+block	bash script.sh
+block	. ./script.sh
+block	source ./script.sh
+block	alias n2=node; n2 -v
+block	$(which node) -v
+pass	bash -n .tooling/bin/contain-snapshot
+pass	. /Users/adham/Developer/et-ccc/.tooling/env.sh && echo $npm_config_cache
+pass	"${CLAUDE_PROJECT_DIR}/.tooling/bin/guard-bash" < x.json
+pass	command -v node
+pass	alias ll="ls -la"
+# auditor round 2 (2026-09-23)
+block	find . -exec node {} ;
+block	find . -name "*.js" -exec node {} +
+block	find . -execdir npm test ;
+block	printf "%s" node | xargs -I{} {} -v
+pass	find . -name "*.py" -exec .tooling/bin/ruff check {} +
+pass	find . -name x -exec rm {} ;

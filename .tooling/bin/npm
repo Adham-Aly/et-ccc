@@ -1,9 +1,13 @@
 #!/bin/bash
 # workspace npm (bundled with the workspace Node). Blocks global installs and remote npx-style exec.
 . "$(dirname "$0")/_wrap.sh"
+# npm also reads config from npm_config_* env vars (case-insensitive): refuse any that switch to global mode.
+if env | /usr/bin/grep -qiE '^npm_config_(global=(true|1|yes)|location=global)'; then
+  wrap_die "npm_config_global / npm_config_location=global are forbidden (operating-rules §7)"
+fi
 for a in "$@"; do
   case "$a" in
-    -g|--global|--location=global|--global=true) wrap_die "global npm operations are forbidden (operating-rules §7)";;
+    -g|--global|--location=global|--location|--global=true) wrap_die "global npm operations are forbidden (operating-rules §7)";;
   esac
 done
 case "${1:-}" in

@@ -7,6 +7,8 @@
 !.tooling/bin/
 !.tooling/README.md
 !.tooling/contain-allowlist.txt
+!.tooling/requirements-tools.txt
+!.tooling/guard-cases.tsv
 
 # Build and test output
 node_modules/
@@ -25,6 +27,8 @@ work/**/_run/
 .vercel/
 .claude/settings.local.json
 .impeccable/config.local.json
+.impeccable/hook.cache.json
+.impeccable/hook.pending.json
 
 # OS
 .DS_Store

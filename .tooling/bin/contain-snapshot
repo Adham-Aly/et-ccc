@@ -18,9 +18,10 @@ FIND=/usr/bin/find
 STAT=/usr/bin/stat
 ALLOW="$T/contain-allowlist.txt"
 
-usage() { echo "usage: contain-snapshot before|after|diff <label>" >&2; exit 2; }
+usage() { echo "usage: contain-snapshot before|after|diff <label>  |  contain-snapshot classify <abs-path>" >&2; exit 2; }
 [ $# -eq 2 ] || usage
 MODE="$1"; LABEL="$2"
+if [ "$MODE" = classify ]; then CLASSIFY_PATH="$2"; LABEL=classify; fi
 case "$LABEL" in *[!A-Za-z0-9._-]*|'') echo "bad label" >&2; exit 2;; esac
 D="$T/snapshots/$LABEL"
 
@@ -91,10 +92,27 @@ for p in "$H"/Library/Caches/com.apple.WebKit*; do [ -e "$p" ] && echo "2|$p"; d
 
 # tool-name tokens (plan §9.4 a); matched against the path relative to $HOME, lower-cased
 TOK='(^|[^a-z0-9])(node|npm|npx|playwright|chromium|webkit|firefox|pypy|python|next|nextjs|impeccable|biome|lighthouse|cspell|vitest|vercel|ruff|vermin|avoid-ai-writing)([^a-z0-9]|$)'
+# The Claude Code harness periodically runs Homebrew npm as `npm --global config get prefix`, which
+# writes ~/.npm/_logs/<ts>-debug-0.log (seen before P3 started). Exempt ONLY logs whose content proves
+# they are exactly that probe (Homebrew node, argv "--global" "config" "get" "prefix"), plus the
+# ~/.npm and ~/.npm/_logs dir mtimes and log-rotation removals. Our npm logs go to .tooling/npm-cache.
+harness_npm_probe() { # $1 abs path, $2 rel path
+  case "$2" in
+    .npm|.npm/_logs) return 0;;
+    .npm/_logs/*-debug-0.log)
+      [ -f "$1" ] || return 0   # removed by npm log rotation (logs-max)
+      /usr/bin/grep -q "^0 verbose cli /opt/homebrew/Cellar/node/[^ ]*/bin/node /opt/homebrew/bin/npm$" "$1" && \
+      /usr/bin/grep -q "^[0-9]* verbose argv \"--global\" \"config\" \"get\" \"prefix\"$" "$1" && \
+      [ "$(/usr/bin/grep -c "verbose argv" "$1")" = 1 ] && return 0
+      return 1;;
+  esac
+  return 1
+}
 classify() { # $1 = absolute path -> prints allowed-collision | HARD-FAIL | allowed | UNLISTED
   local p="$1" rel low g
   case "$p" in "$H"/*) rel="${p#$H/}";; *) rel="$p";; esac
   low="$(printf '%s' "$rel" | tr 'A-Z' 'a-z')"
+  harness_npm_probe "$p" "$rel" && { echo allowed-harness-npm-probe; return; }
   while IFS= read -r g; do case "$rel" in $g) echo allowed-collision; return;; esac; done \
     < <(sed -n 's/^collision[[:space:]]\{1,\}\([^[:space:]]*\).*/\1/p' "$ALLOW")
   if printf '%s' "$low" | grep -Eq "$TOK"; then echo HARD-FAIL; return; fi
@@ -124,6 +142,9 @@ snap() { # $1 = out dir
 }
 
 case "$MODE" in
+classify)
+  classify "$CLASSIFY_PATH"
+  ;;
 before)
   rm -rf "$D"; mkdir -p "$D"
   date '+%Y-%m-%dT%H:%M:%S%z' > "$D/started"

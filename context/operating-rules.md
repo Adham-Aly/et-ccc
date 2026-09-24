@@ -18,12 +18,13 @@ These rules bind every agent working in this workspace, at every tier, unless th
 | Tier | Role | Spawns |
 |---|---|---|
 | 0 | **Main session** ("orchestrator of orchestrators"). Talks to the Manager, launches one phase orchestrator at a time, launches the Manager-report agent after each phase. | Orchestrators, report agents |
-| 1 | **Phase orchestrator** (e.g. `recon-orchestrator`). Plans the phase, dispatches workers, integrates their output, updates context. | Workers (count per `implementation-plan.md`; default max 5) |
+| 1 | **Phase orchestrator** (e.g. `recon-orchestrator`). Plans the phase, dispatches workers, integrates their output, updates context. | Workers: **at most 3 spawns per phase, hard cap, no contingency** (Manager, D-032-A1; roster in `implementation-plan.md` §11.5) |
 | 2 | **Worker**. Does focused work and writes results to files. | **Nothing. Workers must never spawn subagents.** |
 
 Hard rules:
 - **Model:** spawned agents use **only Opus 5.5 or Sonnet 5** (D-010), assigned per phase/task in `context/implementation-plan.md` §11 (model policy, caps and the spawn budget per phase).
 - **Workers never spawn subagents.** Critical. Orchestrators must state this explicitly in every worker prompt.
+- **Spawn cap (Manager, D-032-A1): each phase spawns at most 3 workers in total, and no more.** The orchestrator itself and the Manager report agent are not counted. Reuse workers with SendMessage instead of spawning new ones.
 - **No swarms, no Workflow tool, no `fork`.** At most 3 workers run at once in any phase (`context/implementation-plan.md` §11.1, §11.4).
 - Orchestrators run **sequentially**, one phase at a time.
 - No global side effects: nothing written outside this workspace except the Manager report on `~/Desktop`. No global/user memory, no global skills, no global config.

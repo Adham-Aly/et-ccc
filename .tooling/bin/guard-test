@@ -1,0 +1,26 @@
+#!/usr/bin/perl
+# guard-test — runs .tooling/guard-cases.tsv through .tooling/bin/guard-bash (as hook JSON on stdin).
+# Exit 0 when every case behaves as expected. Add a case for every bypass or false positive found.
+use strict; use warnings; use JSON::PP; use IPC::Open3; use Symbol 'gensym';
+my $root = '/Users/adham/Developer/et-ccc';
+my ($ok, $bad) = (0, 0);
+open my $fh, '<', "$root/.tooling/guard-cases.tsv" or die "cases: $!";
+while (my $l = <$fh>) {
+  chomp $l; next if $l =~ /^\s*(#|$)/;
+  my ($exp, $cmd) = split /\t/, $l, 2;
+  $cmd =~ s/\\n/\n/g; $cmd =~ s/\\t/\t/g;
+  my $json = encode_json({ tool_name => 'Bash', tool_input => { command => $cmd } });
+  my $err = gensym;
+  my $pid = open3(my $w, my $r, $err, "$root/.tooling/bin/guard-bash");
+  print $w $json; close $w; local $/; my $o = <$r> // ''; my $e = <$err> // '';
+  waitpid $pid, 0; my $rc = $? >> 8;
+  my $got = $rc == 2 ? 'block' : $rc == 0 ? 'pass' : "exit$rc";
+  if ($got eq $exp) { $ok++ } else { $bad++; (my $show = $cmd) =~ s/\n/\\n/g; print "MISMATCH expected=$exp got=$got: $show\n$e"; }
+}
+for my $p (['{"tool_name":"Read","tool_input":{}}', 0], ['garbage', 0]) {
+  my $pid = open3(my $w, my $r, my $err = gensym, "$root/.tooling/bin/guard-bash");
+  print $w $p->[0]; close $w; waitpid $pid, 0;
+  if (($? >> 8) == $p->[1]) { $ok++ } else { $bad++; print "MISMATCH non-bash/garbage payload: exit ", $? >> 8, "\n"; }
+}
+print "guard-test: $ok ok, $bad mismatches\n";
+exit($bad ? 1 : 0);

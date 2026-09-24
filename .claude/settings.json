@@ -1,0 +1,76 @@
+{
+  "env": {
+    "ET_CCC_ROOT": "/Users/adham/Developer/et-ccc",
+    "npm_config_userconfig": "/Users/adham/Developer/et-ccc/.tooling/npmrc",
+    "npm_config_globalconfig": "/Users/adham/Developer/et-ccc/.tooling/npm-global/etc/npmrc",
+    "npm_config_prefix": "/Users/adham/Developer/et-ccc/.tooling/npm-global",
+    "npm_config_cache": "/Users/adham/Developer/et-ccc/.tooling/npm-cache",
+    "npm_config_update_notifier": "false",
+    "npm_config_fund": "false",
+    "COREPACK_HOME": "/Users/adham/Developer/et-ccc/.tooling/corepack-home",
+    "COREPACK_ENABLE_DOWNLOAD_PROMPT": "0",
+    "COREPACK_ENABLE_AUTO_PIN": "0",
+    "NODE_REPL_HISTORY": "/Users/adham/Developer/et-ccc/.tooling/xdg/state/node_repl_history",
+    "XDG_CACHE_HOME": "/Users/adham/Developer/et-ccc/.tooling/xdg/cache",
+    "XDG_CONFIG_HOME": "/Users/adham/Developer/et-ccc/.tooling/xdg/config",
+    "XDG_DATA_HOME": "/Users/adham/Developer/et-ccc/.tooling/xdg/data",
+    "XDG_STATE_HOME": "/Users/adham/Developer/et-ccc/.tooling/xdg/state",
+    "PLAYWRIGHT_BROWSERS_PATH": "/Users/adham/Developer/et-ccc/.tooling/playwright-browsers",
+    "NEXT_TELEMETRY_DISABLED": "1",
+    "PIP_CONFIG_FILE": "/dev/null",
+    "PIP_CACHE_DIR": "/Users/adham/Developer/et-ccc/.tooling/xdg/cache/pip",
+    "PIP_DISABLE_PIP_VERSION_CHECK": "1",
+    "PYTHONNOUSERSITE": "1",
+    "PYTHONUSERBASE": "/Users/adham/Developer/et-ccc/.tooling/xdg/data/python-userbase",
+    "PYTHONPYCACHEPREFIX": "/Users/adham/Developer/et-ccc/.tooling/xdg/cache/pycache",
+    "PYTHONHISTORY": "/Users/adham/Developer/et-ccc/.tooling/xdg/state/python_history",
+    "RUFF_CACHE_DIR": "/Users/adham/Developer/et-ccc/.tooling/xdg/cache/ruff",
+    "IMPECCABLE_HOME": "/Users/adham/Developer/et-ccc/.tooling/impeccable-home",
+    "IMPECCABLE_NO_TELEMETRY": "1",
+    "DO_NOT_TRACK": "1",
+    "GH_CONFIG_DIR": "/Users/adham/.config/gh",
+    "GH_NO_UPDATE_NOTIFIER": "1",
+    "GH_NO_EXTENSION_UPDATE_NOTIFIER": "1",
+    "GH_PROMPT_DISABLED": "1",
+    "GIT_TERMINAL_PROMPT": "0"
+  },
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "\"${CLAUDE_PROJECT_DIR}/.tooling/bin/guard-bash\"",
+            "timeout": 10
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "export IMPECCABLE_HOME=\"${CLAUDE_PROJECT_DIR}/.tooling/impeccable-home\" IMPECCABLE_NO_TELEMETRY=1; [ ! -f \"${CLAUDE_PROJECT_DIR}/.claude/skills/impeccable/scripts/impeccable\" ] || \"${CLAUDE_PROJECT_DIR}/.claude/skills/impeccable/scripts/impeccable\" hook",
+            "timeout": 5,
+            "statusMessage": "Checking UI changes"
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "export IMPECCABLE_HOME=\"${CLAUDE_PROJECT_DIR}/.tooling/impeccable-home\" IMPECCABLE_NO_TELEMETRY=1; [ ! -f \"${CLAUDE_PROJECT_DIR}/.claude/skills/impeccable/scripts/impeccable\" ] || \"${CLAUDE_PROJECT_DIR}/.claude/skills/impeccable/scripts/impeccable\" hook",
+            "timeout": 30,
+            "statusMessage": "Design deep pass"
+          }
+        ]
+      }
+    ]
+  }
+}

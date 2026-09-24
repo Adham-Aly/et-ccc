@@ -4,16 +4,16 @@ Status values: `NOT STARTED` · `IN PROGRESS` · `DONE` · `BLOCKED` · `REDO RE
 
 ## Overall
 
-- Current phase: **P3 Setup IN PROGRESS (started 2026-09-23 22:22, `setup-orchestrator`, D-032 go-ahead)**
+- Current phase: **P3 Setup DONE (2026-09-23 23:05); awaiting Manager session restart, then P4**
 - `main-app/`: empty, not initialized (intentional; P4)
-- GitHub repo: NOT YET CREATED (plan §10, P3 step 1)
+- GitHub repo: https://github.com/Adham-Aly/et-ccc (PRIVATE, `main`), created in P3
 - Vercel project: NOT YET LINKED (plan §10.5, P4); personal Hobby account, previews and production both public, no bypass secret (D-030 Q-18)
-- Design skill: Impeccable APPROVED by Manager (D-005 ruling), NOT YET INSTALLED; must be fully contained in workspace (rules §7)
+- Design skill: Impeccable APPROVED by Manager (D-005 ruling), INSTALLED in P3 (skill-v4.3.1, project scope, engine in `.tooling/impeccable-home`)
 - Score target: rejected (D-006 ruling), never shown in app
 - Problem links rule: D-020/D-030 / brief R13 (2021–2026 → WMOJ, 2014–2020 → DMOJ, WMOJ preferred; CCC 2014–2026 only, permanent rejection after 2026)
 - App scope: reading/learning app only, no code execution or exercises (D-020); extensive visuals and animations (D-021, confirmed D-030); **no problem walkthroughs, editorials, solution pages or per-problem hints, ever, and no system/environment setup content** (D-030 Q-19/Q-20) — the app teaches concepts and links CCC problems, nothing else, and stays as lean as possible
-- Writing-style skill: avoid-ai-writing APPROVED (D-009 ruling), NOT YET INSTALLED; voice sample is agent-drafted, Manager approves/rejects (D-030 Q-4)
-- Model policy: Opus 5.5 / Sonnet 5 only (D-010); orchestration per plan v2.1 §11 (41 spawns total, cap 48, ≤ 3 concurrent — unchanged by the v2.1 amendment)
+- Writing-style skill: avoid-ai-writing APPROVED (D-009 ruling), INSTALLED in P3 (v3.35.0 @ fc979c6, project scope); voice sample is agent-drafted, Manager approves/rejects (D-030 Q-4)
+- Model policy: Opus 5.5 / Sonnet 5 only (D-010); orchestration per plan **v2.2** §11: **hard cap of 3 worker spawns per phase** (orchestrator and report agent not counted; D-032-A1); ≈32 spawns total
 - Curriculum modules: **104** (was 105; M0.2/M0.3 dropped as setup-only, M7.14 C++ bridge kept — D-030 Q-19/Q-10)
 
 ## Phase 0 — Workspace setup (main session)
@@ -79,21 +79,21 @@ Plan v1.0 by planning-orchestrator with workers W1–W5 (`research/03-plan/_work
 
 ## Phase 3 — Setup: tooling, containment and repo (`setup-orchestrator`)
 
-Status: `IN PROGRESS` (started 2026-09-23 22:22)
+Status: `DONE` (started 2026-09-23 22:22, finished 2026-09-23 23:05). **Manager action: restart the Claude Code session before P4 (plan §9.3).**
 Branch: `main` (first commit) · Work dir: `work/03-setup/` · Phase log: `context/phase-logs/phase-03-setup.md` (written at phase end)
 Agents: orchestrator (Opus) does every install and the repo steps itself; 1 worker planned: containment auditor (Sonnet, general-purpose). Cap 3.
 
 Checklist:
-- [ ] 1. `contain-snapshot` tooling + allow-list; "before" snapshot
-- [ ] 2. Repo: gh auth checks, `git init -b main`, `.gitignore`, G-SECRETS, first commit, `gh repo create et-ccc --private`, visibility check
-- [ ] 3. `.tooling/` wrappers, `env.sh`, `guard-bash`, `.claude/settings.json` (env + PreToolUse hook + Impeccable hooks)
-- [ ] 4. SPIKE S-1 (Vercel Node major) → workspace Node tarball
-- [ ] 5. PyPy 3.8 v7.3.11 + tools venv (ruff, vermin)
-- [ ] 6. Impeccable (project scope, IMPECCABLE_HOME in `.tooling/`) + smoke test
-- [ ] 7. avoid-ai-writing @ fc979c6 + detector smoke test
-- [ ] 8. Root `CLAUDE.md`
-- [ ] 9. Containment auditor (Sonnet): after-snapshot, diff, backstop, wrappers, guard, `.gitignore`, G-SECRETS, `.tooling/README.md`
-- [ ] 10. Fixes from audit; work/03-setup deliverables; phase log; decisions; P3 commit + push
+- [x] 1. `contain-snapshot` tooling + allow-list; "before" snapshot (`.tooling/bin/contain-snapshot`, label `p3-setup`, taken 22:28; idle calibration PASS)
+- [x] 2. Repo: gh auth checks, `git init -b main`, `.gitignore`, G-SECRETS, first commit, `gh repo create et-ccc --private`, visibility check — DONE: https://github.com/Adham-Aly/et-ccc (PRIVATE, main), first commit 0d9f5f4
+- [x] 3. `.tooling/` wrappers, `env.sh`, `guard-bash`, `.claude/settings.json` (env + PreToolUse hook + Impeccable hooks) — DONE (+ check-secrets, tools-pip, impeccable wrappers; guard battery 20 block / 11 pass cases OK)
+- [x] 4. SPIKE S-1 (Vercel Node major) → workspace Node tarball — DONE: Vercel 24.x default → Node v24.21.0 (`work/03-setup/spike-S1.md`)
+- [x] 5. PyPy 3.8 v7.3.11 + tools venv (ruff, vermin) — DONE: PyPy 7.3.11 arm64, ruff 0.16.8, vermin 1.8.0 (hash-pinned). Incident: first pip run bypassed env.sh and wrote to ~/Library/Caches/pip; cleaned (`work/03-setup/containment/pip-cache-cleanup.txt`)
+- [x] 6. Impeccable (project scope, IMPECCABLE_HOME in `.tooling/`) + smoke test — DONE: skill-v4.3.1, engine 0.1.5 in `.tooling/impeccable-home`; detect + hook smoke OK
+- [x] 7. avoid-ai-writing @ fc979c6 + detector smoke test — DONE: v3.35.0; ESM default import + validate.js smoke OK
+- [x] 8. Root `CLAUDE.md` — DONE
+- [x] 9. Containment auditor (Sonnet): after-snapshot, diff, backstop, wrappers, guard, `.gitignore`, G-SECRETS, `.tooling/README.md` — DONE (spawn 1 of 1, Sonnet). Round 1: PASS WITH FINDINGS (C-1, C-2 blocking; B-1, A-1, C-3 minor); all fixed. Round 2 (SendMessage): PASS; 2 minor gaps fixed after; guard-test 96/96. `work/03-setup/containment/audit.md`
+- [x] 10. Fixes from audit; work/03-setup deliverables; phase log; decisions; P3 commit + push — DONE: final G-CONTAIN PASS (`containment/p3-final-verdict.md`), log `context/phase-logs/phase-03-setup.md`, D-033..D-040
 
 ## Manager reports
 

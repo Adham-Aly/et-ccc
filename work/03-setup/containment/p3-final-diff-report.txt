@@ -1,0 +1,73 @@
+# contain-snapshot report: p3-setup
+before taken: 2026-09-23T22:28:21-0400   diff run: 2026-09-23T22:50:27-0400
+
+## 1. Watched locations (before vs after)
+CHURN    HOME_.agents.txt (all changes allow-listed: OS/harness)
+OK       HOME_.bash_profile.txt
+OK       HOME_.bashrc.txt
+OK       HOME_.cache.txt
+OK       HOME_.cache_gh.txt
+CHANGED  HOME_.claude.json.mcp.txt
+           5c5
+           < (none)
+           ---
+           > {}
+           \ No newline at end of file
+OK       HOME_.claude_CLAUDE.md.txt
+OK       HOME_.claude_agents.txt
+OK       HOME_.claude_commands.txt
+OK       HOME_.claude_hooks.txt
+OK       HOME_.claude_keybindings.json.txt
+OK       HOME_.claude_plugins.txt
+OK       HOME_.claude_settings.json.txt
+OK       HOME_.claude_settings.local.json.txt
+OK       HOME_.claude_skills.txt
+CHURN    HOME_.config.txt (all changes allow-listed: OS/harness)
+OK       HOME_.config_gh.txt
+OK       HOME_.git-credentials.txt
+OK       HOME_.gitconfig.txt
+OK       HOME_.impeccable.txt
+CHURN    HOME_.local.txt (all changes allow-listed: OS/harness)
+OK       HOME_.local_state_gh.txt
+OK       HOME_.node-gyp.txt
+OK       HOME_.node_repl_history.txt
+CHURN    HOME_.npm.txt (all changes allow-listed: OS/harness)
+OK       HOME_.npmrc.txt
+OK       HOME_.pip.txt
+OK       HOME_.profile.txt
+OK       HOME_.pypy.txt
+OK       HOME_.python_history.txt
+OK       HOME_.ssh_known_hosts.txt
+OK       HOME_.zprofile.txt
+OK       HOME_.zshenv.txt
+OK       HOME_.zshrc.txt
+OK       HOME_Library_Application_Support_Chromium.txt
+OK       HOME_Library_Application_Support_CrashReporter.txt
+OK       HOME_Library_Application_Support_Firefox.txt
+OK       HOME_Library_Application_Support_Google_Chrome_Crashpad.txt
+OK       HOME_Library_Application_Support_pip.txt
+OK       HOME_Library_Caches_Chromium.txt
+OK       HOME_Library_Caches_Firefox.txt
+OK       HOME_Library_Caches_com.apple.python.txt
+OK       HOME_Library_Caches_ms-playwright.txt
+OK       HOME_Library_Caches_next-swc.txt
+OK       HOME_Library_Caches_pip.txt
+OK       HOME_Library_HTTPStorages.txt
+OK       HOME_Library_Logs_DiagnosticReports.txt
+OK       HOME_Library_Preferences_nextjs-nodejs.txt
+OK       HOME_Library_Saved_Application_State.txt
+OK       HOME_Library_WebKit.txt
+OK       _etc_paths.d.txt
+OK       _etc_paths.txt
+OK       _opt_homebrew_Cellar.txt
+OK       _opt_homebrew_bin.txt
+OK       _opt_homebrew_etc.txt
+OK       _opt_homebrew_lib_node_modules.txt
+
+## 2. Backstop: find $HOME -newer marker, outside the workspace
+paths newer than marker: 2157   (find errors, e.g. TCC, logged: 0)
+allowed (allow-list): 2155   HARD-FAIL (tool-named): 0   UNLISTED: 2
+  UNLISTED  /Users/adham/Desktop
+  UNLISTED  /Users/adham/Desktop/resume.pdf
+
+RESULT: FAIL (investigate every CHANGED / HARD-FAIL / UNLISTED line above)
