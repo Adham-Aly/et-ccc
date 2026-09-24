@@ -79,7 +79,7 @@ Plan v1.0 by planning-orchestrator with workers W1–W5 (`research/03-plan/_work
 
 ## Phase 3 — Setup: tooling, containment and repo (`setup-orchestrator`)
 
-Status: `DONE` (started 2026-09-23 22:22, finished 2026-09-23 23:05). **Manager action: restart the Claude Code session before P4 (plan §9.3).**
+Status: `DONE` (started 2026-09-23 22:22, finished 2026-09-23 23:05). Commits on `main`: 0d9f5f4 (first), 9b70503 (P3 result), pushed. **Manager action: restart the Claude Code session before P4 (plan §9.3).**
 Branch: `main` (first commit) · Work dir: `work/03-setup/` · Phase log: `context/phase-logs/phase-03-setup.md` (written at phase end)
 Agents: orchestrator (Opus) does every install and the repo steps itself; 1 worker planned: containment auditor (Sonnet, general-purpose). Cap 3.
 
