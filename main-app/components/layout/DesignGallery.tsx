@@ -55,7 +55,7 @@ IndexError: list index out of range
 
 // Mirrors DESIGN.md → Layout → Measure by block type.
 const MEASURES: [string, string][] = [
-  ["Paragraphs, lists, headings, blockquotes", "Prose (42rem)"],
+  ["Paragraphs, lists, headings, block quotes", "Prose (42rem)"],
   ["Callouts, Details, Practice list", "Prose (42rem)"],
   ["Title-block strip, objectives, closing title block", "Prose (42rem)"],
   ["Code block with its Input / Output / Error panels", "Wide (48rem)"],

@@ -11,7 +11,7 @@ export function Breadcrumb({ items }: { items: { label: string; href: string | n
             {it.href ? (
               <a
                 href={it.href}
-                className="text-ink-2 hover:text-blueline hover:underline hover:underline-offset-[0.2em]"
+                className="inline-flex min-h-6 items-center text-ink-2 hover:text-blueline hover:underline hover:underline-offset-[0.2em]"
               >
                 <RichTitle text={it.label} />
               </a>

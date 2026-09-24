@@ -25,7 +25,7 @@ export const arrayStates: ArrayFrame = {
 
 export const arrayCompare: ArrayFrame = {
   values: [2, 5, 8, 11, 14],
-  states: "__mm_",
+  states: "_mm__",
   compare: { a: 1, b: 2, text: "5 < 8" },
   pointers: [
     { name: "i", at: 1, side: "above" },

@@ -245,6 +245,47 @@ async function smallText(page: Page, fig: number): Promise<string[]> {
   );
 }
 
+/**
+ * Source code in a code trace is never cut off. Side by side, and on any stacked pane wider than
+ * a phone, every line shows whole (the code column keeps its natural width; the row wraps when it cannot). On a phone
+ * (< 640 px) a long line may scroll inside the pane, as in every code block (DESIGN.md → Code
+ * block), but only in a keyboard-focusable pane that scrolls sideways.
+ */
+async function clippedCode(page: Page, fig: number, width: number): Promise<string[]> {
+  return page.evaluate(
+    ({ fig, phone }) => {
+      const el = document.querySelectorAll("figure.vz-figure")[fig];
+      if (!el) return [];
+      const bad: string[] = [];
+      for (const pane of el.querySelectorAll<HTMLElement>(".vz-trace-code")) {
+        const hidden = pane.scrollWidth - pane.clientWidth;
+        if (hidden <= 1) continue;
+        const state = pane.closest(".vz-trace")?.querySelector(".vz-trace-state");
+        const side =
+          !!state && state.getBoundingClientRect().top < pane.getBoundingClientRect().bottom;
+        // Table rows share one width, so measure each line's own text.
+        const longest = [...pane.querySelectorAll<HTMLElement>(".vz-code-line")]
+          .map((l) => {
+            const r = document.createRange();
+            r.selectNodeContents(l.querySelector(".vz-code-text") ?? l);
+            return {
+              no: l.querySelector(".vz-code-no")?.textContent,
+              w: r.getBoundingClientRect().width,
+            };
+          })
+          .sort((a, b) => b.w - a.w)[0];
+        const where = `line ${longest?.no ?? "?"} is cut off by ${hidden} px`;
+        if (side) bad.push(`${where} with the code beside the state panel`);
+        else if (!phone) bad.push(`${where} in a stacked code pane wider than a phone`);
+        else if (pane.tabIndex !== 0 || getComputedStyle(pane).overflowX !== "auto")
+          bad.push(`${where} and the pane cannot be scrolled from the keyboard`);
+      }
+      return bad;
+    },
+    { fig, phone: width < 640 },
+  );
+}
+
 async function shootPage(browser: Browser, base: string, url: string, problems: Problem[]) {
   const slug = url.replace(/^\//, "").replace(/\//g, "_") || "home";
   let shots = 0;
@@ -348,6 +389,9 @@ async function shootPage(browser: Browser, base: string, url: string, problems: 
         await settle(page);
         for (const s of await smallText(page, i)) {
           problems.push({ where: `${where} ${label}`, message: `text too small: ${s}` });
+        }
+        for (const s of await clippedCode(page, i, width)) {
+          problems.push({ where: `${where} ${label}`, message: `code clipped: ${s}` });
         }
         if (width === widths[0]) {
           for (const s of await fallbackGlyphs(page, i)) {

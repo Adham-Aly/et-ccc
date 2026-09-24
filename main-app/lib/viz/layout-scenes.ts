@@ -21,7 +21,7 @@ export function layoutStdinScene(frames: StdinSceneFrame[]): VizScene[] {
     rowsVars = Math.max(rowsVars, f.vars.length);
     for (const [n, v] of f.vars) {
       nameW = Math.max(nameW, textWidth(n, "value"));
-      valW = Math.max(valW, textWidth(v, "value") + 16);
+      valW = Math.max(valW, textWidth(v, "value") + 14);
     }
   }
   const x = PAD;
@@ -158,9 +158,12 @@ export function layoutStdinScene(frames: StdinSceneFrame[]): VizScene[] {
         t: "cell",
         x: x + nameW + 34,
         y,
-        w: valW,
+        // Sized to its own value, like every value cell (value width + 14, at least 40).
+        w: Math.max(40, textWidth(value, "value") + 14),
         h: ROW,
-        state: name === f.fresh ? "current" : "none",
+        // The program line about to run holds the one current edge; the value it just got is
+        // "just changed", as in a code trace.
+        state: name === f.fresh ? "changed" : "none",
         text: value,
         noCaret: true,
       });
@@ -198,7 +201,8 @@ export function layoutJudgeScene(frames: JudgeSceneFrame[]): VizScene[] {
   const yVerdicts = yTests + 36 + 12;
   const yPipe = yVerdicts + 30;
   const yCheck = yPipe + boxH + 30;
-  const height = yCheck + boxH + PAD;
+  const yVerdict = yCheck + boxH + 24;
+  const height = yVerdict + boxH + PAD;
   const bx = (i: number) => PAD + boxWs.slice(0, i).reduce((a, b) => a + b, 0) + i * arrowGap;
   return frames.map((f) => {
     const items: VizItem[] = [
@@ -283,10 +287,12 @@ export function layoutJudgeScene(frames: JudgeSceneFrame[]): VizScene[] {
       d: `M ${xo} ${yPipe + boxH + 3} L ${xo} ${ymid} L ${xc} ${ymid} L ${xc} ${yCheck - 4}`,
       state: "none",
     });
+    // The verdict in words on its own full-width row (DESIGN.md → Scenes); the short code is only
+    // the secondary label under each test case.
     items.push({
       key: "pverdict",
       t: "arrow",
-      d: `M ${bx(0) + checkW + 3} ${yCheck + boxH / 2} L ${bx(2) - 4} ${yCheck + boxH / 2}`,
+      d: `M ${bx(0) + checkW / 2} ${yCheck + boxH + 3} L ${bx(0) + checkW / 2} ${yVerdict - 4}`,
       state: "none",
     });
     const t = f.tests[f.active];
@@ -294,12 +300,14 @@ export function layoutJudgeScene(frames: JudgeSceneFrame[]): VizScene[] {
     items.push({
       key: "bverdict",
       t: "cell",
-      x: bx(2),
-      y: yCheck,
-      w: boxW(2),
+      x: bx(0),
+      y: yVerdict,
+      w: bx(2) + boxW(2) - bx(0),
       h: boxH,
-      state: verdict === null ? "unvisited" : verdict === "AC" ? "path" : "invalid",
-      text: verdict === null ? "Verdict" : verdict,
+      // Accepted is the answer path; a rejection stays plain ink, because the invalid strike
+      // would cross the words.
+      state: verdict === null ? "unvisited" : verdict === "AC" ? "path" : "none",
+      text: verdict === null ? "Verdict" : `Verdict: ${verdictWord(verdict)} (${verdict})`,
       textRole: "label",
     });
     return { width, height, items };

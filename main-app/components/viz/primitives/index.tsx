@@ -134,9 +134,7 @@ export function Cell({ item, flags = {} }: { item: CellItem; flags?: ItemFlags }
           {glyphRuns(text)}
         </text>
       ) : null}
-      {state === "current" && item.shape !== "pill" && !item.noCaret ? (
-        <Caret x={w / 2} y={0} />
-      ) : null}
+      {state === "current" && !item.noCaret ? <Caret x={w / 2} y={0} /> : null}
     </g>
   );
 }

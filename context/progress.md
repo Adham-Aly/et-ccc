@@ -121,8 +121,8 @@ Checklist:
 - [x] 6. W1: judgeUrl, registry stub (119), verify-judges, DMOJ checklist `work/04-app/dmoj-checklist.html`; **WMOJ run 1: 56/56 ok** (`work/04-app/wmoj-verification-run-1.md`); 63 DMOJ unverified pending the Manager checklist (P5).
 - [x] 7. W1: pycheck (G-PY-38/RUN), style (G-STYLE), R14, spell, MDX, every gate with a failing fixture; fixture course M90.1–M90.3. WebKit storage containment RESOLVED via CFFIXED_USER_HOME (`work/04-app/containment/webkit-storage.md`).
 - [x] 8. W3: viz library (9 visualizers, player, scenes), trace.py + vizrec.py (PyPy 3.8), gen:viz, check:viz (G-VIZ, 10 fixture visuals), viz:shots, /dev/viz gallery, DESIGN.md [W3] sections; lazy chunk 18.3 kB gzip. Review fixes in progress (∞ glyph, heap layout, frame edge, caption code). **Manager item: W3 used CSS transitions instead of Motion (plan §4.2 [DECIDED]) → decision pending.**
-- [ ] 9. Client features; E2E, visual, a11y, perf suites; deployed-url — W1 batch 3 in progress (sent 2026-09-24).
-- [ ] 10. Orchestrator review (architecture, code, pixel, motion) → `work/04-app/design-review.md`; fixes
+- [ ] 9. Client features done; suites in progress (brief §8 ownership): W1 deployed-url, verify wiring, G-LINKS-INT, G-PERF, G-LINK-EXT; W2 G-PAGE + page visual baselines; W3 player E2E, long-task, chunk budget, viz baselines + W2 critique fixes (11). Nav/course-map/practice-links/search/mark-as-read/copy/all-pages-clean E2E specs exist and pass. Checkpoint a0843a2.
+- [ ] 10. Orchestrator review running: `work/04-app/design-review.md` (round 1: R1 fixed, V1 mostly fixed, heap round 2 open, A1 fixed). Motion vs CSS comparison for the Manager: `work/04-app/decision-motion.md` (recommendation: accept CSS).
 - [ ] 11. verify:full green locally; suites green on the Vercel preview; G-CONTAIN clean
 - [ ] 12. Report assets, phase log, decisions, commit + push
 

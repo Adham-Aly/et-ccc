@@ -1,15 +1,11 @@
 import { defineConfig } from "@playwright/test";
-import {
-  chromiumOnlyProjects,
-  resolveBaseUrl,
-  webServerFor,
-} from "./tests/support/playwright-shared";
+import { fullDeviceProjects, resolveBaseUrl, webServerFor } from "./tests/support/playwright-shared";
 
 // G-PAGE (plan §7): axe WCAG 2.2 AA, zero violations, on every built page (players in initial and
-// mid-step state once W3's player exists); no horizontal overflow at 390px. Chromium only — axe's
-// violation set is about the document (roles, contrast, structure), not engine quirks, and this
-// suite runs on every page in the app, so halving the browser matrix keeps it fast without losing
-// coverage (WebKit-specific rendering bugs are G-VISUAL's job).
+// mid-step state once W3's player exists); no horizontal overflow at 390px. Runs on WebKit too
+// (W2 request, requests.md): axe's own violation set is document-level, but assistive-tech
+// rendering (focus order, computed roles/names from the engine's own accessibility tree) can
+// genuinely differ between engines, so G-PAGE is not Chromium-only.
 const info = resolveBaseUrl(4102);
 
 export default defineConfig({
@@ -22,6 +18,6 @@ export default defineConfig({
     baseURL: info.baseURL,
     trace: "retain-on-failure",
   },
-  projects: chromiumOnlyProjects(),
+  projects: fullDeviceProjects(),
   webServer: webServerFor(info),
 });

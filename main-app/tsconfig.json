@@ -37,13 +37,25 @@
     ".next-prod-check/types/**/*.ts",
     ".next-prod-check/dev/types/**/*.ts",
     ".next-local/types/**/*.ts",
-    ".next-local/dev/types/**/*.ts"
+    ".next-local/dev/types/**/*.ts",
+    ".next-links-check/types/**/*.ts",
+    ".next-links-check/dev/types/**/*.ts",
+    ".next-verify-build/types/**/*.ts",
+    ".next-verify-build/dev/types/**/*.ts",
+    ".next-perf/types/**/*.ts",
+    ".next-perf/dev/types/**/*.ts",
+    ".next-w3viz/types/**/*.ts",
+    ".next-w3viz/dev/types/**/*.ts"
   ],
   "exclude": [
     "node_modules",
     ".next",
     ".next-local",
     ".next-prod-check",
+    ".next-links-check",
+    ".next-verify-build",
+    ".next-perf",
+    ".next-w3viz",
     "playwright-report",
     "test-results",
     "tests/fixtures/gates"

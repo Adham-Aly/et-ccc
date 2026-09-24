@@ -418,6 +418,64 @@
   }
 }
 
+/* ---------- Scroll affordance (code, output and traceback regions) ----------
+   A region that scrolls sideways shows a fade at its right edge while more content lies to the
+   right. A named scroll timeline drives it: fully visible at the start, gone at the end, and
+   absent when nothing overflows (an inactive timeline leaves the base opacity of 0). Without
+   scroll-driven animations the region shows a thin scrollbar that stays visible instead. */
+@layer components {
+  [data-scroll-frame] {
+    timeline-scope: --scroll-x;
+  }
+
+  [data-scroll-x] {
+    scroll-timeline: --scroll-x x;
+  }
+
+  [data-scroll-fade] {
+    position: absolute;
+    inset-block: 0;
+    right: 0;
+    width: 2.5rem;
+    pointer-events: none;
+    opacity: 0;
+    background: linear-gradient(to right, transparent, var(--fade-bg, var(--color-paper)) 85%);
+  }
+
+  @supports (animation-timeline: scroll()) {
+    [data-scroll-fade] {
+      animation: scroll-fade linear both;
+      animation-timeline: --scroll-x;
+    }
+  }
+
+  @supports not (animation-timeline: scroll()) {
+    [data-scroll-x] {
+      scrollbar-width: thin;
+      scrollbar-color: var(--color-rule-strong) transparent;
+    }
+
+    [data-scroll-x]::-webkit-scrollbar {
+      height: 6px;
+    }
+
+    [data-scroll-x]::-webkit-scrollbar-thumb {
+      border-radius: 3px;
+      background: var(--color-rule-strong);
+    }
+  }
+}
+
+@keyframes scroll-fade {
+  0%,
+  85% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
 /* ---------- Motion primitives ---------- */
 @keyframes ink-in {
   from {

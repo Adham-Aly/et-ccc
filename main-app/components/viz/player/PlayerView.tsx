@@ -1,5 +1,5 @@
 import { Pause, Play, RotateCcw, StepBack, StepForward } from "lucide-react";
-import type { KeyboardEvent, ReactNode, Ref } from "react";
+import { type KeyboardEvent, type ReactNode, type Ref, useId } from "react";
 import type { PlayerAction, SpeedId } from "@/lib/viz/player-state";
 import { SPEEDS } from "@/lib/viz/player-state";
 import type { VizState } from "@/lib/viz/schema";
@@ -76,6 +76,9 @@ export function PlayerView(props: PlayerViewProps) {
     legend,
     act,
   } = props;
+  // Radio groups are named per instance: the same visual shown twice on a page (the gallery's
+  // frozen pictures) would otherwise share one group, and checking one would uncheck the other.
+  const group = `${uid}-${useId().replace(/[^a-zA-Z0-9_-]/g, "")}`;
   const last = total - 1;
   const atStart = step === 0;
   const atEnd = step >= last;
@@ -109,7 +112,7 @@ export function PlayerView(props: PlayerViewProps) {
               <label key={p.id}>
                 <input
                   type="radio"
-                  name={`${uid}-preset`}
+                  name={`${group}-preset`}
                   value={p.id}
                   data-ctl={`preset-${i}`}
                   {...(live
@@ -203,7 +206,7 @@ export function PlayerView(props: PlayerViewProps) {
             <label key={s.id}>
               <input
                 type="radio"
-                name={`${uid}-speed`}
+                name={`${group}-speed`}
                 value={s.id}
                 data-ctl={`speed-${s.id}`}
                 aria-label={`Speed ${s.label}`}

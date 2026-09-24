@@ -75,7 +75,7 @@ export function buildStdinFlow(props: z.infer<typeof stdinFlowProps>): SceneBuil
     if (existing >= 0) vars[existing] = [r.name, value];
     else vars.push([r.name, value]);
     const next = i + 1 < props.reads.length ? i + 1 : -1;
-    let caption = `Line ${i + 1} runs: ${c("input()")} reads the ${ORD[i]} line, ${c(pyStr(line))}, and drops its newline.`;
+    let caption = `Line ${i + 1} ran: ${c("input()")} reads the ${ORD[i]} line, ${c(pyStr(line))}, and drops its newline.`;
     if (r.as === "int") {
       caption += ` ${c("int()")} turns the text into the number ${c(value)}, and ${c(r.name)} refers to it.`;
     } else if (r.as === "split") {
@@ -84,7 +84,11 @@ export function buildStdinFlow(props: z.infer<typeof stdinFlowProps>): SceneBuil
       caption += ` ${c(r.name)} refers to that text: it is a string, even if it looks like a number.`;
     }
     if (next === -1 && props.lines.length > props.reads.length) {
-      caption += " The lines left over are never read.";
+      caption += " The program ends here, so the lines left over are never read.";
+    } else if (next === -1) {
+      caption += " The program ends here.";
+    } else {
+      caption += ` Line ${next + 1} runs next.`;
     }
     steps.push({
       caption,

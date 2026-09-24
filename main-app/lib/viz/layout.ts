@@ -851,6 +851,8 @@ export function layoutStruct(frames: StructFrame[]): VizScene[] {
           state,
           text: fmt(it.v),
           shape: "pill",
+          // The heap's current entry carries its caret once, on the array cell.
+          noCaret: true,
         });
         items.push({
           key: `hc${i}`,
@@ -1087,7 +1089,7 @@ export function layoutLine(frames: LineFrame[]): VizScene[] {
           [X(f.sweep.x), yAxis + 6],
         ],
         style: "sweep",
-        state: "current",
+        state: "none",
       });
       if (f.sweep.label)
         items.push({
@@ -1350,10 +1352,14 @@ export function layoutPlot(frames: PlotFrame[]): VizScene[] {
         state: stateOf(s.s),
       });
       const end = pts[pts.length - 1];
+      // A marker on the end point pushes the series label past its circle (r 5 + 6 clear).
+      const onMarker = (f.markers ?? []).some(
+        (m) => end && Math.hypot(X(m.x) - end[0], Y(m.y) - end[1]) < 6,
+      );
       if (end)
         labels.push({
           key: `sl${s.id}`,
-          x: Math.min(end[0], left + plotW),
+          x: Math.min(end[0], left + plotW) + (onMarker ? 5 : 0),
           y: end[1],
           text: s.label,
         });
@@ -1384,14 +1390,14 @@ export function layoutPlot(frames: PlotFrame[]): VizScene[] {
           [X(f.vline.x), bottom],
         ],
         style: "sweep",
-        state: "current",
+        state: "none",
       });
       if (f.vline.label) {
         // Centred on its line, but never over the y-axis title in the same top row.
         const half = textWidth(f.vline.label, "label") / 2;
         const clearOfTitle =
           f.y.label && topY - 14 - (PAD + 8) < FONT.label
-            ? left - 8 + textWidth(f.y.label, "label") + 8 + half
+            ? left - 8 + textWidth(f.y.label, "label") + 16 + half
             : 0;
         const vx = Math.min(Math.max(X(f.vline.x), clearOfTitle, half + 2), width - half - 2);
         items.push({

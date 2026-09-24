@@ -1,0 +1,26 @@
+[
+  {
+    "id": 5551001,
+    "sha": "1111111111111111111111111111111111abcd",
+    "ref": "phase-04-app",
+    "environment": "Preview",
+    "created_at": "2026-09-20T10:00:00Z",
+    "updated_at": "2026-09-20T10:00:00Z"
+  },
+  {
+    "id": 5551002,
+    "sha": "cafe0000000000000000000000000000000feed",
+    "ref": "phase-04-app",
+    "environment": "Preview",
+    "created_at": "2026-09-24T09:30:00Z",
+    "updated_at": "2026-09-24T09:30:00Z"
+  },
+  {
+    "id": 5551003,
+    "sha": "cafe0000000000000000000000000000000feed",
+    "ref": "phase-04-app",
+    "environment": "Preview",
+    "created_at": "2026-09-24T09:31:15Z",
+    "updated_at": "2026-09-24T09:31:15Z"
+  }
+]

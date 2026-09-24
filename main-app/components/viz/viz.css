@@ -392,11 +392,15 @@
   --vz-lw: var(--viz-stroke);
 }
 
+/* Chart gridlines are data furniture, so they are rule grey; construction blue belongs to the
+   stage's decorative grid only (DESIGN.md → Principles). */
 .vz-pl-grid {
   --vz-lw: var(--viz-stroke-hair);
-  color: var(--color-viz-grid);
+  color: var(--color-rule);
 }
 
+/* A sweep is 1.5 px dashed ink: never heavy, so the marker or cell it points at keeps the one
+   current edge. */
 .vz-pl-sweep {
   --vz-lw: var(--viz-stroke);
   --vz-ld: var(--viz-dash);
@@ -883,33 +887,30 @@
 }
 
 /* ---------- Code trace ---------- */
+/* A wrapping row (TraceStage): the code column (code, then the output it prints) at its natural
+   width, and the frames-and-objects panel, which never gets narrower than --vz-state-min (its
+   natural width × the minimum text ratio). When both fit, they sit side by side and the state
+   panel takes the spare width; when they do not, the row wraps into code, output, then frames and
+   objects, so source code is never squeezed and state text never drops below its minimum. */
 .vz-trace {
-  display: grid;
+  display: flex;
+  flex-wrap: wrap;
   gap: 16px;
-  grid-template-columns: minmax(0, 1fr);
+  align-items: flex-start;
 }
 
-/* Side by side only when the state panel still gets the phone stage's width (22rem: 316 px plus
-   its padding), so its text never renders below the minimum sizes; the code column takes the
-   rest and scrolls sideways if it must. */
-@container (min-width: 44rem) {
-  .vz-trace {
-    grid-template-columns: fit-content(58%) minmax(22rem, 1fr);
-    grid-template-areas: "code state" "out state";
-    align-items: start;
-  }
+.vz-trace-left {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  gap: 16px;
+  min-width: 0;
+  max-width: 100%;
+}
 
-  .vz-trace-code {
-    grid-area: code;
-  }
-
-  .vz-trace-state {
-    grid-area: state;
-  }
-
-  .vz-trace-out {
-    grid-area: out;
-  }
+.vz-trace-state {
+  flex: 1000 1 var(--vz-state-min);
+  min-width: min(100%, var(--vz-state-min));
 }
 
 .vz-trace-code {

@@ -21,7 +21,7 @@ Reviewer: `app-orchestrator` (Opus). This is a running record, with the final si
 | # | Where | Finding | Owner | Status |
 |---|---|---|---|---|
 | V1-1 | Dijkstra distance boxes | "∞" reads as a sideways "8" (probable font fallback), a correctness risk for a beginner | W3 | fixed (∞ drawn from the sans; viz:shots fails on any font fallback) |
-| V1-2 | heap panel | Tree node, array cell and index labels scattered across the panel | W3 | round 2: one unit now, but text is cramped in the circles, index labels collide, tree and array nearly touch, and panel scales differ at 390; a collision check was requested |
+| V1-2 | heap panel | Tree node, array cell and index labels scattered across the panel | W3 | fixed in round 2 (pills, shared scale per figure, indices only under the array; new G-VIZ `collision` rule with a fixture) |
 | V1-3 | figure frame | 2 px blue line along the bottom edge, overrunning the right corner | W3 | not a defect (the focus-visible ring was clipped by element shots; shots now blur first) |
 | V1-4 | captions | Code identifiers set in the sans; "(distance,node)" spacing | W3 | fixed (backtick → Mono spans) |
 | V1-5 | architecture | CSS transitions instead of Motion (plan §4.2 [DECIDED]) | Manager | `decision-motion.md`, recommendation: accept CSS |
@@ -39,3 +39,7 @@ Reviewer: `app-orchestrator` (Opus). This is a running record, with the final si
 | A1-6 | local builds | A shared `.next` meant builds killed a running dev server; an un-ignored `.next-local/` broke Tailwind for every dev page | W1 / orchestrator | `.next-*/` ignored (orchestrator); env-driven dist dirs (W1) open |
 | A1-7 | `scripts/port-lease.mjs` | Missed servers listening on `::` | W1 | fixed |
 | A1-8 | `lib/read-state` | Stored JSON is not shape-checked (arrays and non-string values pass), and `id in map` sees prototype keys; use `Object.hasOwn` and validate entries | W1 | fixed |
+
+## Round 2: W2's Impeccable critique of the visuals (24/32 "Good")
+
+11 findings (1 blocking: the code trace clipped source lines; 6 should-fix; 4 nits), listed in `requests.md` → "W2 → W3: visual-language critique". All went to W3. Status: in progress.

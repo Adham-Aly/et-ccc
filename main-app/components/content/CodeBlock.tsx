@@ -65,7 +65,7 @@ export async function CodeBlock({
       <div
         data-code-frame=""
         className={cn(
-          "overflow-hidden rounded-box border bg-paper-sunk",
+          "overflow-hidden rounded-box border bg-paper-sunk [--fade-bg:var(--color-paper-sunk)]",
           bad ? "border-redline" : "border-rule",
         )}
       >
@@ -90,65 +90,69 @@ export async function CodeBlock({
             labels={{ copy: s.copy, copied: s.copied, failed: s.copyFailed }}
           />
         </div>
-        <section
-          // biome-ignore lint/a11y/noNoninteractiveTabindex: a scrollable region must be keyboard-reachable (WCAG 2.1.1)
-          tabIndex={0}
-          aria-label={regionLabel}
-          className="overflow-x-auto focus-inset"
-        >
-          <pre className="text-code">
-            <code className="grid w-max min-w-full">
-              {lines.map((tokens, i) => {
-                const no = startLine + i;
-                const on = hl.has(no);
-                // First and last lines carry the block padding so the gutter rule runs edge to edge.
-                const edge = cn(i === 0 && "pt-3", i === lines.length - 1 && "pb-3");
-                const empty =
-                  tokens.length === 0 || (tokens.length === 1 && tokens[0]?.content === "");
-                return (
-                  <span
-                    // biome-ignore lint/suspicious/noArrayIndexKey: lines are static and ordered
-                    key={i}
-                    data-line={no}
-                    data-highlighted={on ? "" : undefined}
-                    className={cn(
-                      "grid pr-4",
-                      on ? "bg-check-soft" : "bg-paper-sunk",
-                      !showNumbers && "pl-4",
-                    )}
-                    style={{ gridTemplateColumns: showNumbers ? `${gutter} 1fr` : "1fr" }}
-                  >
-                    {showNumbers ? (
-                      <span
-                        aria-hidden="true"
-                        className={cn(
-                          "sticky left-0 border-rule border-r px-3 text-right tnum select-none [background:inherit]",
-                          edge,
-                          on ? "font-bold text-ink" : "text-ink-3",
-                        )}
-                      >
-                        {no}
+        <div data-scroll-frame="" className="relative">
+          <section
+            // biome-ignore lint/a11y/noNoninteractiveTabindex: a scrollable region must be keyboard-reachable (WCAG 2.1.1)
+            tabIndex={0}
+            aria-label={regionLabel}
+            data-scroll-x=""
+            className="overflow-x-auto focus-inset"
+          >
+            <pre className="text-code">
+              <code className="grid w-max min-w-full">
+                {lines.map((tokens, i) => {
+                  const no = startLine + i;
+                  const on = hl.has(no);
+                  // First and last lines carry the block padding so the gutter rule runs edge to edge.
+                  const edge = cn(i === 0 && "pt-3", i === lines.length - 1 && "pb-3");
+                  const empty =
+                    tokens.length === 0 || (tokens.length === 1 && tokens[0]?.content === "");
+                  return (
+                    <span
+                      // biome-ignore lint/suspicious/noArrayIndexKey: lines are static and ordered
+                      key={i}
+                      data-line={no}
+                      data-highlighted={on ? "" : undefined}
+                      className={cn(
+                        "grid pr-4",
+                        on ? "bg-check-soft" : "bg-paper-sunk",
+                        !showNumbers && "pl-4",
+                      )}
+                      style={{ gridTemplateColumns: showNumbers ? `${gutter} 1fr` : "1fr" }}
+                    >
+                      {showNumbers ? (
+                        <span
+                          aria-hidden="true"
+                          className={cn(
+                            "sticky left-0 border-rule border-r px-3 text-right tnum select-none [background:inherit]",
+                            edge,
+                            on ? "font-bold text-ink" : "text-ink-3",
+                          )}
+                        >
+                          {no}
+                        </span>
+                      ) : null}
+                      <span className={cn("whitespace-pre", showNumbers && "pl-4", edge)}>
+                        {empty
+                          ? "\n"
+                          : tokens.map((t, j) => (
+                              <span
+                                // biome-ignore lint/suspicious/noArrayIndexKey: tokens are static and ordered
+                                key={j}
+                                style={{ color: t.color, fontWeight: t.bold ? 700 : undefined }}
+                              >
+                                {t.content}
+                              </span>
+                            ))}
                       </span>
-                    ) : null}
-                    <span className={cn("whitespace-pre", showNumbers && "pl-4", edge)}>
-                      {empty
-                        ? "\n"
-                        : tokens.map((t, j) => (
-                            <span
-                              // biome-ignore lint/suspicious/noArrayIndexKey: tokens are static and ordered
-                              key={j}
-                              style={{ color: t.color, fontWeight: t.bold ? 700 : undefined }}
-                            >
-                              {t.content}
-                            </span>
-                          ))}
                     </span>
-                  </span>
-                );
-              })}
-            </code>
-          </pre>
-        </section>
+                  );
+                })}
+              </code>
+            </pre>
+          </section>
+          <ScrollFade />
+        </div>
       </div>
       {hasIo ? (
         <div
@@ -180,7 +184,7 @@ export function IoPanel({ kind, text }: { kind: "input" | "output"; text: string
   return (
     <section
       aria-label={label}
-      className="min-w-0 overflow-hidden rounded-box border border-rule bg-paper"
+      className="min-w-0 overflow-hidden rounded-box border border-rule bg-paper [--fade-bg:var(--color-paper)]"
     >
       <p className="flex items-center gap-1.5 px-4 pt-2.5 font-semibold text-ink-3 text-label">
         <Icon aria-hidden="true" size={14} strokeWidth={2} />
@@ -189,13 +193,17 @@ export function IoPanel({ kind, text }: { kind: "input" | "output"; text: string
       {body === "" ? (
         <p className="px-4 pt-1 pb-3 text-ink-3 text-small italic">{s.noOutput}</p>
       ) : (
-        <pre
-          // biome-ignore lint/a11y/noNoninteractiveTabindex: scrollable output must be keyboard-reachable
-          tabIndex={0}
-          className="max-h-[calc(20lh+1.25rem)] overflow-auto px-4 pt-1 pb-3 text-code focus-inset"
-        >
-          {body}
-        </pre>
+        <div data-scroll-frame="" className="relative">
+          <pre
+            // biome-ignore lint/a11y/noNoninteractiveTabindex: scrollable output must be keyboard-reachable
+            tabIndex={0}
+            data-scroll-x=""
+            className="max-h-[calc(20lh+1.25rem)] overflow-auto pt-1 pb-3 text-code focus-inset"
+          >
+            <span className="block w-max min-w-full px-4">{body}</span>
+          </pre>
+          <ScrollFade />
+        </div>
       )}
     </section>
   );
@@ -218,20 +226,40 @@ export function ErrorPanel({ type, traceback }: { type: string; traceback: strin
   return (
     <section
       aria-label={s.errorRegion}
-      className={cn("min-w-0 overflow-hidden rounded-box border bg-redline-soft", MIXED_REDLINE)}
+      className={cn(
+        "min-w-0 overflow-hidden rounded-box border bg-redline-soft [--fade-bg:var(--color-redline-soft)]",
+        MIXED_REDLINE,
+      )}
     >
       <p className="flex items-center gap-1.5 px-4 pt-2.5 font-semibold text-label text-redline">
         <OctagonAlert aria-hidden="true" size={14} strokeWidth={2} />
         {fmt(s.error, { type })}
       </p>
-      <pre
-        // biome-ignore lint/a11y/noNoninteractiveTabindex: scrollable traceback must be keyboard-reachable
-        tabIndex={0}
-        className="max-h-[calc(20lh+1.25rem)] overflow-auto px-4 pt-1 pb-3 text-code text-ink focus-inset"
-      >
-        {lines.length > 0 ? `${lines.join("\n")}\n` : ""}
-        <span className="font-bold text-redline">{last}</span>
-      </pre>
+      <div data-scroll-frame="" className="relative">
+        <pre
+          // biome-ignore lint/a11y/noNoninteractiveTabindex: scrollable traceback must be keyboard-reachable
+          tabIndex={0}
+          data-scroll-x=""
+          className="max-h-[calc(20lh+1.25rem)] overflow-auto pt-1 pb-3 text-code text-ink focus-inset"
+        >
+          <span className="block w-max min-w-full px-4">
+            {lines.length > 0 ? `${lines.join("\n")}\n` : ""}
+            <span className="font-bold text-redline">{last}</span>
+          </span>
+        </pre>
+        <ScrollFade />
+      </div>
     </section>
   );
+}
+
+/**
+ * Right-edge fade that shows a code region scrolls sideways. It is visible only while more
+ * content lies to the right: a scroll-driven animation fades it out as the region reaches its
+ * end, and it stays hidden when nothing overflows. Colour comes from the panel (--fade-bg).
+ * Browsers without scroll-driven animations get an always-visible thin scrollbar instead
+ * (globals.css → Scroll affordance).
+ */
+function ScrollFade() {
+  return <span aria-hidden="true" data-scroll-fade="" />;
 }
