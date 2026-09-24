@@ -66,8 +66,13 @@ describe("panel layouts", () => {
 });
 
 describe("text measurement", () => {
-  it("measures mono values wider per character than sans labels", () => {
-    expect(textWidth("mmmm", "value")).toBeGreaterThan(textWidth("mmmm", "label"));
-    expect(textWidth("", "value")).toBe(0);
+  it("matches the browser within a few percent and never under-measures", () => {
+    // Chromium measured "Boxed under each node: distance" at 14.958 em in the label face.
+    const real = 14.958 * 14;
+    const est = textWidth("Boxed under each node: distance", "label");
+    expect(est).toBeGreaterThanOrEqual(real);
+    expect(est).toBeLessThan(real * 1.06);
+    expect(textWidth("0123", "value")).toBe(Math.ceil(4 * 16 * 0.62));
+    expect(textWidth("", "label")).toBe(0);
   });
 });

@@ -15,6 +15,14 @@ export interface SceneSvgProps {
   exiting?: VizItem[] | undefined;
 }
 
+/**
+ * Free-standing text (labels, notes, titles) paints above every shape, so no line, sweep or
+ * edge ever crosses a label's halo. Everything else keeps the layout's order.
+ */
+function paintOrder(items: VizItem[]): VizItem[] {
+  return [...items.filter((i) => i.t !== "text"), ...items.filter((i) => i.t === "text")];
+}
+
 /** One panel drawing: a pure SVG, identical on the server and in the client player. */
 export function SceneSvg({ scene, box, title, desc, entering, exiting }: SceneSvgProps) {
   return (
@@ -26,7 +34,7 @@ export function SceneSvg({ scene, box, title, desc, entering, exiting }: SceneSv
     >
       <title>{title}</title>
       {desc ? <desc>{desc}</desc> : null}
-      {scene.items.map((it) => (
+      {paintOrder(scene.items).map((it) => (
         <Item key={it.key} item={it} flags={entering?.has(it.key) ? { enter: true } : undefined} />
       ))}
       {exiting?.map((it) => (

@@ -19,14 +19,14 @@ export function CourseSidebar({ nav, idPrefix = "side" }: { nav: CourseNav; idPr
     <nav aria-labelledby={headingId} className="px-4 py-5 text-ui">
       <a
         href="/learn"
-        className="flex h-9 items-center gap-2 rounded-control px-2 font-medium text-ink-2 hover:bg-board-deep hover:text-ink pointer-coarse:h-11"
+        className="flex h-9 items-center gap-2 rounded-control border border-transparent px-2 font-medium text-ink-2 hover:bg-board-deep hover:text-ink pointer-coarse:h-11"
       >
         <LayoutList aria-hidden="true" size={16} strokeWidth={1.75} />
         {s.nav.courseMap}
       </a>
       {stage ? (
         <>
-          <h2 id={headingId} className="mt-5 px-2">
+          <h2 id={headingId} className="mt-5 px-[calc(0.5rem+1px)]">
             <span className="block text-ink-3 text-label tnum">
               {fmt(s.nav.stage, { n: stage.number })}
             </span>
@@ -42,11 +42,9 @@ export function CourseSidebar({ nav, idPrefix = "side" }: { nav: CourseNav; idPr
                       href={m.href}
                       aria-current={current && !nav.currentLessonId ? "page" : undefined}
                       className={cn(
-                        "grid grid-cols-[3.25rem_minmax(0,1fr)] items-baseline rounded-control px-2 py-2 hover:bg-board-deep",
+                        "grid grid-cols-[3.5rem_minmax(0,1fr)] items-baseline rounded-control border border-transparent px-2 py-2 hover:bg-board-deep",
                         current ? "font-semibold text-ink" : "text-ink-2",
-                        current &&
-                          !nav.currentLessonId &&
-                          "border border-rule bg-paper hover:bg-paper",
+                        current && !nav.currentLessonId && "border-rule bg-paper hover:bg-paper",
                       )}
                     >
                       <span className="text-ink-3 text-small tnum">{m.id}</span>
@@ -55,7 +53,7 @@ export function CourseSidebar({ nav, idPrefix = "side" }: { nav: CourseNav; idPr
                       </span>
                     </a>
                   ) : (
-                    <div className="grid grid-cols-[3.25rem_minmax(0,1fr)_auto] items-baseline gap-x-2 px-2 py-2 text-ink-3">
+                    <div className="grid grid-cols-[3.5rem_minmax(0,1fr)_auto] items-baseline gap-x-2 border border-transparent px-2 py-2 text-ink-3">
                       <span className="text-small tnum">{m.id}</span>
                       <span>
                         <RichTitle text={m.title} />
@@ -64,7 +62,7 @@ export function CourseSidebar({ nav, idPrefix = "side" }: { nav: CourseNav; idPr
                     </div>
                   )}
                   {current && m.lessons.length > 0 ? (
-                    <ul className="mt-0.5 mb-2 ml-[3.25rem]">
+                    <ul className="mt-0.5 mb-2 ml-[3.5rem]">
                       {m.lessons.map((l) => {
                         const on = l.id === nav.currentLessonId;
                         return (
@@ -103,7 +101,7 @@ export function CourseSidebar({ nav, idPrefix = "side" }: { nav: CourseNav; idPr
             <li key={st.id}>
               <a
                 href={st.href}
-                className="grid grid-cols-[3.25rem_minmax(0,1fr)] items-baseline rounded-control px-2 py-1.5 text-ink-2 text-small hover:bg-board-deep hover:text-ink"
+                className="grid grid-cols-[2rem_minmax(0,1fr)] items-baseline rounded-control border border-transparent px-2 py-1.5 text-ink-2 text-small hover:bg-board-deep hover:text-ink"
               >
                 <span className="text-ink-3 tnum">{st.number}</span>
                 <span>

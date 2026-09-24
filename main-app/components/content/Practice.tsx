@@ -49,7 +49,7 @@ export function Practice({
                 <ArrowUpRight aria-hidden="true" size={14} strokeWidth={2} className="text-ink-3" />
               </span>
               {p.sameAs ? (
-                <span className="block text-ink-2 text-small">
+                <span className="ml-1.5 whitespace-nowrap text-ink-2 text-small">
                   {fmt(s.sameAs, { label: problemLabel(p.sameAs) })}
                 </span>
               ) : null}

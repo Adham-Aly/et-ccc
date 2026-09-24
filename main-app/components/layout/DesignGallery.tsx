@@ -53,6 +53,17 @@ const TRACEBACK = `Traceback (most recent call last):
 IndexError: list index out of range
 `;
 
+// Mirrors DESIGN.md → Layout → Measure by block type.
+const MEASURES: [string, string][] = [
+  ["Paragraphs, lists, headings, blockquotes", "Prose (42rem)"],
+  ["Callouts, Details, Practice list", "Prose (42rem)"],
+  ["Title-block strip, objectives, closing title block", "Prose (42rem)"],
+  ["Code block with its Input / Output / Error panels", "Wide (48rem)"],
+  ["Output panel alone", "Wide (48rem)"],
+  ["Figures (diagrams, step-throughs, code traces)", "Wide (48rem)"],
+  ["Tables, display math", "Wide (48rem)"],
+];
+
 function Block({ title, children }: { title: string; children: React.ReactNode }) {
   return (
     <section className="mt-14 border-rule border-t pt-6 first-of-type:mt-10 first-of-type:border-t-0 first-of-type:pt-0">
@@ -64,7 +75,7 @@ function Block({ title, children }: { title: string; children: React.ReactNode }
 
 function State({ label, children }: { label: string; children: React.ReactNode }) {
   return (
-    <div data-exhibit="">
+    <div data-exhibit="" data-wide="">
       <p className="mb-2 text-ink-3 text-label">{label}</p>
       {children}
     </div>
@@ -241,6 +252,38 @@ export function DesignGallery({
             Disabled
           </Button>
         </div>
+      </Block>
+
+      <Block title="Title-block strip (longest values)">
+        <div className="max-w-(--measure)">
+          <TitleBlockStrip
+            cells={[
+              { label: "Module", value: "M4.15" },
+              { label: "Lesson", value: "12 of 12" },
+              { label: "Reading time", value: "25 min" },
+            ]}
+            extra={<DraftBadge />}
+          />
+        </div>
+      </Block>
+
+      <Block title="Measure by block type">
+        <table>
+          <thead>
+            <tr>
+              <th>Block</th>
+              <th>Measure</th>
+            </tr>
+          </thead>
+          <tbody>
+            {MEASURES.map(([block, measure]) => (
+              <tr key={block}>
+                <td>{block}</td>
+                <td>{measure}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
       </Block>
 
       <Block title="Index rows">

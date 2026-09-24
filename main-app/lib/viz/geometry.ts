@@ -33,13 +33,33 @@ export const MAX_NATURAL_WIDTH = Math.floor(
   PHONE_STAGE / Math.max(MIN_RENDERED.value / FONT.value, MIN_RENDERED.label / FONT.label),
 );
 
-/** Advance of a Mono glyph (0.618 em measured) and a safe average for the text face (0.44–0.59 em measured). */
+/** Advance of a Mono glyph (0.618 em measured in Chromium). */
 export const MONO_ADVANCE = 0.62;
-export const SANS_ADVANCE = 0.53;
+/** Fallback advance for a text-face character missing from SANS_ADVANCES. */
+export const SANS_ADVANCE = 0.62;
+/**
+ * Advances of the text face (Atkinson Hyperlegible Next) per character, in em, measured in
+ * Chromium with getComputedTextLength; the larger of weight 500 (labels) and 600 (titles).
+ * Remeasure with work/04-app/_scratch/w3/advances.mjs if the face changes.
+ */
+// biome-ignore format: a measured lookup table reads best packed
+const SANS_ADVANCES: Record<string, number> = {" ":0.293,"!":0.298,"\"":0.362,"#":0.73,"$":0.604,"%":0.953,"&":0.729,"'":0.195,"(":0.324,")":0.324,"*":0.485,"+":0.601,",":0.252,"-":0.369,".":0.253,"/":0.307,"0":0.632,"1":0.632,"2":0.632,"3":0.632,"4":0.632,"5":0.632,"6":0.632,"7":0.632,"8":0.632,"9":0.632,":":0.253,";":0.253,"<":0.564,"=":0.621,">":0.564,"?":0.526,"@":0.78,"A":0.684,"B":0.634,"C":0.637,"D":0.683,"E":0.589,"F":0.562,"G":0.711,"H":0.699,"I":0.415,"J":0.546,"K":0.654,"L":0.548,"M":0.848,"N":0.71,"O":0.737,"P":0.617,"Q":0.747,"R":0.639,"S":0.604,"T":0.608,"U":0.688,"V":0.647,"W":0.885,"X":0.666,"Y":0.664,"Z":0.615,"[":0.333,"\\":0.424,"]":0.344,"^":0.573,"_":0.391,"`":0.274,"a":0.544,"b":0.587,"c":0.489,"d":0.586,"e":0.555,"f":0.36,"g":0.582,"h":0.565,"i":0.285,"j":0.284,"k":0.536,"l":0.293,"m":0.87,"n":0.565,"o":0.569,"p":0.587,"q":0.591,"r":0.377,"s":0.497,"t":0.36,"u":0.559,"v":0.533,"w":0.747,"x":0.545,"y":0.523,"z":0.492,"{":0.37,"|":0.249,"}":0.37,"~":0.548,"·":0.277,"×":0.535,"–":0.503,"—":0.83,"’":0.259,"→":0.993,"∞":0.766,"≤":0.587,"≥":0.587,};
+/** Safety margin on the text face so a label never measures narrower than it renders. */
+const SANS_MARGIN = 1.03;
 
-export function textWidth(text: string, role: TextRole, mono = role === "value"): number {
+/** The measured advance of a text run in user units (drawing: knockouts that hug the glyphs). */
+export function textAdvance(text: string, role: TextRole, mono = role === "value"): number {
   const size = FONT[role];
-  return Math.ceil([...text].length * size * (mono ? MONO_ADVANCE : SANS_ADVANCE));
+  const chars = [...text];
+  if (mono) return chars.length * size * MONO_ADVANCE;
+  let em = 0;
+  for (const ch of chars) em += SANS_ADVANCES[ch] ?? SANS_ADVANCE;
+  return em * size;
+}
+
+/** A text run's width for layout: the measured advance plus a safety margin, rounded up. */
+export function textWidth(text: string, role: TextRole, mono = role === "value"): number {
+  return Math.ceil(textAdvance(text, role, mono) * (mono ? 1 : SANS_MARGIN));
 }
 
 export const PAD = 8;

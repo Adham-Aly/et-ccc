@@ -26,10 +26,16 @@
     "check:viz": "node scripts/assert-contained.mjs && node --import ./tools/viz/register.mjs tools/viz/check-viz.ts",
     "viz:shots": "node scripts/assert-contained.mjs && node --import ./tools/viz/register.mjs tools/viz/viz-shots.ts",
     "prebuild": "node scripts/assert-contained.mjs && node scripts/gates/prebuild.mjs",
-    "test:e2e": "node scripts/assert-contained.mjs && playwright test",
+    "test:e2e": "node scripts/assert-contained.mjs && node scripts/check-production-mode.mjs && node scripts/run-playwright.mjs e2e playwright.config.ts 4100",
+    "test:visual": "node scripts/assert-contained.mjs && node scripts/run-playwright.mjs visual playwright.visual.config.ts 4101",
+    "test:a11y": "node scripts/assert-contained.mjs && node scripts/run-playwright.mjs a11y playwright.a11y.config.ts 4102",
     "links:verify": "node scripts/assert-contained.mjs && node tools/links/verify-judges.mjs",
+    "links:internal": "node scripts/assert-contained.mjs && node scripts/links-internal.mjs",
+    "perf": "node scripts/assert-contained.mjs && node scripts/perf-budgets.mjs",
+    "deployed-url": "node scripts/assert-contained.mjs && node scripts/deployed-url.mjs",
     "verify:fast": "node scripts/assert-contained.mjs && node scripts/verify.mjs fast",
-    "verify:full": "node scripts/assert-contained.mjs && node scripts/verify.mjs full"
+    "verify:full": "node scripts/assert-contained.mjs && node scripts/verify.mjs full",
+    "verify:preview": "node scripts/assert-contained.mjs && node scripts/verify.mjs preview"
   },
   "dependencies": {
     "@base-ui/react": "1.8.0",

@@ -60,7 +60,8 @@ export function layoutTrace(states: TraceState[]): VizScene[] {
   }
   const fw = Math.max(titleW + 20, 10 + nameW + 10 + valW + 10);
   const x0 = PAD;
-  const xObj = x0 + fw + 44;
+  // Room for the reference arrows between the frames and the objects.
+  const xObj = x0 + fw + 36;
   const availW = Math.max(60, MAX_NATURAL_WIDTH - xObj - PAD);
 
   return states.map((s) => {

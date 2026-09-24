@@ -12,19 +12,19 @@ import {
   type VizScene,
 } from "./geometry";
 import { layoutJudgeScene, layoutStdinScene } from "./layout-scenes";
-import {
-  type ArrayFrame,
-  type FrameByViz,
-  type GraphFrame,
-  type GridFrame,
-  type LineFrame,
-  type PlotFrame,
-  type StructFrame,
-  stateOf,
-  type TableFrame,
-  type TreeFrame,
-  type TreeNodeData,
+import type {
+  ArrayFrame,
+  FrameByViz,
+  GraphFrame,
+  GridFrame,
+  LineFrame,
+  PlotFrame,
+  StructFrame,
+  TableFrame,
+  TreeFrame,
+  TreeNodeData,
 } from "./schema";
+import { stateOf } from "./states";
 
 const ROW_POINTER = 38;
 const ROW_RANGE = 28;
@@ -204,13 +204,17 @@ export function layoutArray(frames: ArrayFrame[]): VizScene[] {
     if (f.compare) {
       const a = Math.min(f.compare.a, f.compare.b);
       const b = Math.max(f.compare.a, f.compare.b);
+      // With a pointer above either end, the legs stop on top of its label instead of crossing it.
+      const onPointer = (f.pointers ?? []).some(
+        (p) => p.side === "above" && (p.at === a || p.at === b),
+      );
       items.push({
         key: "cmp",
         t: "dim",
         x1: cx(a),
         x2: cx(b),
         y: yCompare + ROW_RANGE / 2,
-        yRef: yCells,
+        yRef: onPointer ? yCells - ROW_POINTER : yCells,
         label: f.compare.text,
         kind: "compare",
       });
@@ -614,7 +618,7 @@ export function layoutTable(frames: TableFrame[]): VizScene[] {
         // Neighbours: a short arrow across the shared border, beside the values.
         const d =
           r1 !== r2
-            ? `M ${sx + cw * 0.3} ${sy + Math.sign(ty - sy) * (ch / 2 - 7)} L ${tx + cw * 0.3} ${ty - Math.sign(ty - sy) * (ch / 2 - 7)}`
+            ? `M ${sx + cw * 0.34} ${sy + Math.sign(ty - sy) * (ch / 2 - 7)} L ${tx + cw * 0.34} ${ty - Math.sign(ty - sy) * (ch / 2 - 7)}`
             : `M ${sx + Math.sign(tx - sx) * (cw / 2 - 8)} ${sy - ch * 0.28} L ${tx - Math.sign(tx - sx) * (cw / 2 - 8)} ${ty - ch * 0.28}`;
         items.push({ key, t: "arrow", d, state: "none" });
         continue;

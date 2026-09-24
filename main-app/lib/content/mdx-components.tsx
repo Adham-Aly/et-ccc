@@ -52,6 +52,9 @@ export function createMdxComponents({ moduleDir, practiceItems = [] }: MdxCompon
     expectError?: string;
     lang?: string;
     variant?: "normal" | "bad38";
+    /** Set by remark-fenced-code.ts as an attribute (never JSX children — see its comment: JSX
+     * children text is whitespace-cleaned at compile time, which strips indentation). */
+    code?: string;
     children?: ReactNode;
   }) {
     const data = props.file
@@ -64,7 +67,7 @@ export function createMdxComponents({ moduleDir, practiceItems = [] }: MdxCompon
           expectError: props.expectError,
         })
       : fencedCodeBlock(
-          childrenToText(props.children),
+          props.code ?? childrenToText(props.children),
           props.lang ?? "python",
           props.variant ?? "normal",
         );

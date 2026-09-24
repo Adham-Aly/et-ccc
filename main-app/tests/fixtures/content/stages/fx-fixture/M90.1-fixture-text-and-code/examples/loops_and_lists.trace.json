@@ -42,6 +42,6 @@
 {"l":11,"e":"return","st":[{"f":"<module>","l":16,"v":[["total_of",[1]],["factorial",[2]],["numbers",[3]]]},{"f":"factorial","l":11,"v":[["n","4"]]},{"f":"factorial","l":11,"v":[["n","3"]]},{"f":"factorial","l":11,"v":[["n","2"]]}],"r":"2","c":"The call with n = 1 handed back 1. The call of factorial with n = 2 returns 2. Its frame leaves the call stack next."},
 {"l":11,"e":"return","st":[{"f":"<module>","l":16,"v":[["total_of",[1]],["factorial",[2]],["numbers",[3]]]},{"f":"factorial","l":11,"v":[["n","4"]]},{"f":"factorial","l":11,"v":[["n","3"]]}],"r":"6","c":"The call with n = 2 handed back 2. The call of factorial with n = 3 returns 6. Its frame leaves the call stack next."},
 {"l":11,"e":"return","st":[{"f":"<module>","l":16,"v":[["total_of",[1]],["factorial",[2]],["numbers",[3]]]},{"f":"factorial","l":11,"v":[["n","4"]]}],"r":"24","c":"The call with n = 3 handed back 6. The call of factorial with n = 4 returns 24. Its frame leaves the call stack next."},
-{"l":11,"e":"end","st":[{"f":"<module>","l":11,"v":[["total_of",[1]],["factorial",[2]],["numbers",[3]]]}],"o":"24\n","c":"Line 16 runs: it prints 24. The program has finished: no lines are left to run."}
+{"l":16,"e":"end","st":[{"f":"<module>","l":16,"v":[["total_of",[1]],["factorial",[2]],["numbers",[3]]]}],"o":"24\n","c":"Line 16 runs: it prints 24. The program has finished: no lines are left to run."}
 ]}
 ]}

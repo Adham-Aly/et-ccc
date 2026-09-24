@@ -22,6 +22,10 @@ playwright-report/
 # gitignored as a safety net if a run is interrupted)
 main-app/.pycheck-scratch/
 
+# scripts/check-production-mode.mjs's isolated production build (G-E2E production-mode proof,
+# plan §7); deleted at the end of every run, gitignored as a safety net if a run is interrupted
+main-app/.next-prod-check/
+
 # Phase scratch and run files
 work/**/_scratch/
 work/**/_run/

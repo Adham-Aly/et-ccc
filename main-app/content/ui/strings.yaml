@@ -53,6 +53,7 @@ module:
   stage: Stage
   lessons: Lessons
   lessonCount: "{n} lessons"
+  lessonCountOne: "{n} lesson"
   before: Before this module
   lessonsHeading: Lessons
   objectives: In this module
@@ -96,6 +97,7 @@ home:
   startLabel: Start with Stage 0
   sheetIndex: The course, stage by stage
   modules: "{n} modules"
+  modulesOne: "{n} module"
   howHeading: How this course works
   how:
     - term: Read

@@ -109,3 +109,14 @@ Computed from the hex tokens (`work/04-app/_scratch/palette.cjs`). Text pairs us
 - `.prose-sheet > :first-child { margin-top: 0 }`: `.prose-sheet h2` (3rem) outranked `> *` (0), so a body opening with an H2 got a double gap under the title block. The gallery's first block also dropped its top rule and margin.
 - Slashed zero: Atkinson Next has no plain-zero alternate (no `zero`/`ssNN`/`cvNN`; `aalt` 1–3 unchanged; see `_scratch/fonts/zero-features.png`). Kept, and recorded in DESIGN.md → Numerals.
 - r7 shots: `work/04-app/_scratch/shots/w2/r7/`. One run logged "Can't perform a React state update on a component that hasn't mounted yet" at 768 right after a dev-server cold start. It did not recur in 6 more runs × 3 viewports × 4 routes, so I treat it as a dev-compile artifact. Watch for it in the E2E console-error gate.
+
+### Fixture-course review (r8, confirm r8c)
+- Shots: `_scratch/shots/w2/r8/` (lesson, module, sidebar at 3 widths), `r8s/` (mark-as-read before and after, Term popover, Details open, sidebar and drawer with a read lesson, home continue block, course-map check marks), `r8c/` (confirm).
+- Fixed: KaTeX CSS was never loaded, so math showed twice, unstyled (now imported by LessonPage). The Term popover ran off the right edge on phones (it now spans the gutters). The crossover "(same problem as …)" is inline after the badge. Sidebar ID column widened to 3.5rem (M90.1 and M4.10 touched their titles), and rows reserve a transparent 1 px border so the current tab doesn't shift. The other-stages column is now 2rem, so "Junior J4–J5 / Senior S1–S2" no longer breaks at the en dash.
+- Raised with W1: fenced code loses its indentation through MDX (the bad38 `match` example renders flat); "1 lessons" needs singular string keys.
+
+### r9 fixes
+- Title-block strip: the cells always share one row in equal columns with rules between them. On phones the Draft badge gets its own ruled row. Checked at 390 with M4.15 / 12 of 12 / 25 min (gallery block "Title-block strip (longest values)").
+- Measure by block type: `data-wide` (code assemblies, the lone Output panel) plus `figure`, `table` and display math go to 48rem. Callouts, Details and Practice keep 42rem. `data-exhibit` now controls spacing only. The table is in DESIGN.md → Layout and in the /dev/design gallery.
+- Corner radii are consistent: callouts, code frames, IO panels, Details and W3's `.vz-figure` all use `--radius-box` (6 px).
+- Singular count strings wired (`lessonCountOne`, `modulesOne`).

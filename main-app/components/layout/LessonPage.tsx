@@ -1,3 +1,4 @@
+import "katex/dist/katex.min.css";
 import { Practice } from "@/components/content/Practice";
 import type { LessonPageProps } from "@/components/layout/props";
 import { DraftBadge } from "@/components/ui/Badge";
@@ -64,7 +65,7 @@ export function LessonPage({ lesson, module, stage, practice, nav, courseNav }: 
           ) : null}
           <div className="prose-sheet mt-10">{lesson.body}</div>
           {practice && practice.length > 0 ? (
-            <div className="mt-12 max-w-(--measure-wide)">
+            <div className="mt-12 max-w-(--measure)">
               <Practice items={practice} />
             </div>
           ) : null}

@@ -17,7 +17,7 @@ import type {
   TextItem,
   VizItem,
 } from "@/lib/viz/geometry";
-import { FONT, textWidth } from "@/lib/viz/geometry";
+import { FONT, textAdvance, textWidth } from "@/lib/viz/geometry";
 
 export interface ItemFlags {
   /** Newly present in this step (fades in, second phase). */
@@ -290,8 +290,14 @@ export function Label({ item, flags = {} }: { item: TextItem; flags?: ItemFlags 
   const weight = item.weight ?? 500;
   const halo = item.halo !== false;
   const mono = item.mono ?? item.role === "value";
+  // The halo only outlines each glyph; a knockout behind the whole label also clears the gaps
+  // between letters, so a sweep, edge or grid line never shows through a label.
+  const kw = halo ? textAdvance(item.text, item.role, mono) + 3 : 0;
+  const kh = FONT[item.role] + 2;
+  const kx = item.anchor === "middle" ? -kw / 2 : item.anchor === "end" ? -kw + 1.5 : -1.5;
   return (
     <g className={cls("vz-label", flags)} data-k={item.key} style={at(item.x, item.y)}>
+      {halo ? <rect className="vz-gap" x={kx} y={-kh / 2} width={kw} height={kh} rx={2} /> : null}
       <text
         className={`vz-t vz-t-${item.role}${mono ? " vz-mono" : ""}${item.muted ? " vz-muted" : ""}${halo ? " vz-halo" : ""}`}
         dy="0.35em"

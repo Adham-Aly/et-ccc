@@ -313,14 +313,29 @@ The page is a board with a sheet on it. Four widths are designed: 390, 768, 1440
 - **Board**: the `board` colour fills everything below the header.
 - **Sidebar** (1024 px and up; 18rem wide, board ground, sticky below the header, own scroll, 1.5rem padding): course navigation for lesson and module pages.
 - **Sheet**: paper, 1 px `rule` edge, square corners, sitting on the board with a board margin: 1.5rem at 1024 px and up, 1rem at 640–1023 px, none below 640 px (the sheet becomes the full-bleed page with the rule edge removed). Sheet padding: 3rem top / 3.5rem sides / 4rem bottom at 1024 px and up; 2rem / 2rem / 3rem at 640–1023; 1.5rem / 1.25rem / 2.5rem below 640 (the 20 px side gutter satisfies the 16 px minimum).
-- **Content column**: max 42rem, left-aligned inside the sheet (not centred) so the eye returns to a fixed left edge. Wide elements (code blocks, figures, tables) may extend to 48rem when the sheet has room, never past the sheet padding.
+- **Content column**: max 42rem, left-aligned inside the sheet (not centred) so the eye returns to a fixed left edge. Wide elements may extend to 48rem when the sheet has room, never past the sheet padding (see Measure by block type).
 - **On this page** (1280 px and up, lesson pages with 3 or more H2s): a 13rem static list in the sheet's right margin, sticky at header height + 1.5rem; it lists H2s only. No scroll-spy (the §4.8 client budget excludes it).
 - **Maximum sheet width**: the sheet stops growing at 76rem (content + TOC + padding); beyond that the extra board shows on the right. At 1920 px the layout holds its left edge beside the sidebar.
+
+### Measure by block type
+The prose measure is `--measure` (42rem); the wide measure is `--measure-wide` (48rem). A block goes wide only when it carries `data-wide` or is a `figure`, `table` or display math; `data-exhibit` sets only the 2rem block spacing, never the width.
+
+| Block | Measure |
+|---|---|
+| Paragraphs, lists, headings, blockquotes | Prose (42rem) |
+| Callouts, Details, Practice list | Prose (42rem) |
+| Title-block strip, objectives, closing title block | Prose (42rem) |
+| Code block with its Input / Output / Error panels (`data-wide`) | Wide (48rem) |
+| Output panel alone (`data-wide`) | Wide (48rem) |
+| Figures: diagrams, step-throughs, code traces (`figure`) | Wide (48rem) |
+| Tables, display math | Wide (48rem) |
+
+Index lists (module lessons, prerequisites, the course map) are page structure, not prose, and fill the content column.
 
 ### Reading page (lesson) order
 1. Breadcrumb line (small, ink-3): Course map / Stage N title / Module title. Links in ink-2 with blueline hover underline.
 2. H1 lesson title.
-3. **Title-block strip**: one ruled row of cells directly under the H1 (1 px `rule` top and bottom and between cells; 0 radius). Cells: Module (ID + short title), Lesson (`2 of 3`), Reading time (`12 min`), and the Draft badge when applicable. Field label above value inside each cell (label 400 ink-3, value UI 600 ink, tabular). Wraps to two rows on phones; cells never truncate their value.
+3. **Title-block strip**: one ruled row of cells directly under the H1 (1 px `rule` top and bottom and between cells; 0 radius). Cells: Module (ID + short title), Lesson (`2 of 3`), Reading time (`12 min`), and the Draft badge when applicable. Field label above value inside each cell (label 400 ink-3, value UI 600 ink, tabular). The cells always share one row in equal columns with a rule between them (checked at 390 px with the longest values: M4.15, 12 of 12, 25 min). On phones the Draft badge takes its own ruled row below; from 640 px it sits at the right end of the row. Values wrap, never truncate.
 4. Objectives (a short list introduced by a Minor heading, copy from `ui/strings.yaml`).
 5. Lesson body.
 6. Practice list (last lesson of a module only).
@@ -397,10 +412,11 @@ Every interactive component has default, hover, focus-visible, active, and (wher
 ### Sidebar (course navigation)
 - Top: "Course map" link (ghost row with a LayoutList icon).
 - Stage heading: label style ink-3 "Stage 4" then UI 700 ink stage title.
-- Modules of the current stage: rows of ID (tabular, ink-3, fixed 3.25rem column) + title (UI, ink-2), 8 px vertical padding, 4 px radius hover fill board-deep. Planned modules: ink-3 text, no link, a dashed-outline "Soon" tag in a trailing column (grid `3.25rem | 1fr | auto`, all cells on the first baseline), so a wrapped title never pushes the tag onto an orphan line.
-- The current module expands to its lessons: indented 3.25rem, each row a read cell + lesson title (small, ink-2). Read lessons keep their title in ink-2 (the "read drops to a tint" rule: read is quieter, never hidden or struck).
+- Modules of the current stage: rows of ID (tabular, ink-3, fixed 3.5rem column) + title (UI, ink-2), 8 px vertical padding, 4 px radius hover fill board-deep. Planned modules: ink-3 text, no link, a dashed-outline "Soon" tag in a trailing column (grid `3.5rem | 1fr | auto`, all cells on the first baseline), so a wrapped title never pushes the tag onto an orphan line.
+- The current module expands to its lessons: indented 3.5rem, each row a read cell + lesson title (small, ink-2). Read lessons keep their title in ink-2 (the "read drops to a tint" rule: read is quieter, never hidden or struck).
 - **Current lesson** (`aria-current="page"`): a white sheet tab: paper fill, 1 px `rule` border, 4 px radius, ink 600 title. This is the only paper on the board, so it reads as the sheet pulled from the set.
-- Other stages: collapsed list of stage titles at the bottom, each linking to `/learn#stage-n`.
+- Other stages: collapsed list of stage titles at the bottom (a 2rem number column), each linking to `/learn#stage-n`.
+- Every sidebar row carries a 1 px border (transparent unless it is the current tab), so the current row's paper tab never shifts its text.
 
 ### Read cell and mark-as-read
 - **Read cell**: 14 px square, 2 px radius. Unread (pencilled): paper fill, 1.5 px `rule-strong` border. Read (inked): ink fill, paper Check icon 10 px stroke 2.5. Appears in the sidebar, course map rows, module lesson lists, and the closing title block. Read cells are decorative in lists (`aria-hidden`), with the state in visible or visually hidden text ("Read").
@@ -430,7 +446,7 @@ Every interactive component has default, hover, focus-visible, active, and (wher
 - Kind is conveyed by icon + label + colour (never colour alone). Rendered as `<aside>` with `aria-label` of the label.
 
 ### Term
-- Inline text with a 1 px dotted blueline underline (offset 0.2em). It is a `<button>` that opens a native popover (`popover` + `popovertarget`, no JS) anchored below the term (CSS anchor positioning where supported, otherwise centred in the viewport): paper, 1 px rule border, 6 px radius, overlay shadow, max 22rem, 12 px × 16 px padding: the term in UI 700, the definition in small ink, and a "In the glossary" link. Hover: solid underline; focus ring as standard. Escape and light-dismiss close it.
+- Inline text with a 1 px dotted blueline underline (offset 0.2em). It is a `<button>` that opens a native popover (`popover` + `popovertarget`, no JS) anchored below the term (CSS anchor positioning where supported, otherwise centred in the viewport; below 640 px it spans the page gutters under the term instead of starting at it): paper, 1 px rule border, 6 px radius, overlay shadow, max 22rem, 12 px × 16 px padding: the term in UI 700, the definition in small ink, and a "In the glossary" link. Hover: solid underline; focus ring as standard. Escape and light-dismiss close it.
 
 ### Details
 - Native `<details>`: 6 px radius, 1 px `rule` border, paper. Summary row: 12 px × 16 px padding, UI 600 ink, a 16 px ChevronRight that rotates 90° when open (150 ms, reduced motion: none). Hover: board fill on the summary. Open: a 1 px rule under the summary, content padded 16 px. No other animation.
@@ -491,7 +507,7 @@ Every interactive component has default, hover, focus-visible, active, and (wher
 - Full-width of the column, UI style, header row label style ink-3 on sheet-sunk, 1 px rule dividers, 10 px × 12 px cell padding, tabular numerals, horizontal scroll inside a wrapper below 640 px.
 
 ### KaTeX
-- Math inherits ink; display math centred inside the column with 24 px vertical space and scrolls horizontally inside itself when too wide.
+- KaTeX's stylesheet loads with the lesson page component only. Math inherits ink; display math centred inside the column with 24 px vertical space and scrolls horizontally inside itself when too wide.
 
 ### Implementation rules (as built)
 - **Fonts** (`app/layout.tsx`, `next/font/local`): Atkinson Hyperlegible Next roman and Mono are preloaded (Mono appears above the fold in every code block); the italic is a separate face, not preloaded, applied by one rule to `em, i, cite, var, dfn`. Next roman uses an Arial-adjusted fallback; Mono has no adjusted fallback.
@@ -533,7 +549,7 @@ Plan §4.11.3. Tokens and the state grammar below are the design lead's [W2]. Th
 
 ### Typography in visuals [W2]
 - Lettering: Atkinson Hyperlegible Next for labels and captions, Mono for values, indices and code. Both tabular.
-- **Minimum rendered size at a 390 px viewport: 12 px** for indices, axis labels and pointer names; **14 px** for values inside cells and nodes; captions 15 px (small) on phones, 16 px at 640 px and up. Visuals scale with the column, so authors size presets so that these minimums hold at the 390 px column width (about 350 px of stage); the G-VIZ/visual checks enforce it [W3: the check].
+- **Minimum rendered size at a 390 px viewport: 12 px** for indices, axis labels and pointer names; **14 px** for values inside cells and nodes; captions 15 px (small) on phones, 16 px at 640 px and up. Visuals scale with the column, so authors size presets so that these minimums hold at the 390 px column width (about 350 px of stage); the G-VIZ/visual checks enforce it. [W3] Two checks do it: `check:viz` lays out every step of every preset and fails any panel wider than 361 units (a 316 px phone stage ÷ 0.875, the ratio of 14 px values to their 16 px natural size); `viz:shots` then measures every SVG text in a real browser at each width it shoots (390, 768 and 1440 px by default) and fails anything below 14 px (values) or 12 px (labels and titles).
 - Values in Mono 500; labels in Next 500; the current pointer label in 700.
 
 ### Motion [W2 rules, W3 implementation]
@@ -544,7 +560,7 @@ Plan §4.11.3. Tokens and the state grammar below are the design lead's [W2]. Th
 - **Interruption:** a new step request while a transition runs finishes the current transition immediately (jump to its end state) and starts the next one. Scrubbing jumps without animation.
 - **No autoplay, no loops, no flashing.** Nothing moves without a user action.
 - **Reduced motion** (`prefers-reduced-motion: reduce`, and Motion's `MotionConfig reducedMotion="user"`): no spatial movement; state changes become a 120 ms opacity cross-fade or an instant snap; stepping, playing and scrubbing still work. The UI's ink-in, drawer slide and dialog scale follow the same rule.
-- [W3] playback timing per speed (suggestion: 1× = one step per 1.2 s, 0.5× = 2.4 s, 2× = 0.6 s with transitions shortened to 200 ms), the exact sequencing per visualizer, and layout transitions.
+- [W3] Playback timing per speed (`lib/viz/player-state.ts` SPEEDS): 0.5× = one step per 2.4 s, 1× = 1.2 s, 2× = 0.6 s; transitions take `--dur-viz` (280 ms) at 0.5× and 1× and 200 ms at 2×. Sequencing and layout transitions: see "Motion choreography" below.
 
 ### Captions [W2 style, W3 plumbing]
 - Every step has a caption in the teaching voice (style guide, G-STYLE): what changed and why, one or two sentences, present tense, naming things with the same words as the prose and the legend. Never "Step 7".
@@ -575,12 +591,45 @@ Below 640 px: the stage stays above; state panels (variables, stack, output in a
 - Call stack: frames as ruled stacked boxes, newest on top, the active frame with the 3 px ink edge; returned frames leave with a 200 ms fade.
 - Output so far: the Output panel style, growing line by line.
 
-### [W3] to complete
-- Per-visualizer specifics (ArrayViz, GridViz, GraphViz, TreeViz, TableViz, StructViz, LineViz, PlotViz, CodeTraceViz): cell and node sizes, spacing, arrow heads, edge weights labels, DP dependency arrows, heap-as-array-and-tree linkage, plot axes and gridlines.
-- Scene conventions (stdin-flow, how judging works, growth charts).
-- Layout presets for combined visualizers and the stacked phone layout breakpoints inside the player.
-- Exact motion choreography and speed timings; the `/dev/viz` gallery layout.
-- Any additional token needed (add it to the token block below and tell the design lead).
+### Library structure [W3]
+- Frames are data, drawn by one renderer. A layout function (`lib/viz/layout*.ts`, pure TypeScript) turns every step of every preset of one panel into positioned items (cells, nodes, edges, arrows, pointers, dimension lines, text, slots, lines, badges, bands); `components/viz/SceneSvg.tsx` draws them with the primitives in `components/viz/primitives`. The same code runs on the server (first frame), in the lazy client player, and in the `check:viz` gate.
+- Every panel keeps one box for all steps and presets (the union of their sizes), so nothing shifts while stepping. A smaller preset sits centred in that box.
+- Styling is by state, not by colour: each item carries `data-s="<state>"` and `viz.css` maps states to custom properties (`--vz-fill`, `--vz-edge`, `--vz-sw`, `--vz-dash`), which read only the tokens below. No component hard-codes a colour.
+- Two library states beyond the table above: **Wall** (`#` in grids: `rule-strong` fill hatching, legend "Wall") and **Just changed** (code trace values and objects: `--color-viz-changed`, currently falling back to `check-soft`, legend "Just changed"). Free-standing labels paint above every shape and sit on a stage-coloured knockout, so no line, sweep or edge ever crosses a label.
+
+### Per-visualizer specifics [W3]
+All sizes are in natural units (1 unit = 1 px at scale 1; the stage scales a panel down to fit, never below the minimum text sizes, and up to at most 1.25×). Scene padding is 8.
+- **ArrayViz**: cells 40 tall and at least 40 wide (value width + 14), indices 20 below in label style. Pointers get a 38-unit row above or below: a 1.5 px ink arrow and the name (the strong one in 700); several pointers on one index share one label ("lo, mid"). Ranges are dimension lines in 28-unit rows. A compare is a plum bracket on its own row above, with the comparison written in its gap; with a pointer at either end, the bracket's legs stop on top of the pointer label. `circular` draws a return arrow under the row.
+- **GridViz**: square cells from 28 to 40 units (as large as fits 361 units), row and column indices in label style unless `indices: false`; walls hatched; values in Mono inside cells; no pointers (the caption names the cell).
+- **GraphViz**: author coordinates in grid units of 60; nodes are circles of radius 18 with the id in Mono; value badges sit under each node, and `valueLabel` explains them once under the graph ("Boxed under each node: distance"). Edge weights sit at the midpoint, offset from the line, on a knockout. Directed edges end in an arrowhead at the node rim.
+- **TreeViz**: a tidy tree (d3-hierarchy) laid out over the union of every step and preset, so a node never moves when others appear. Boxes are the label width + 14 (at least 36), 30 tall; levels 58 apart (70 with notes); 12 between siblings, 1.15 × that between cousins. Notes ("= 3") sit under the box; edges start below the parent's note. Node ids name positions: an id must have the same parent in every step and preset (G-VIZ rule `tree-ids`); ids by call path (`r`, `rL`, `rLR`) do this.
+- **TableViz**: 32-unit rows, columns as wide as their widest value; row and column heads in label style with an optional corner title. Dependency arrows between neighbours are short and cross the shared border beside the values (a vertical one sits at 84% of the cell width, clear of the current caret); arrows between farther cells run edge to edge with a slight bow.
+- **StructViz**: stack is a slot open at the top with a "top" marker; queue and deque are open-ended rails with "front"/"back" markers; heap is drawn twice, as a tree and as the array under it, linked by the same index labels (nodes grow with their text, never touching the ring); map is key → value rows; set is chips in a rounded container. An empty heap or map says "empty".
+- **LineViz**: a number line with ticks every `tick` (16–44 units apart), intervals on rows 0–3 above it (30 units per row), points with labels, and a dashed sweep line with its label on top. `kind: wheel` draws a clock face for modular arithmetic.
+- **PlotViz**: a fixed 190-unit-tall plot as wide as the phone allows, nice ticks on both axes, up to three series in three line styles (solid, dashed, dotted), series labels spread so they never overlap, a shaded `band` with its label top-left inside it, a dashed `vline` with its label above the plot, and markers with values.
+- **CodeTraceViz**: code pane left (at most 58% of the width), frames-and-objects panel right, output under the code; stacked in that order below 44rem of player width, so the state panel always gets at least the phone stage's width. Frames are ruled boxes, newest on top, the active one with the 3 px edge; objects start 36 units right of the frames, level with the first name that refers to them; lists wrap to the panel width. Function objects are a "function" type row and a pill with the name.
+
+### Scenes [W3]
+Named concept animations built from a few plain props at build time (no recorded file). Each validates its props with Zod and produces frames for the shared player.
+- `stdin-flow` (`lines`, `reads: [{name, as: str | int | split}]`): the standard-input lines on top, the program in the middle, the variables below, stacked vertically so it reads on a phone. Each step consumes one line (it turns done), highlights the program line that reads it and shows the Python value it becomes (`'hello'`, `5`, `['red', 'green']`).
+- `how-judging-works` (`verdicts`: 1–6 of AC, WA, TLE, RTE, MLE): test cases in a row, a pipeline input → your program → output → checker, and the verdict per test in words, never as a score.
+- `growth-rates` (`curves`: 2–5 of `logn`, `n`, `nlogn`, `n2`, `2n`; `points`: the n values to step through; `yMax`): a PlotViz with one curve per growth rate, stepping through the n values with markers; curves that leave the chart are clipped at the top.
+
+### Combined layouts [W3]
+- `layout: single` is one panel. `layout: row` is two panels side by side (3 : 2) once the player is at least 36rem wide, each with a small title; below that they stack, main panel first.
+- Phone (below 36rem of player width): the controls take two rows (buttons with the speed control, then the scrubber with the counter), the caption reserves 4 lines, and the legend wraps.
+
+### Motion choreography [W3]
+- CSS transitions, not a motion library (no runtime dependency; the lazy chunk stays small). The client player adds `.vz-live` after the first user action, so the server-rendered first frame never animates.
+- Phase 1 (0 to `--dur-viz`): items move to their new places and recolour; the new current item takes its edge; items that are gone fade out. Phase 2 (`--dur-viz` to 2 × `--dur-viz`): the consequences follow (new frontier, answer path, compared, invalid, just changed) and new items fade in. That keeps cause before effect, and one thing moving at a time.
+- Interruption: any new step request during a transition adds `.vz-snap` for one frame, which ends every running transition at its end state, then the next step animates. Seek, preset switch, Restart, Home and End always snap.
+- Reduced motion: `--vz-dur: 0ms`, so every change is an instant snap; stepping, playing and scrubbing still work.
+
+### The `/dev/viz` gallery [W3]
+A dev-only page (404 in production) on the standard sheet, in five sections: Primitives (every state on cells, nodes and edges; pointers, dimension lines, slots, arrows; the full legend), Visualizers (every visualizer in every state it draws, from inline sample frames), Players (a live StepThrough with presets, a reduced-motion one, and frozen pictures of the middle, last and playing states), Code trace (live, and frozen at the deepest recursion), and Scenes (all three). Every entry has a `data-gallery` id, which `viz:shots` uses to name its screenshots.
+
+### Tokens added [W3]
+- `--color-viz-changed`: the "Just changed" fill in code traces. Requested from the design lead for `app/globals.css`; until it lands, `viz.css` falls back to `--color-check-soft`, which is the intended value.
 
 ## Do's and Don'ts
 

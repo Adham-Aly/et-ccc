@@ -4,39 +4,11 @@
 // gate scripts can load it with type stripping (tools/viz/register.mjs).
 import { z } from "zod";
 
-// ---------------------------------------------------------------------------------------------
-// State vocabulary (DESIGN.md → Visual Language → State vocabulary). One letter per state keeps
-// grid and table frames compact: a grid row is a string such as "..qc#d".
-// ---------------------------------------------------------------------------------------------
+// The state vocabulary lives in ./states (no Zod), so client code can use it without pulling
+// Zod into the browser bundle.
+import { VIZ_STATES } from "./states";
 
-export const STATE_CODES = {
-  _: "none",
-  ".": "unvisited",
-  q: "frontier",
-  c: "current",
-  d: "done",
-  p: "path",
-  m: "compare",
-  x: "invalid",
-  "#": "wall",
-} as const;
-
-export type StateCode = keyof typeof STATE_CODES;
-/** "changed" is internal (a traced value that just changed); it has no authoring code. */
-export type VizState = (typeof STATE_CODES)[StateCode] | "changed";
-
-export const VIZ_STATES = [
-  "none",
-  "unvisited",
-  "frontier",
-  "current",
-  "done",
-  "path",
-  "compare",
-  "invalid",
-  "wall",
-  "changed",
-] as const satisfies readonly VizState[];
+export { STATE_CODES, type StateCode, stateOf, VIZ_STATES, type VizState } from "./states";
 
 const stateCodeRe = /^[_.qcdpmx#]*$/;
 
@@ -690,9 +662,3 @@ export const traceYamlSchema = z.strictObject({
   budget: budgetSchema.optional(),
 });
 export type TraceYaml = z.infer<typeof traceYamlSchema>;
-
-/** Decode a state code (a missing code means "none"). */
-export function stateOf(code: string | undefined): VizState {
-  if (code === undefined || code === "") return "none";
-  return STATE_CODES[code as StateCode] ?? "none";
-}

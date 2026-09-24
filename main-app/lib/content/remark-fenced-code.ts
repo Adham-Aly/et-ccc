@@ -26,11 +26,18 @@ function toJsxCodeNode(node: MdCodeNode) {
   return {
     type: "mdxJsxFlowElement",
     name: "Code",
+    // The block's source goes in a `code` attribute, never as JSX children: MDX/JSX children
+    // text goes through the standard whitespace-cleaning algorithm at compile time (trim each
+    // line, join with a single space) — correct for prose, but it silently strips a Python
+    // block's indentation (bug: requests.md W2 r8 review, fixed with a repro in
+    // tests/unit/content/mdx-fenced-code.test.ts). An attribute value is a plain string literal
+    // in the compiled output and is never whitespace-cleaned, so it survives byte-for-byte.
     attributes: [
       { type: "mdxJsxAttribute", name: "lang", value: lang },
       { type: "mdxJsxAttribute", name: "variant", value: variant },
+      { type: "mdxJsxAttribute", name: "code", value: node.value },
     ],
-    children: [{ type: "text", value: node.value }],
+    children: [],
     data: { _mdxExplicitJsx: true },
   };
 }

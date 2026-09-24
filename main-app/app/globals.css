@@ -257,8 +257,10 @@
     max-width: var(--measure);
   }
 
-  /* Exhibits (code, figures, callouts, details, tables) may run to the wide measure. */
-  .prose-sheet > :is([data-exhibit], figure, table, .katex-display) {
+  /* Measure per block type (DESIGN.md → Layout → Measure by block type): code assemblies,
+     output panels, figures, tables and display math run to the wide measure; everything else,
+     including callouts, details and the practice list, keeps the prose measure. */
+  .prose-sheet > :is([data-wide], figure, table, .katex-display) {
     max-width: var(--measure-wide);
   }
 
@@ -494,6 +496,17 @@
       top: anchor(bottom);
       left: anchor(left);
       position-try-fallbacks: flip-block, flip-inline;
+    }
+
+    /* Phones: the popover is nearly as wide as the screen, so it spans the gutters instead of
+       starting at the term (which would push it off the right edge). */
+    @media (max-width: 39.999rem) {
+      .term-pop {
+        left: 1rem;
+        right: 1rem;
+        width: auto;
+        position-try-fallbacks: flip-block;
+      }
     }
   }
 }

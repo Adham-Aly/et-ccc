@@ -138,6 +138,9 @@ export const uiStringsSchema = z.object({
     stage: z.string(),
     lessons: z.string(),
     lessonCount: z.string(),
+    /** Singular form of lessonCount ("{n} lesson", n === 1) — so "1 lessons" can never render
+     * (requests.md, W2 r8 review). */
+    lessonCountOne: z.string(),
     before: z.string(),
     lessonsHeading: z.string(),
     objectives: z.string(),
@@ -183,6 +186,9 @@ export const uiStringsSchema = z.object({
     startLabel: z.string(),
     sheetIndex: z.string(),
     modules: z.string(),
+    /** Singular form of modules ("{n} module", n === 1) — so "1 modules" can never render
+     * (requests.md, W2 r8 review). */
+    modulesOne: z.string(),
     howHeading: z.string(),
     how: z.array(z.object({ term: z.string(), text: z.string() })),
   }),

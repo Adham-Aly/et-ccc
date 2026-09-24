@@ -27,6 +27,10 @@ const securityHeaders = [
 
 const nextConfig: NextConfig = {
   reactStrictMode: true,
+  // Lets scripts/check-production-mode.mjs (batch 3, G-E2E production-mode proof) build a
+  // production-env build into its own directory, so it never clobbers the preview `.next` the
+  // e2e/visual/a11y suites' `next start` needs. Unset (the default) keeps the normal `.next`.
+  distDir: process.env.NEXT_DIST_DIR || ".next",
   // No `output: 'export'` (plan §4.1): a regular Vercel build keeps next.config headers working.
   async headers() {
     return [

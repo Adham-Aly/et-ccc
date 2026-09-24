@@ -55,7 +55,16 @@ export function CourseMapPage({ stages }: CourseMapPageProps) {
                       <DraftBadge label={s.status.draft} />
                     ) : undefined
                   }
-                  meta={readable ? fmt(s.module.lessonCount, { n: m.lessons.length }) : undefined}
+                  meta={
+                    readable
+                      ? fmt(
+                          m.lessons.length === 1 ? s.module.lessonCountOne : s.module.lessonCount,
+                          {
+                            n: m.lessons.length,
+                          },
+                        )
+                      : undefined
+                  }
                   marks={readable ? <LessonMarks module={m} /> : undefined}
                 />
               );

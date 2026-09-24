@@ -37,6 +37,12 @@ describe("expandTrace (trace_demo.py)", () => {
     expect(maxOutputLines(two ?? [])).toBe(2);
   });
 
+  it("ends on the module's own line (the print that made the last call)", () => {
+    expect(two?.at(-1)?.line).toBe(19);
+    expect(two?.at(-1)?.caption).toMatch(/^Line 19 runs/);
+    expect(two?.at(-1)?.stack.length).toBe(1);
+  });
+
   it("marks what changed and where the previous line was", () => {
     expect(two?.[0]?.prevLine).toBeNull();
     const withChange = two?.filter((s) => s.changedVars.size > 0) ?? [];

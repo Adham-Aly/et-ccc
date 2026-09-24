@@ -1,8 +1,8 @@
 // npm run viz:shots [-- --scope <id>] [-- --url=http://localhost:4100] [-- --page=/path]
-//                   [-- --widths=390,1440] [-- --out=<dir>] [-- --no-crawl]
+//                   [-- --widths=390,768,1440] [-- --out=<dir>] [-- --no-crawl]
 //
 // Screenshots every visual (each <figure class="vz-figure">) on /dev/viz and on every lesson page
-// reachable from /learn, at its first, middle and last step, at a phone and a desktop width.
+// reachable from /learn, at its first, middle and last step, at a phone, a tablet and a desktop width.
 // While doing so it checks, in a real browser, what the static G-VIZ width check predicts:
 // every SVG text renders at no less than 14 px (values) or 12 px (labels and titles), the page
 // never scrolls sideways, and the console stays free of errors and warnings.
@@ -11,6 +11,7 @@
 // work/04-app/_run/viz-shots.pid, and stops the server and releases the port when done.
 import { type ChildProcess, spawn } from "node:child_process";
 import fs from "node:fs";
+import net from "node:net";
 import path from "node:path";
 import { type Browser, chromium, type Page } from "@playwright/test";
 import { APP_ROOT, parseArgs } from "./lib";
@@ -28,7 +29,7 @@ function option(flags: Set<string>, name: string): string[] {
 }
 
 const { scope, flags } = parseArgs(process.argv.slice(2));
-const widths = (option(flags, "widths")[0] ?? "390,1440").split(",").map(Number);
+const widths = (option(flags, "widths")[0] ?? "390,768,1440").split(",").map(Number);
 const outDir = path.resolve(APP_ROOT, option(flags, "out")[0] ?? "test-results/viz-shots");
 const extraPages = option(flags, "page");
 const crawl = !flags.has("no-crawl");
@@ -49,6 +50,18 @@ async function waitForServer(url: string, child: ChildProcess | null): Promise<v
   throw new Error(`${url} did not answer within 120 s`);
 }
 
+/** Does anything accept connections on localhost:port (IPv4 or IPv6)? */
+function answers(port: number): Promise<boolean> {
+  return new Promise((resolve) => {
+    const sock = net.connect({ port, host: "localhost" });
+    sock.once("connect", () => {
+      sock.destroy();
+      resolve(true);
+    });
+    sock.once("error", () => resolve(false));
+  });
+}
+
 async function startServer(): Promise<{ base: string; stop: () => Promise<void> }> {
   const lease = (await import(path.join(APP_ROOT, "scripts", "port-lease.mjs"))) as {
     leasePort: (
@@ -56,7 +69,17 @@ async function startServer(): Promise<{ base: string; stop: () => Promise<void> 
       o: { releaseOnExit: boolean },
     ) => Promise<{ port: number; release: () => void }>;
   };
-  const { port, release } = await lease.leasePort("viz-shots", { releaseOnExit: true });
+  // A leased port can still have a listener that took it without a lease (the lease probe
+  // binds 127.0.0.1 only; `next dev` listens on ::). Keep such a lease, so the next call skips
+  // it, and lease again.
+  const held: (() => void)[] = [];
+  let leased = await lease.leasePort("viz-shots", { releaseOnExit: true });
+  while (await answers(leased.port)) {
+    held.push(leased.release);
+    leased = await lease.leasePort("viz-shots", { releaseOnExit: true });
+  }
+  for (const r of held) r();
+  const { port, release } = leased;
   const nextBin = path.join(APP_ROOT, "node_modules", "next", "dist", "bin", "next");
   const child = spawn(process.execPath, [nextBin, "dev", "--port", String(port)], {
     cwd: APP_ROOT,
@@ -98,6 +121,14 @@ async function startServer(): Promise<{ base: string; stop: () => Promise<void> 
     await waitForServer(`${base}/dev/viz`, child);
   } catch (err) {
     await stop();
+    // Next runs one dev server per project; when one is already up, it names it. Use that one
+    // (read-only: it is someone else's, so it is never stopped here).
+    const existing = /access the existing server at (http:\/\/\S+?),?\s/.exec(log)?.[1];
+    if (existing) {
+      console.log(`viz:shots: using the dev server already running at ${existing}`);
+      await waitForServer(`${existing}/dev/viz`, null);
+      return { base: existing, stop: async () => {} };
+    }
     throw new Error(`${(err as Error).message}\n${log.slice(-2000)}`);
   }
   return { base, stop };
@@ -176,7 +207,16 @@ async function shootPage(browser: Browser, base: string, url: string, problems: 
       if (m.type() === "error" || m.type() === "warning") logs.push(m.text());
     });
     page.on("pageerror", (e) => logs.push(String(e)));
-    await page.goto(base + url, { waitUntil: "networkidle" });
+    try {
+      await page.goto(base + url, { waitUntil: "networkidle" });
+    } catch (err) {
+      // A dev server can drop a connection while it (re)compiles; wait for it once and retry.
+      console.log(
+        `viz:shots: ${url} @${width}: ${(err as Error).message.split("\n")[0]}; retrying once`,
+      );
+      await waitForServer(base + url, null);
+      await page.goto(base + url, { waitUntil: "networkidle" });
+    }
     await page.addStyleTag({ content: "nextjs-portal{display:none!important}" });
     await settle(page);
     const count = await page.locator("figure.vz-figure").count();

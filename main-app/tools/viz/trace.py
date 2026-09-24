@@ -500,8 +500,14 @@ def _emit_end(self, final):
         for n, v in self.module_frame_globals.items()
         if not n.startswith("__") and not isinstance(v, types.ModuleType)
     ]
-    stack = [{"f": "<module>", "l": self.last_line, "v": values}]
-    step = {"l": self.last_line, "e": "end", "st": stack}
+    # A normal end is on the module frame's own line (e.g. the print that called the last
+    # function); an error ends where it was raised, the innermost line that ran.
+    line = self.last_line
+    prev_stack = self.prev_state["stack"] if self.prev_state else None
+    if not final and prev_stack:
+        line = prev_stack[0]["l"]
+    stack = [{"f": "<module>", "l": line, "v": values}]
+    step = {"l": line, "e": "end", "st": stack}
     changed = {str(r): o for r, o in snap.items() if self.prev_snapshot.get(r) != o}
     if changed:
         step["h"] = changed
@@ -514,7 +520,7 @@ def _emit_end(self, final):
         self.out_pos = len(text)
     if final:
         step.update(final)
-    state = {"stack": stack, "heap": snap, "line": self.last_line, "event": "end", "params": [()]}
+    state = {"stack": stack, "heap": snap, "line": line, "event": "end", "params": [()]}
     step["c"] = self.caption(self.prev_state, state, step, None)
     if len(self.steps) >= self.max_steps:
         raise TraceError(f"more than {self.max_steps} steps: add a skip marker or shrink the preset")

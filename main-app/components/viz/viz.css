@@ -786,9 +786,12 @@
   grid-template-columns: minmax(0, 1fr);
 }
 
-@container (min-width: 40rem) {
+/* Side by side only when the state panel still gets the phone stage's width (22rem: 316 px plus
+   its padding), so its text never renders below the minimum sizes; the code column takes the
+   rest and scrolls sideways if it must. */
+@container (min-width: 44rem) {
   .vz-trace {
-    grid-template-columns: fit-content(58%) minmax(0, 1fr);
+    grid-template-columns: fit-content(58%) minmax(22rem, 1fr);
     grid-template-areas: "code state" "out state";
     align-items: start;
   }

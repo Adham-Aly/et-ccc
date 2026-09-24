@@ -116,12 +116,12 @@ Checklist:
 - [x] 1. §9.3 verification → `work/04-app/p3-verification.md` (all PASS)
 - [x] 2. Scaffold with §4.2 pins (`work/04-app/versions.md`), verify scripts, G-UI-LIGHT, Playwright Chromium + WebKit, Lighthouse installed; containment proofs in `work/04-app/containment/` (node-gyp leak found and remediated; npm wrapper now forces ignore-scripts on installs; **WebKit per-bundle storage writes to ~/Library — open, W1 batch 2 tries a redirect**). Committed 1e0d772, pushed `phase-04-app`. Design record (PRODUCT.md, DESIGN.md "The Drafting Set", fonts) by W2 in the same commit.
 - [ ] 3. Manager: link Vercel (§10.5) → SPIKE S-2 → first deployed build. **PAUSED FOR MANAGER (2026-09-23 23:45): instructions in `work/04-app/manager-action-vercel.md`.** Workers continue meanwhile; the main session resumes the orchestrator with SendMessage once the Manager says "Vercel linked".
-- [ ] 4. Impeccable init → PRODUCT.md / DESIGN.md; tokens, fonts, layout, base components, every §4.10 route
-- [ ] 5. Content pipeline (loader, schemas, MDX map, course.yaml, drafts, content:check/status)
-- [ ] 6. Registry code, 119-slug stub, verify-judges, DMOJ checklist; first WMOJ automated run recorded
-- [ ] 7. pycheck, style, lint (R14), every §7 gate with a failing fixture; fixture course
-- [ ] 8. Visualization system + `/dev/viz` gallery + visual language in DESIGN.md
-- [ ] 9. Client features; E2E, visual, a11y, perf suites; deployed-url
+- [x] 4. W2: PRODUCT.md / DESIGN.md ("The Drafting Set"), tokens, Atkinson Hyperlegible Next + Mono fonts, layout, components/{ui,content,layout}, nine page components, `/dev/design` gallery; review fixes r7 done. Lesson/module shots (r8) in progress.
+- [x] 5. W1: loader, Zod schemas, MDX map, fixture overlay (stage fx, non-production only), draft visibility, content:check/status. Checkpoint commit d3ed330.
+- [x] 6. W1: judgeUrl, registry stub (119), verify-judges, DMOJ checklist `work/04-app/dmoj-checklist.html`; **WMOJ run 1: 56/56 ok** (`work/04-app/wmoj-verification-run-1.md`); 63 DMOJ unverified pending the Manager checklist (P5).
+- [x] 7. W1: pycheck (G-PY-38/RUN), style (G-STYLE), R14, spell, MDX, every gate with a failing fixture; fixture course M90.1–M90.3. WebKit storage containment RESOLVED via CFFIXED_USER_HOME (`work/04-app/containment/webkit-storage.md`).
+- [x] 8. W3: viz library (9 visualizers, player, scenes), trace.py + vizrec.py (PyPy 3.8), gen:viz, check:viz (G-VIZ, 10 fixture visuals), viz:shots, /dev/viz gallery, DESIGN.md [W3] sections; lazy chunk 18.3 kB gzip. Review fixes in progress (∞ glyph, heap layout, frame edge, caption code). **Manager item: W3 used CSS transitions instead of Motion (plan §4.2 [DECIDED]) → decision pending.**
+- [ ] 9. Client features; E2E, visual, a11y, perf suites; deployed-url — W1 batch 3 in progress (sent 2026-09-24).
 - [ ] 10. Orchestrator review (architecture, code, pixel, motion) → `work/04-app/design-review.md`; fixes
 - [ ] 11. verify:full green locally; suites green on the Vercel preview; G-CONTAIN clean
 - [ ] 12. Report assets, phase log, decisions, commit + push

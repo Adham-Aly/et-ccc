@@ -48,7 +48,9 @@ export function HomePage({ stages, lessonOrder }: HomePageProps) {
               title={<RichTitle text={st.title} />}
               description={st.goal}
               href={st.href}
-              meta={fmt(h.modules, { n: st.modules.length })}
+              meta={fmt(st.modules.length === 1 ? h.modulesOne : h.modules, {
+                n: st.modules.length,
+              })}
             />
           ))}
         </div>

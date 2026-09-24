@@ -102,7 +102,7 @@ export function ModulePage({ module, stage, prerequisites, practice, courseNav }
           </ol>
         </section>
         {practice.length > 0 ? (
-          <div className="mt-12">
+          <div className="mt-12 max-w-(--measure)">
             <Practice items={practice} />
           </div>
         ) : null}

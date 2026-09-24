@@ -55,7 +55,13 @@ export async function CodeBlock({
   const hasIo = input !== undefined || output !== undefined || error !== undefined;
 
   return (
-    <figure data-exhibit="" data-ui="" data-code-assembly="" className="max-w-(--measure-wide)">
+    <figure
+      data-exhibit=""
+      data-wide=""
+      data-ui=""
+      data-code-assembly=""
+      className="max-w-(--measure-wide)"
+    >
       <div
         data-code-frame=""
         className={cn(
@@ -198,7 +204,7 @@ export function IoPanel({ kind, text }: { kind: "input" | "output"; text: string
 /** Output panel alone (`<Output file="…" />`). */
 export function OutputPanel({ output }: { output: string }) {
   return (
-    <div data-exhibit="" data-ui="" className="max-w-(--measure-wide)">
+    <div data-exhibit="" data-wide="" data-ui="" className="max-w-(--measure-wide)">
       <IoPanel kind="output" text={output} />
     </div>
   );
