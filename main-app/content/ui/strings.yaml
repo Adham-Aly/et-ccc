@@ -1,0 +1,133 @@
+# content/ui/strings.yaml — ALL learner-facing UI copy (plan §4.6.2). P4 skeleton seeded from
+# the design lead's working defaults (main-app/components/ui/ui-strings.ts DEFAULTS); P5 writes
+# the final, style-guide-checked copy. Loaded and Zod-validated by lib/content/strings.ts
+# (getUiStrings()). Working title: "CCC Python Course" (brief §7) until P5/Manager decides.
+
+siteName: CCC Python Course
+skipLink: Skip to content
+nav:
+  label: Main
+  learn: Learn
+  problems: Problems
+  glossary: Glossary
+  start: Start here
+  about: About
+  menu: Open menu
+  closeMenu: Close menu
+  courseMap: Course map
+  stage: Stage {n}
+search:
+  trigger: Search
+  open: Open search
+  placeholder: Search lessons, terms and problems
+  label: Search the course
+  close: Close search
+  hintEmpty: Type a word to search lessons, glossary terms and problems.
+  loading: Loading the search index
+  noResults: No matches for “{q}”. Try a shorter word or check the spelling.
+  loadFailed: Search could not load.
+  retry: Try again
+  groupLessons: Lessons
+  groupTerms: Glossary
+  groupProblems: Problems
+  pageTitle: Search
+lesson:
+  breadcrumb: Breadcrumb
+  module: Module
+  lesson: Lesson
+  lessonOf: "{i} of {n}"
+  readingTime: Reading time
+  minutes: "{n} min"
+  objectives: In this lesson
+  onThisPage: On this page
+  previous: Previous
+  next: Next
+  backToMap: Back to the course map
+  markRead: Mark as read
+  read: Read
+  markedOn: Marked on {date}
+  undo: Undo
+  readState: Read
+  unreadState: Not read yet
+module:
+  stage: Stage
+  lessons: Lessons
+  lessonCount: "{n} lessons"
+  before: Before this module
+  lessonsHeading: Lessons
+  objectives: In this module
+status:
+  draft: Draft
+  comingSoon: Coming soon
+  soon: Soon
+callout:
+  note: Note
+  warning: Watch out
+  graderTip: Grader tip
+code:
+  python: Python
+  copy: Copy
+  copied: Copied
+  copyFailed: Press Ctrl+C to copy
+  bad38: Not valid on the CCC grader
+  input: Input
+  output: Output
+  noOutput: (no output)
+  error: "Error: {type}"
+  errorRegion: Error output
+  region: Code
+term:
+  inGlossary: In the glossary
+practice:
+  heading: Practice
+  intro: Try these on the judges. Each link opens the problem on WMOJ or DMOJ.
+  why: "Why DMOJ:"
+  sameAs: (same problem as {label})
+  opensOn: (opens on {judge} in a new tab)
+  judgeHome: "{judge}"
+  judgeSignup: Create a {judge} account
+home:
+  lede:
+    - A free course that starts at your very first line of code and goes all the way to the
+      algorithms behind CCC Senior problems, in Python 3.8.
+    - Read a lesson, watch the code run step by step, then practise on real CCC problems on WMOJ and
+      DMOJ.
+  continueLabel: Continue where you left off
+  startLabel: Start with Stage 0
+  sheetIndex: The course, stage by stage
+  modules: "{n} modules"
+  howHeading: How this course works
+  how:
+    - term: Read
+      text: Each lesson explains one idea at a time, with example programs you can copy into your own
+        editor.
+    - term: Watch it run
+      text: Step-throughs show programs and algorithms running one step at a time. You control the pace.
+    - term: Practise on the judges
+      text: Modules end with a short list of CCC problems. You solve them on WMOJ or DMOJ, which check
+        your answers.
+    - term: Keep your place
+      text: Mark a lesson as read when you finish it. The marks are saved in this browser only.
+courseMap:
+  title: Course map
+  intro: Every stage and module in order. Modules that are not written yet say so.
+problems:
+  title: Problems
+  intro: Every CCC problem the course links, by year. Each one opens on its judge.
+  problem: Problem
+  titleCol: Title
+  taughtIn: Taught in
+  notYet: Not in a module yet
+glossary:
+  title: Glossary
+  intro: Every term the course defines, with the lesson that introduces it.
+  introducedIn: Introduced in
+  letters: Jump to letter
+notFound:
+  title: This page is not in the set
+  body: The link may be old, or the page may have moved.
+  courseMap: Course map
+  search: Search
+  home: Home
+  drawingLabel: A missing sheet, drawn in pencil
+  cell: Missing

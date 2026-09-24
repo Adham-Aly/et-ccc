@@ -1,0 +1,927 @@
+/*
+  Visualization library styles (DESIGN.md → Visual Language). Every colour, stroke and duration
+  is a token from app/globals.css; nothing here is a literal colour. Light mode only.
+  Items carry their state in `data-s`; `.vz-live` is set by the client player (transitions
+  only run after a user action), `.vz-snap` finishes a running transition at once.
+*/
+
+/* ---------- Figure frame ---------- */
+.vz-figure {
+  max-width: var(--measure-wide);
+}
+
+.vz-frame {
+  container-type: inline-size;
+  --vz-dur: var(--dur-viz);
+  border: 1px solid var(--color-rule);
+  border-radius: var(--radius-box);
+  background: var(--color-paper);
+}
+
+.vz-frame[data-speed="2"] {
+  --vz-dur: min(var(--dur-viz), 200ms);
+}
+
+.vz-frame:focus-visible {
+  outline: 2px solid var(--color-blueline);
+  outline-offset: 2px;
+}
+
+.vz-presets {
+  padding: 12px 12px 0;
+}
+
+/* ---------- Stage ---------- */
+.vz-stage {
+  padding: 16px;
+  background-color: var(--color-viz-stage);
+  background-image:
+    linear-gradient(
+      to right,
+      color-mix(in srgb, var(--color-viz-grid) calc(var(--viz-grid-opacity) * 100%), transparent)
+        1px,
+      transparent 1px
+    ),
+    linear-gradient(
+      to bottom,
+      color-mix(in srgb, var(--color-viz-grid) calc(var(--viz-grid-opacity) * 100%), transparent)
+        1px,
+      transparent 1px
+    );
+  background-size: var(--viz-grid-size) var(--viz-grid-size);
+  background-position: -1px -1px;
+  border-radius: var(--radius-box) var(--radius-box) 0 0;
+}
+
+.vz-presets + .vz-stage {
+  border-radius: 0;
+  margin-top: 12px;
+}
+
+.vz-panels {
+  display: grid;
+  gap: 16px;
+  align-items: start;
+}
+
+@container (min-width: 36rem) {
+  .vz-panels[data-layout="row"] {
+    grid-template-columns: minmax(0, 3fr) minmax(0, 2fr);
+  }
+}
+
+.vz-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+}
+
+.vz-panel-title {
+  font-size: var(--text-label);
+  line-height: var(--text-label--line-height);
+  font-weight: 600;
+  color: var(--color-ink-2);
+}
+
+.vz-svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  margin-inline: auto;
+  overflow: visible;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ---------- Text inside visuals ---------- */
+.vz-t {
+  fill: var(--color-viz-ink);
+  font-family: var(--font-sans);
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+}
+
+.vz-t-value {
+  font-family: var(--font-mono);
+  font-size: 16px;
+}
+
+.vz-t-label,
+.vz-t-title {
+  font-size: 14px;
+}
+
+.vz-t-title {
+  font-weight: 600;
+}
+
+.vz-mono {
+  font-family: var(--font-mono);
+}
+
+.vz-muted {
+  fill: var(--color-viz-line);
+}
+
+.vz-strong .vz-ptr-label,
+.vz-ptr-label.vz-strong {
+  font-weight: 700;
+}
+
+.vz-halo {
+  paint-order: stroke;
+  stroke: var(--color-viz-stage);
+  stroke-width: 5px;
+  stroke-linejoin: round;
+}
+
+/* ---------- State vocabulary ----------
+   Each item sets custom properties; one rule per shape class reads them. Later state rules win
+   over the item-type defaults by order (equal specificity). */
+.vz-cell,
+.vz-node {
+  --vz-fill: var(--color-viz-stage);
+  --vz-edge: var(--color-viz-cell-line);
+  --vz-sw: var(--viz-stroke);
+  --vz-dash: none;
+}
+
+.vz-badge,
+.vz-slot {
+  --vz-fill: none;
+  --vz-edge: var(--color-viz-cell-line);
+  --vz-sw: var(--viz-stroke-hair);
+  --vz-dash: none;
+}
+
+.vz-badge {
+  --vz-fill: var(--color-viz-stage);
+}
+
+.vz-band {
+  --vz-fill: var(--color-viz-frontier);
+  --vz-edge: none;
+  --vz-sw: 0;
+  --vz-dash: none;
+}
+
+.vz-slot.vz-strong {
+  --vz-edge: var(--color-viz-current-line);
+  --vz-sw: var(--viz-stroke-current);
+}
+
+[data-s="unvisited"] {
+  --vz-fill: var(--color-viz-unvisited);
+  --vz-edge: var(--color-viz-cell-line);
+}
+
+[data-s="frontier"] {
+  --vz-fill: var(--color-viz-frontier);
+  --vz-edge: var(--color-viz-frontier-line);
+  --vz-dash: var(--viz-dash);
+}
+
+[data-s="current"] {
+  --vz-fill: var(--color-viz-current);
+  --vz-edge: var(--color-viz-current-line);
+  --vz-sw: var(--viz-stroke-current);
+}
+
+[data-s="done"] {
+  --vz-fill: var(--color-viz-done);
+  --vz-edge: var(--color-viz-done-line);
+}
+
+[data-s="path"] {
+  --vz-fill: var(--color-viz-path);
+  --vz-edge: var(--color-viz-path-line);
+  --vz-sw: var(--viz-stroke-strong);
+}
+
+[data-s="compare"] {
+  --vz-fill: var(--color-viz-compare);
+  --vz-edge: var(--color-viz-compare-line);
+  --vz-sw: var(--viz-stroke-strong);
+}
+
+[data-s="invalid"] {
+  --vz-fill: var(--color-viz-invalid);
+  --vz-edge: var(--color-viz-invalid-line);
+}
+
+[data-s="wall"] {
+  --vz-fill: var(--color-viz-stage);
+  --vz-edge: var(--color-viz-line);
+}
+
+[data-s="changed"] {
+  --vz-fill: var(--color-viz-changed, var(--color-check-soft));
+  --vz-edge: var(--color-viz-cell-line);
+}
+
+.vz-shape {
+  fill: var(--vz-fill);
+  stroke: var(--vz-edge);
+  stroke-width: var(--vz-sw);
+  stroke-dasharray: var(--vz-dash);
+}
+
+.vz-ring {
+  fill: none;
+  stroke: var(--color-viz-path-line);
+  stroke-width: var(--viz-stroke-hair);
+}
+
+.vz-strike {
+  stroke: var(--color-viz-invalid-line);
+  stroke-width: var(--viz-stroke);
+  stroke-linecap: round;
+}
+
+.vz-hatch {
+  fill: none;
+  stroke: var(--color-viz-line);
+  stroke-width: var(--viz-stroke-hair);
+}
+
+.vz-caret {
+  fill: var(--color-viz-current-line);
+}
+
+.vz-gap {
+  fill: var(--color-viz-stage);
+}
+
+.vz-badge .vz-t {
+  font-weight: 600;
+}
+
+/* ---------- Lines: edges, arrows, pointers, dimensions, plot lines ----------
+   Colour through currentColor (heads and dots follow the line); width and dash through
+   --vz-lw / --vz-ld set on the item. */
+.vz-edge,
+.vz-arrow,
+.vz-pointer,
+.vz-dim,
+.vz-pline,
+.vz-slot,
+.vz-band {
+  --vz-lw: var(--viz-stroke);
+  --vz-ld: none;
+  color: var(--color-viz-line);
+}
+
+.vz-edge {
+  color: var(--color-viz-cell-line);
+}
+
+.vz-pointer {
+  color: var(--color-viz-ink);
+}
+
+.vz-dim,
+.vz-band {
+  --vz-lw: var(--viz-stroke-hair);
+}
+
+.vz-band {
+  --vz-ld: var(--viz-dash);
+  color: var(--color-viz-frontier-line);
+}
+
+.vz-pline {
+  --vz-lw: var(--viz-stroke-strong);
+}
+
+.vz-pl-axis {
+  --vz-lw: var(--viz-stroke);
+}
+
+.vz-pl-grid {
+  --vz-lw: var(--viz-stroke-hair);
+  color: var(--color-viz-grid);
+}
+
+.vz-pl-sweep {
+  --vz-lw: var(--viz-stroke);
+  --vz-ld: var(--viz-dash);
+  color: var(--color-viz-ink);
+}
+
+.vz-pl-2 {
+  --vz-lw: 2.5px;
+}
+
+.vz-pointer.vz-strong,
+.vz-dim.vz-compare,
+.vz-arrow[data-s="current"] {
+  --vz-lw: var(--viz-stroke-strong);
+}
+
+.vz-dim.vz-compare {
+  color: var(--color-viz-compare-line);
+}
+
+:is(.vz-edge, .vz-arrow, .vz-pline)[data-s="done"] {
+  --vz-lw: var(--viz-stroke-strong);
+  color: var(--color-viz-done-line);
+}
+
+:is(.vz-edge, .vz-arrow, .vz-pline)[data-s="current"] {
+  color: var(--color-viz-current-line);
+}
+
+:is(.vz-edge, .vz-pline)[data-s="current"],
+:is(.vz-edge, .vz-pline)[data-s="path"] {
+  --vz-lw: var(--viz-stroke-current);
+}
+
+:is(.vz-edge, .vz-arrow, .vz-pline)[data-s="frontier"] {
+  --vz-ld: var(--viz-dash);
+  color: var(--color-viz-frontier-line);
+}
+
+:is(.vz-edge, .vz-arrow, .vz-pline)[data-s="path"] {
+  color: var(--color-viz-path-line);
+}
+
+:is(.vz-edge, .vz-arrow, .vz-pline)[data-s="compare"] {
+  --vz-lw: var(--viz-stroke-strong);
+  color: var(--color-viz-compare-line);
+}
+
+:is(.vz-edge, .vz-arrow, .vz-pline)[data-s="invalid"] {
+  --vz-ld: var(--viz-dash);
+  color: var(--color-viz-invalid-line);
+}
+
+.vz-slot {
+  color: var(--color-viz-line);
+}
+
+.vz-line,
+.vz-ext {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: var(--vz-lw);
+  stroke-dasharray: var(--vz-ld);
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.vz-head,
+.vz-dot {
+  fill: currentColor;
+  stroke: none;
+}
+
+/* ---------- Motion (client player only) ---------- */
+.vz-live .vz-item {
+  transition: transform var(--vz-dur) var(--ease-draft);
+}
+
+.vz-live :is(.vz-shape, .vz-line, .vz-head, .vz-dot, .vz-t) {
+  transition:
+    fill var(--vz-dur) var(--ease-draft),
+    stroke var(--vz-dur) var(--ease-draft),
+    stroke-width var(--vz-dur) var(--ease-draft),
+    color var(--vz-dur) var(--ease-draft);
+}
+
+/* Choreography: what becomes current (and what stops being current) changes first; its
+   consequences (queued, answer path, compared, invalid, just changed, new items) follow. */
+.vz-live
+  :is(
+    [data-s="frontier"],
+    [data-s="path"],
+    [data-s="compare"],
+    [data-s="invalid"],
+    [data-s="changed"]
+  )
+  > * {
+  transition-delay: var(--vz-dur);
+}
+
+.vz-live :is(.vz-ring, .vz-strike, .vz-caret) {
+  animation: vz-in var(--vz-dur) var(--ease-draft) both;
+}
+
+.vz-live .vz-enter {
+  animation: vz-in var(--vz-dur) var(--ease-draft) var(--vz-dur) both;
+}
+
+.vz-exit {
+  animation: vz-out var(--vz-dur) var(--ease-draft) both;
+  pointer-events: none;
+}
+
+/* Interruption and scrubbing: finish every running transition at once. */
+.vz-frame.vz-snap,
+.vz-frame.vz-snap :is(.vz-item, .vz-item *) {
+  transition: none;
+  animation: none;
+}
+
+@keyframes vz-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes vz-out {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .vz-frame {
+    --vz-dur: 0ms;
+  }
+}
+
+/* ---------- Control strip ---------- */
+.vz-controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 12px;
+  padding: 8px 12px;
+  background: var(--color-paper-sunk);
+  border-top: 1px solid var(--color-rule);
+}
+
+.vz-buttons {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.vz-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border: 0;
+  border-radius: var(--radius-control);
+  background: transparent;
+  color: var(--color-ink-2);
+}
+
+.vz-btn:hover:not([aria-disabled="true"]) {
+  background: var(--color-board);
+  color: var(--color-ink);
+}
+
+.vz-btn[aria-disabled="true"] {
+  color: var(--color-ink-3);
+  opacity: 0.5;
+}
+
+.vz-btn-play {
+  background: var(--color-ink);
+  color: var(--color-paper);
+}
+
+.vz-btn-play:hover:not([aria-disabled="true"]) {
+  background: var(--color-ink-2);
+  color: var(--color-paper);
+}
+
+.vz-btn-play:active {
+  box-shadow: inset 0 0 0 1px var(--color-rule-strong);
+}
+
+.vz-scrub {
+  position: relative;
+  flex: 1 1 8rem;
+  min-width: 8rem;
+  height: 40px;
+  display: flex;
+  align-items: center;
+}
+
+.vz-ticks {
+  position: absolute;
+  left: 8px;
+  width: calc(100% - 16px);
+  top: 50%;
+  height: 14px;
+  transform: translateY(-50%);
+  pointer-events: none;
+  color: var(--color-rule-strong);
+}
+
+.vz-range {
+  --vz-pct: 0%;
+  position: relative;
+  width: 100%;
+  height: 24px;
+  margin: 0;
+  background: transparent;
+  appearance: none;
+  -webkit-appearance: none;
+  cursor: pointer;
+}
+
+.vz-range:focus-visible {
+  outline: 2px solid var(--color-blueline);
+  outline-offset: 2px;
+  border-radius: var(--radius-control);
+}
+
+.vz-range::-webkit-slider-runnable-track {
+  height: 4px;
+  border-radius: 2px;
+  background: linear-gradient(
+    to right,
+    var(--color-ink-2) var(--vz-pct),
+    var(--color-rule) var(--vz-pct)
+  );
+}
+
+.vz-range::-moz-range-track {
+  height: 4px;
+  border-radius: 2px;
+  background: linear-gradient(
+    to right,
+    var(--color-ink-2) var(--vz-pct),
+    var(--color-rule) var(--vz-pct)
+  );
+}
+
+.vz-range::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 16px;
+  height: 16px;
+  margin-top: -6px;
+  border: 0;
+  border-radius: 2px;
+  background: var(--color-ink);
+  box-shadow: 0 0 0 2px var(--color-paper);
+}
+
+.vz-range::-moz-range-thumb {
+  width: 16px;
+  height: 16px;
+  border: 0;
+  border-radius: 2px;
+  background: var(--color-ink);
+  box-shadow: 0 0 0 2px var(--color-paper);
+}
+
+.vz-counter {
+  font-family: var(--font-mono);
+  font-weight: 500;
+  font-size: var(--text-ui);
+  font-variant-numeric: tabular-nums;
+  color: var(--color-ink-2);
+  text-align: center;
+  white-space: nowrap;
+}
+
+/* Segmented controls (speed, presets): native radios, styled labels. */
+.vz-seg {
+  display: inline-flex;
+  border: 1px solid var(--color-rule-strong);
+  border-radius: var(--radius-control);
+  background: var(--color-paper);
+  overflow: hidden;
+  margin: 0;
+  padding: 0;
+  min-width: 0;
+}
+
+.vz-seg legend {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.vz-seg label {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  height: 30px;
+  padding: 0 10px;
+  font-size: var(--text-label);
+  line-height: 1;
+  font-weight: 600;
+  letter-spacing: var(--text-label--letter-spacing);
+  color: var(--color-ink-2);
+  font-variant-numeric: tabular-nums;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.vz-seg label + label {
+  border-left: 1px solid var(--color-rule-strong);
+}
+
+.vz-seg label:hover {
+  background: var(--color-board);
+}
+
+.vz-seg input {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  margin: 0;
+  cursor: pointer;
+}
+
+.vz-seg label:has(input:checked) {
+  background: var(--color-ink);
+  color: var(--color-paper);
+}
+
+.vz-seg label:has(input:focus-visible) {
+  outline: 2px solid var(--color-blueline);
+  outline-offset: -4px;
+}
+
+.vz-speed {
+  margin-left: auto;
+}
+
+@media (pointer: coarse) {
+  .vz-btn {
+    width: 44px;
+    height: 44px;
+  }
+
+  .vz-seg label {
+    height: 42px;
+  }
+}
+
+/* Below 36rem of figure width: buttons row, then the scrubber row. */
+@container (max-width: 35.999rem) {
+  .vz-scrub {
+    order: 5;
+    flex: 1 1 10rem;
+    min-width: 0;
+  }
+
+  .vz-counter {
+    order: 6;
+  }
+}
+
+/* ---------- Caption and legend ---------- */
+.vz-caption {
+  padding: 12px 16px 8px;
+  min-height: calc(3lh + 20px);
+  font-size: var(--text-ui);
+  line-height: var(--text-ui--line-height);
+  color: var(--color-ink);
+  text-wrap: pretty;
+}
+
+.vz-skip {
+  display: inline-block;
+  margin-right: 6px;
+  padding: 0 6px;
+  border: 1.5px dashed var(--color-rule-strong);
+  border-radius: var(--radius-cell);
+  font-size: var(--text-label);
+  font-weight: 600;
+  color: var(--color-ink-2);
+}
+
+@container (max-width: 35.999rem) {
+  .vz-caption {
+    font-size: var(--text-small);
+    line-height: var(--text-small--line-height);
+    min-height: calc(4lh + 20px);
+  }
+}
+
+.vz-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 16px;
+  margin: 0;
+  padding: 0 16px 14px;
+  list-style: none;
+}
+
+.vz-legend li {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: var(--text-label);
+  line-height: var(--text-label--line-height);
+  font-weight: 600;
+  color: var(--color-ink-2);
+}
+
+.vz-legend svg {
+  width: 16px;
+  height: 16px;
+  overflow: visible;
+}
+
+.vz-stage + .vz-legend {
+  padding-top: 12px;
+  border-top: 1px solid var(--color-rule);
+}
+
+/* ---------- Figure caption and text alternative ---------- */
+.vz-figcaption {
+  margin-top: 8px;
+  font-size: var(--text-small);
+  line-height: var(--text-small--line-height);
+  color: var(--color-ink-2);
+}
+
+.vz-figcaption b {
+  font-size: var(--text-ui);
+  font-weight: 700;
+  color: var(--color-ink);
+  font-variant-numeric: tabular-nums;
+  margin-right: 6px;
+}
+
+.vz-text-alt {
+  margin-top: 12px;
+}
+
+.vz-text-alt ol {
+  list-style: decimal;
+  padding-left: 1.5rem;
+  font-size: var(--text-small);
+  line-height: var(--text-small--line-height);
+}
+
+.vz-text-alt ol > li + li {
+  margin-top: 4px;
+}
+
+.vz-text-alt ol > li::marker {
+  color: var(--color-ink-3);
+  font-variant-numeric: tabular-nums;
+}
+
+.vz-text-alt .vz-alt-preset {
+  font-weight: 700;
+  font-size: var(--text-small);
+}
+
+/* ---------- Code trace ---------- */
+.vz-trace {
+  display: grid;
+  gap: 16px;
+  grid-template-columns: minmax(0, 1fr);
+}
+
+@container (min-width: 40rem) {
+  .vz-trace {
+    grid-template-columns: fit-content(58%) minmax(0, 1fr);
+    grid-template-areas: "code state" "out state";
+    align-items: start;
+  }
+
+  .vz-trace-code {
+    grid-area: code;
+  }
+
+  .vz-trace-state {
+    grid-area: state;
+  }
+
+  .vz-trace-out {
+    grid-area: out;
+  }
+}
+
+.vz-trace-code {
+  border: 1px solid var(--color-rule);
+  border-radius: var(--radius-box);
+  background: var(--color-paper-sunk);
+  overflow-x: auto;
+  scrollbar-width: thin;
+}
+
+.vz-trace-code:focus-visible {
+  outline-offset: -2px;
+}
+
+.vz-code {
+  display: table;
+  min-width: 100%;
+  margin: 0;
+  padding: 8px 0;
+  font-family: var(--font-mono);
+  font-size: var(--text-code);
+  line-height: var(--text-code--line-height);
+  color: var(--color-ink);
+}
+
+.vz-code-line {
+  display: table-row;
+}
+
+.vz-code-line > span {
+  display: table-cell;
+  white-space: pre;
+}
+
+.vz-code-no {
+  position: relative;
+  width: 3.25rem;
+  padding: 0 10px 0 18px;
+  text-align: right;
+  color: var(--color-ink-3);
+  border-right: 1px solid var(--color-rule);
+  user-select: none;
+  font-variant-numeric: tabular-nums;
+}
+
+.vz-code-text {
+  padding: 0 16px 0 12px;
+}
+
+.vz-code-line[data-cur] > span {
+  background: var(--color-check-soft);
+}
+
+.vz-code-line[data-cur] > .vz-code-no {
+  color: var(--color-ink);
+  font-weight: 700;
+}
+
+.vz-code-caret {
+  position: absolute;
+  left: 4px;
+  top: 50%;
+  width: 8px;
+  height: 10px;
+  transform: translateY(-50%);
+  overflow: visible;
+}
+
+.vz-code-caret path {
+  fill: var(--color-ink);
+}
+
+.vz-code-caret.vz-prev path {
+  fill: none;
+  stroke: var(--color-ink-2);
+  stroke-width: 1.5px;
+}
+
+.vz-trace-out {
+  border: 1px solid var(--color-rule);
+  border-radius: var(--radius-box);
+  background: var(--color-paper);
+}
+
+.vz-trace-out-head {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px 0;
+  font-size: var(--text-label);
+  line-height: var(--text-label--line-height);
+  font-weight: 600;
+  color: var(--color-ink-3);
+}
+
+.vz-trace-out pre {
+  margin: 0;
+  padding: 6px 16px 10px;
+  font-family: var(--font-mono);
+  font-size: var(--text-code);
+  line-height: var(--text-code--line-height);
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  color: var(--color-ink);
+}
+
+.vz-trace-out .vz-empty {
+  color: var(--color-ink-3);
+  font-family: var(--font-sans);
+  font-size: var(--text-small);
+}
+
+.vz-trace-out .vz-exc {
+  color: var(--color-redline);
+  font-weight: 700;
+}
+
+/* Gallery: force the reduced-motion timings on one player. */
+.vz-frame[data-motion="reduced"] {
+  --vz-dur: 0ms;
+}

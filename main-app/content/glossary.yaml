@@ -1,0 +1,18 @@
+# content/glossary.yaml — P4 skeleton, P5 finalises (brief §2 A5).
+#
+# term -> definition, introducedIn (optional: the lesson id that first defines it, checked
+# against real lesson files once they exist — no real lessons exist yet in P4, only the fixture
+# course does, so introducedIn is left unset here). A handful of Stage 0/1 terms are seeded to
+# prove the schema end to end (G-SCHEMA checks every <Term id> used in a lesson resolves here);
+# P5 writes the full set and fills in introducedIn as each lesson is authored.
+
+terms:
+  - id: variable
+    term: variable
+    definition: A name that refers to a value stored while a program runs.
+  - id: interpreter
+    term: interpreter
+    definition: The program that reads Python source code and runs it, one instruction at a time.
+  - id: algorithm
+    term: algorithm
+    definition: A precise, step-by-step method for solving a problem.

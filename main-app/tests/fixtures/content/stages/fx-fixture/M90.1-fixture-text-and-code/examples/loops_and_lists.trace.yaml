@@ -1,0 +1,7 @@
+example: loops_and_lists.py
+alt: >-
+  The program traced line by line: a loop adds up a list of five numbers inside a function
+  call, then factorial calls itself until n is 1, with one frame per call on the call stack,
+  and each call hands its result back to the one below it.
+notes:
+  "14": numbers refers to a list object; the list lives outside the frame.

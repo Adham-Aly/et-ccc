@@ -1,0 +1,18 @@
+---
+title: Tracing a program line by line
+objectives:
+  - See how a code trace shows a loop, a list, a function call and recursion together.
+---
+
+The second lesson in this fixture module exists so the reader's "previous" and "next" links have
+something real to point at.
+
+A line-by-line trace shows the program's variables, its call stack and its output as it runs,
+one step at a time. The example below sums a list of numbers with a loop, then computes a small
+factorial recursively:
+
+<Code file="examples/loops_and_lists.py" caption="A loop over a list, then a recursive call" />
+
+<Figure caption="The same program, one line at a time: frames on the left, the objects they refer to on the right.">
+  <CodeTrace trace="examples/loops_and_lists.trace.json" />
+</Figure>

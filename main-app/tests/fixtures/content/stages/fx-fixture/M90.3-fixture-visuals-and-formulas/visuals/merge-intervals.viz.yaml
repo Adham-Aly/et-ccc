@@ -1,0 +1,15 @@
+layout: single
+panels:
+  - { id: a, viz: LineViz }
+alt: >-
+  Intervals on a number line, sorted by their start. A sweep line visits each start in order:
+  an interval that starts inside the current merged block extends it, and one that starts after
+  it opens a new block. The merged blocks grow on the top row.
+captions: vizrec
+presets:
+  - { id: two, label: Two blocks, stdin: "4\n1 3\n2 5\n7 9\n8 11\n" }
+  - { id: one, label: One block, stdin: "3\n1 4\n3 8\n6 10\n" }
+consistency:
+  description: The number of blocks and the covered length equal the output of examples/merge_intervals.py.
+  example: ../examples/merge_intervals.py
+  compare: output

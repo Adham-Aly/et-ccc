@@ -9,6 +9,7 @@ out/
 test-results/
 playwright-report/
 *.tsbuildinfo
+.pycheck-scratch/
 
 .env*
 .vercel/

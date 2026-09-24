@@ -1,0 +1,51 @@
+---
+title: Scenes, diagrams and formulas
+objectives:
+  - See a named concept scene rendered from plain data, not a recorded file.
+  - See a KaTeX formula rendered inline and on its own line.
+---
+
+A named scene builds its frames from a few plain values, so it needs no recorded file at all.
+This one shows `input()` reading two lines from standard input, one at a time:
+
+<Figure caption="Reading an integer, then a line of three numbers, from standard input.">
+  <Scene name="stdin-flow" lines={["3", "10 20 30"]} reads={[{ name: "n", as: "int" }, { name: "row", as: "split" }]} />
+</Figure>
+
+A static diagram is one frozen step of a recorded visual, with no player controls:
+
+<Figure caption="The finished route-count table for a 3 × 4 grid, as one still picture.">
+  <Diagram frames="visuals/grid-paths.frames.json" preset="small" step={7} />
+</Figure>
+
+One step-through for each of the remaining panel visualizers:
+
+<Figure caption="Two pointers close in on a pair with a given sum in a sorted list.">
+  <StepThrough frames="visuals/pair-sum.frames.json" />
+</Figure>
+
+<Figure caption="Shortest distances from A: the heap always hands back the closest node not yet done.">
+  <StepThrough frames="visuals/dijkstra.frames.json" />
+</Figure>
+
+<Figure caption="Every call a recursive function makes, as a tree: each call waits for its children.">
+  <StepThrough frames="visuals/fib-calls.frames.json" preset="four" />
+</Figure>
+
+<Figure caption="Filling a table of route counts one cell at a time.">
+  <StepThrough frames="visuals/grid-paths.frames.json" />
+</Figure>
+
+<Figure caption="Merging overlapping intervals with a sweep from left to right.">
+  <StepThrough frames="visuals/merge-intervals.frames.json" />
+</Figure>
+
+<Figure caption="Binary search for the smallest x whose square reaches a target.">
+  <StepThrough frames="visuals/first-square.frames.json" />
+</Figure>
+
+KaTeX renders inline, such as $O(n \log n)$, and on its own line:
+
+$$
+T(n) = 2T(n / 2) + O(n)
+$$

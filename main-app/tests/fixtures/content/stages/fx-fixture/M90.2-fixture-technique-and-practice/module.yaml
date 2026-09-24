@@ -1,0 +1,18 @@
+id: M90.2
+title: "Fixture: technique and practice list"
+objectives:
+  - See a technique lesson's step-through and its practice list.
+  - See how a WMOJ pick, a justified DMOJ pick and a crossover problem each render.
+prereqs:
+  - M90.1
+lessons:
+  - technique
+practice:
+  - id: ccc23j1
+    note: A WMOJ problem from the current judge, picked first.
+  - id: ccc19j1
+    note: An older DMOJ problem that still fits this technique.
+    why: Extra practice once the WMOJ pick above feels comfortable.
+  - id: ccc22j4
+    note: The Junior side of a crossover problem, registered once under its Senior slug.
+status: reviewed

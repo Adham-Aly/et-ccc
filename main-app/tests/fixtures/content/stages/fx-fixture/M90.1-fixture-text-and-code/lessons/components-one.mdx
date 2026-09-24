@@ -1,0 +1,68 @@
+---
+title: Text and code components
+objectives:
+  - See every text component the lesson reader supports.
+  - See a code block with line numbers, a highlighted line and a caption.
+  - See a code block that shows its own input and output.
+  - See a code block that shows the error a program actually raises.
+---
+
+This fixture lesson exercises every text and code component the MDX pipeline supports, so the
+gates and the design review have real content to check against.
+
+<Callout kind="note">
+A note callout looks like this: a short aside that adds context without interrupting the main
+explanation.
+</Callout>
+
+<Callout kind="warning">
+A warning callout flags a common mistake before the learner makes it themselves.
+</Callout>
+
+<Callout kind="grader-tip">
+A grader tip callout explains something specific to how the judge checks a submission, such as
+exact output matching.
+</Callout>
+
+The term <Term id="variable">variable</Term> links to its entry in the glossary; hovering or
+opening the link shows the definition inline.
+
+<Details summary="A collapsible detail, closed by default">
+This text is hidden until the learner opens it, which is useful for an optional aside that would
+otherwise break up the main explanation.
+</Details>
+
+Here is a small program with two lines highlighted and a caption:
+
+<Code file="examples/basics.py" lines="1-7" highlight="4,5" caption="Counting the letters in a greeting" />
+
+This example shows its own committed input and output, so nothing here is typed by hand:
+
+<Code file="examples/echo.py" showOutput caption="Summing three numbers read from standard input" />
+
+The same output can also stand alone, without its source shown again:
+
+<Output file="examples/echo.out" />
+
+This example is deliberately wrong: it reads past the end of a three-item list, and the lesson
+reader labels it as failing, with the real traceback PyPy 3.8 produces.
+
+<Code file="examples/oops.py" expectError="IndexError" caption="Reading one index past the end of the list" />
+
+A fenced block works the same way as a file-based one:
+
+```python
+values = [1, 2, 3]
+print(sum(values))
+```
+
+This fenced block is deliberately not valid on Python 3.8, since the `match` statement is a
+3.10 feature, so the reader marks it as failing on the grader:
+
+```python bad38
+match len([1, 2, 3]):
+    case 3:
+        print("three items")
+    case _:
+        print("some other count")
+```

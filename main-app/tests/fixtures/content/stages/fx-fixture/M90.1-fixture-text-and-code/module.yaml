@@ -1,0 +1,12 @@
+id: M90.1
+title: "Fixture: text and code components"
+objectives:
+  - Recognize every text component the lesson reader supports.
+  - Recognize every code component the lesson reader supports, including a deliberately invalid
+    example and a deliberately failing one.
+prereqs: []
+lessons:
+  - components-one
+  - components-two
+practice: []
+status: accepted

@@ -1,0 +1,10 @@
+id: M90.3
+title: "Fixture: scenes and formulas"
+objectives:
+  - See a named concept scene, a static diagram, and a KaTeX formula.
+prereqs:
+  - M90.2
+lessons:
+  - visuals
+practice: []
+status: accepted

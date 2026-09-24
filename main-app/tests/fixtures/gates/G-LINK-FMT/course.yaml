@@ -1,0 +1,14 @@
+# tests/fixtures/gates/G-LINK-FMT/course.yaml — deliberately broken: the goal text embeds a raw
+# judge URL. Judge URLs must only ever come from lib/registry/judge-url.ts (R13/D-020);
+# content:check greps every content file for a raw wmoj.ca/dmoj.ca string outside the registry
+# code's own allow-list (tests/unit/gates/content-check.test.ts).
+stages:
+  - id: s0
+    number: "0"
+    title: Test stage
+    goal: "See https://wmoj.ca/problems/ccc23j1 for an example (this line is the violation)."
+    modules:
+      - id: M1.1
+        title: A
+        prereqs: []
+        status: planned

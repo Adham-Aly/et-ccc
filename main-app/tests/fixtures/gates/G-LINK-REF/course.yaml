@@ -1,0 +1,9 @@
+stages:
+  - id: s0
+    number: "0"
+    title: Test stage
+    modules:
+      - id: M1.1
+        title: A
+        prereqs: []
+        status: planned

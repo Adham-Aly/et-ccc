@@ -18,6 +18,10 @@ test-results/
 playwright-report/
 *.tsbuildinfo
 
+# tools/pycheck scratch (fenced-code-block temp files, deleted at the end of every run;
+# gitignored as a safety net if a run is interrupted)
+main-app/.pycheck-scratch/
+
 # Phase scratch and run files
 work/**/_scratch/
 work/**/_run/

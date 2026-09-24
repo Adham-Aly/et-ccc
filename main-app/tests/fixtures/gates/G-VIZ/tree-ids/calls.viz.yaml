@@ -1,0 +1,14 @@
+layout: single
+panels:
+  - { id: t, viz: TreeViz }
+alt: >-
+  A call tree whose node ids count the calls in order, so the same id lands in different places
+  in the two presets.
+captions: vizrec
+presets:
+  - { id: three, label: "n = 3", stdin: "3\n" }
+  - { id: four, label: "n = 4", stdin: "4\n" }
+consistency:
+  description: The number of calls equals the output of calls_count.py.
+  example: calls_count.py
+  compare: output

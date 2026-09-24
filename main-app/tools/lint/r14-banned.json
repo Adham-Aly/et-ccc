@@ -1,0 +1,85 @@
+{
+  "_comment": "G-R14 narrowed banned patterns (plan §6.5, quoted verbatim where the plan gives an exact regex). Scanned over lesson MDX prose, content/ui/strings.yaml, and string literals in app/ and components/ source (plan §7 G-R14: 'prose, ui/strings.yaml and hard-coded strings in app code'). `allowlist` entries are exact substrings that never match, for legitimate technical terms the plan names as pass-through ('ceiling division', 'average of the array').",
+  "patterns": [
+    {
+      "id": "score-ceiling-target",
+      "pattern": "(score|mark)s?.{0,20}(ceiling|target)",
+      "flags": "gi",
+      "message": "target score/mark ceiling — R14 never states a score target"
+    },
+    {
+      "id": "realistic-score",
+      "pattern": "realistic (score|ceiling|target)",
+      "flags": "gi",
+      "message": "\"realistic\" score/ceiling/target — R14 never frames a realistic score"
+    },
+    {
+      "id": "fraction-75",
+      "pattern": "\\b\\d{1,2}\\s*/\\s*75\\b",
+      "flags": "g",
+      "message": "a \"x/75\" fraction — reads as a CCC score, never shown"
+    },
+    {
+      "id": "cco-qualify",
+      "pattern": "(qualif\\w*|invit\\w*).{0,20}CCO",
+      "flags": "gi",
+      "message": "CCO qualification/invitation framing — never mentioned"
+    },
+    {
+      "id": "average-result",
+      "pattern": "average (score|mark|result)s?",
+      "flags": "gi",
+      "message": "average score/mark/result — never mentioned"
+    },
+    {
+      "id": "solution-exists-elsewhere",
+      "pattern": "(solution|walkthrough|editorial).{0,20}(exists|available|can be found|see)",
+      "flags": "gi",
+      "message": "pointing at a solution/walkthrough/editorial existing elsewhere — C20/D-030 Q-20: never, in the app or elsewhere"
+    },
+    {
+      "id": "full-marks-perfect-score",
+      "pattern": "\\b(full marks|perfect score)\\b",
+      "flags": "gi",
+      "message": "\"full marks\"/\"perfect score\" as a goal — never mentioned"
+    },
+    {
+      "id": "cutoff",
+      "pattern": "\\bcutoffs?\\b",
+      "flags": "gi",
+      "message": "contest cutoff — never mentioned"
+    },
+    {
+      "id": "distinction-honour-roll",
+      "pattern": "\\b(distinction|honou?r roll)\\b",
+      "flags": "gi",
+      "message": "Distinction/honour roll — never mentioned"
+    },
+    {
+      "id": "percentile-medal",
+      "pattern": "\\b(percentiles?|medals?)\\b",
+      "flags": "gi",
+      "message": "percentile/medal — never mentioned"
+    },
+    {
+      "id": "python-cant",
+      "pattern": "python\\s+(can'?t|cannot|isn'?t able)\\b",
+      "flags": "gi",
+      "message": "\"Python can't...\" framing — never claimed"
+    },
+    {
+      "id": "python-too-slow",
+      "pattern": "python\\b[^.]{0,40}too slow|too slow\\b[^.]{0,40}python",
+      "flags": "gi",
+      "message": "Python \"too slow\" framing — never claimed"
+    }
+  ],
+  "allowlist": [
+    "ceiling division",
+    "average of the array",
+    "average of the list",
+    "average case",
+    "average time",
+    "average-case"
+  ]
+}

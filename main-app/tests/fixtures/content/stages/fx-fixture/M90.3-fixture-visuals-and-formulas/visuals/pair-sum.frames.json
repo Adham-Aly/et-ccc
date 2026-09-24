@@ -1,0 +1,23 @@
+{"schema":1,
+"kind":"frames",
+"id":"pair-sum",
+"layout":"single",
+"panels":[{"id":"a","viz":"ArrayViz"}],
+"alt":"Two pointers on a sorted list. lo starts at the left end and hi at the right end. When their sum is too small, lo moves right; when it is too big, hi moves left; they stop at a pair with the target sum or when they meet.",
+"presets":[
+{"id":"found","label":"Target 13","steps":[
+{"caption":"The list is sorted. lo starts at the smallest value and hi at the largest; the goal is a pair that adds up to 13.","panels":{"a":{"values":[1,3,4,6,8,9,11],"states":"c.....c","pointers":[{"name":"lo","at":0,"side":"above","strong":true},{"name":"hi","at":6,"side":"above","strong":true}],"name":"values"}}},
+{"caption":"1 + 11 = 12 is too small. Every partner of 1 is at most 11, so 1 can never reach 13: lo moves right.","panels":{"a":{"values":[1,3,4,6,8,9,11],"states":"c.....c","pointers":[{"name":"lo","at":0,"side":"above","strong":true},{"name":"hi","at":6,"side":"above","strong":true}],"compare":{"a":0,"b":6,"text":"1 + 11 = 12 < 13"},"name":"values"}}},
+{"caption":"3 + 11 = 14 is too big. Every partner of 11 is at least 3, so 11 is always too big: hi moves left.","panels":{"a":{"values":[1,3,4,6,8,9,11],"states":"dc....c","pointers":[{"name":"lo","at":1,"side":"above","strong":true},{"name":"hi","at":6,"side":"above","strong":true}],"compare":{"a":1,"b":6,"text":"3 + 11 = 14 > 13"},"name":"values"}}},
+{"caption":"3 + 9 = 12 is too small. Every partner of 3 is at most 9, so 3 can never reach 13: lo moves right.","panels":{"a":{"values":[1,3,4,6,8,9,11],"states":"dc...cd","pointers":[{"name":"lo","at":1,"side":"above","strong":true},{"name":"hi","at":5,"side":"above","strong":true}],"compare":{"a":1,"b":5,"text":"3 + 9 = 12 < 13"},"name":"values"}}},
+{"caption":"4 + 9 is exactly 13: the pair is at indices 2 and 5.","panels":{"a":{"values":[1,3,4,6,8,9,11],"states":"ddp..pd","pointers":[{"name":"lo","at":2,"side":"above","strong":true},{"name":"hi","at":5,"side":"above","strong":true}],"compare":{"a":2,"b":5,"text":"4 + 9 = 13 = 13"},"name":"values"}}}
+]},
+{"id":"none","label":"Target 6","steps":[
+{"caption":"The list is sorted. lo starts at the smallest value and hi at the largest; the goal is a pair that adds up to 6.","panels":{"a":{"values":[1,2,7,8,9],"states":"c...c","pointers":[{"name":"lo","at":0,"side":"above","strong":true},{"name":"hi","at":4,"side":"above","strong":true}],"name":"values"}}},
+{"caption":"1 + 9 = 10 is too big. Every partner of 9 is at least 1, so 9 is always too big: hi moves left.","panels":{"a":{"values":[1,2,7,8,9],"states":"c...c","pointers":[{"name":"lo","at":0,"side":"above","strong":true},{"name":"hi","at":4,"side":"above","strong":true}],"compare":{"a":0,"b":4,"text":"1 + 9 = 10 > 6"},"name":"values"}}},
+{"caption":"1 + 8 = 9 is too big. Every partner of 8 is at least 1, so 8 is always too big: hi moves left.","panels":{"a":{"values":[1,2,7,8,9],"states":"c..cd","pointers":[{"name":"lo","at":0,"side":"above","strong":true},{"name":"hi","at":3,"side":"above","strong":true}],"compare":{"a":0,"b":3,"text":"1 + 8 = 9 > 6"},"name":"values"}}},
+{"caption":"1 + 7 = 8 is too big. Every partner of 7 is at least 1, so 7 is always too big: hi moves left.","panels":{"a":{"values":[1,2,7,8,9],"states":"c.cdd","pointers":[{"name":"lo","at":0,"side":"above","strong":true},{"name":"hi","at":2,"side":"above","strong":true}],"compare":{"a":0,"b":2,"text":"1 + 7 = 8 > 6"},"name":"values"}}},
+{"caption":"1 + 2 = 3 is too small. Every partner of 1 is at most 2, so 1 can never reach 6: lo moves right.","panels":{"a":{"values":[1,2,7,8,9],"states":"ccddd","pointers":[{"name":"lo","at":0,"side":"above","strong":true},{"name":"hi","at":1,"side":"above","strong":true}],"compare":{"a":0,"b":1,"text":"1 + 2 = 3 < 6"},"name":"values"}}},
+{"caption":"lo and hi have met, so every pair has been ruled out: no two values add up to 6.","panels":{"a":{"values":[1,2,7,8,9],"states":"dcddd","pointers":[{"name":"lo","at":1,"side":"above","strong":true},{"name":"hi","at":1,"side":"above","strong":true}],"name":"values"}}}
+]}
+]}

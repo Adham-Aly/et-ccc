@@ -1,0 +1,20 @@
+layout: row
+panels:
+  - { id: g, viz: GraphViz, title: Graph }
+  - { id: h, viz: StructViz, title: Heap }
+alt: >-
+  Shortest distances from A on a small weighted graph. The heap always hands back the entry with
+  the smallest distance; that node becomes done, and each of its edges may give a neighbour a
+  shorter distance, which goes into the heap as a new entry. Out-of-date entries are thrown away.
+captions: vizrec
+presets:
+  - id: square
+    label: Five nodes
+    stdin: "5 6\nA B C D E\nA B 4\nA C 1\nC B 2\nB D 1\nC E 5\nD E 1\n"
+  - id: wide
+    label: Six nodes
+    stdin: "6 7\nA B C D E F\nA B 2\nA C 5\nB C 1\nB D 6\nC E 2\nE D 1\nD F 3\n"
+consistency:
+  description: The final distances in the visual equal the output of examples/dijkstra.py.
+  example: ../examples/dijkstra.py
+  compare: output

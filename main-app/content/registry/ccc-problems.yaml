@@ -1,0 +1,881 @@
+# content/registry/ccc-problems.yaml — P4 skeleton, P5 finalises (brief §2 A5).
+#
+# One entry per unique CCC problem, 2014-2026 (119 total, plan §4.7). id is the derived judge
+# slug (never hand-typed elsewhere — judgeUrl() in lib/registry/judge-url.ts is the only place
+# that builds a URL from it, R13/D-020). A crossover problem (hosted once, under its Senior
+# slug — plan §4.7) carries its Junior "aliases" entry; there is no separate Junior registry row
+# for it, by design (G-SCHEMA checks there is no duplicate).
+#
+# Titles are provisional, taken only from research/01-recon/past-problems-analysis.md (the id,
+# year, level, number and title columns only — NOT the Diff/Py-verdict/Cheap-partial-route
+# columns, which contain the kind of solution/score framing the app must never show, R14/C20).
+# topics, modules and the subtask outline are P5's job. "internal" is never rendered (G-SCHEMA).
+
+problems:
+  - id: ccc14j1
+    year: 2014
+    level: J
+    number: 1
+    title: Triangle Times
+    internal:
+      titleSource: research/01-recon/past-problems-analysis.md
+  - id: ccc14j2
+    year: 2014
+    level: J
+    number: 2
+    title: Vote Count
+    internal:
+      titleSource: research/01-recon/past-problems-analysis.md
+  - id: ccc14j3
+    year: 2014
+    level: J
+    number: 3
+    title: Double Dice
+    internal:
+      titleSource: research/01-recon/past-problems-analysis.md
+  - id: ccc14s1
+    year: 2014
+    level: S
+    number: 1
+    title: Party Invitation
+    aliases:
+      - level: J
+        number: 4
+    internal:
+      titleSource: research/01-recon/past-problems-analysis.md
+  - id: ccc14s2
+    year: 2014
+    level: S
+    number: 2
+    title: Assigning Partners
+    aliases:
+      - level: J
+        number: 5
+    internal:
+      titleSource: research/01-recon/past-problems-analysis.md
+  - id: ccc14s3
+    year: 2014
+    level: S
+    number: 3
+    title: The Geneva Confection
+    internal:
+      titleSource: research/01-recon/past-problems-analysis.md
+  - id: ccc14s4
+    year: 2014
+    level: S
+    number: 4
+    title: Tinted Glass Window
+    internal:
+      titleSource: research/01-recon/past-problems-analysis.md
+  - id: ccc14s5
+    year: 2014
+    level: S
+    number: 5
+    title: Lazy Fox
+    internal:
+      titleSource: research/01-recon/past-problems-analysis.md
+  - id: ccc15j1
+    year: 2015
+    level: J
+    number: 1
+    title: Special Day
+    internal:
+      titleSource: research/01-recon/past-problems-analysis.md
+  - id: ccc15j2
+    year: 2015
+    level: J
+    number: 2
+    title: Happy or Sad
+    internal:
+      titleSource: research/01-recon/past-problems-analysis.md
+  - id: ccc15j3
+    year: 2015
+    level: J
+    number: 3
+    title: Rövarspråket
+    internal:
+      titleSource: research/01-recon/past-problems-analysis.md
+  - id: ccc15j4
+    year: 2015
+    level: J
+    number: 4
+    title: Wait Time
+    internal:
+      titleSource: research/01-recon/past-problems-analysis.md
+  - id: ccc15j5
+    year: 2015
+    level: J
+    number: 5
+    title: π-day
+    internal:
+      titleSource: research/01-recon/past-problems-analysis.md
+  - id: ccc15s1
+    year: 2015
+    level: S
+    number: 1
+    title: Zero That Out
+    internal:
+      titleSource: research/01-recon/past-problems-analysis.md
+  - id: ccc15s2
+    year: 2015
+    level: S
+    number: 2
+    title: Jerseys
+    internal:
+      titleSource: research/01-recon/past-problems-analysis.md
+  - id: ccc15s3
+    year: 2015
+    level: S
+    number: 3
+    title: Gates
+    internal:
+      titleSource: research/01-recon/past-problems-analysis.md
+  - id: ccc15s4
+    year: 2015
+    level: S
+    number: 4
+    title: Convex Hull
+    internal:
+      titleSource: research/01-recon/past-problems-analysis.md
+  - id: ccc15s5
+    year: 2015
+    level: S
+    number: 5
+    title: Greedy For Pies
+    internal:
+      titleSource: research/01-recon/past-problems-analysis.md
+  - id: ccc16j1
+    year: 2016
+    level: J
+    number: 1
+    title: Tournament Selection
+    internal:
+      titleSource: research/01-recon/past-problems-analysis.md
+  - id: ccc16j2
+    year: 2016
+    level: J
+    number: 2
+    title: Magic Squares
+    internal:
+      titleSource: research/01-recon/past-problems-analysis.md
+  - id: ccc16j3
+    year: 2016
+    level: J
+    number: 3
+    title: Hidden Palindrome
+    internal:
+      titleSource: research/01-recon/past-problems-analysis.md
+  - id: ccc16j4
+    year: 2016
+    level: J
+    number: 4
+    title: Arrival Time
+    internal:
+      titleSource: research/01-recon/past-problems-analysis.md
+  - id: ccc16s1
+    year: 2016
+    level: S
+    number: 1
+    title: Ragaman
+    internal:
+      titleSource: research/01-recon/past-problems-analysis.md
+  - id: ccc16s2
+    year: 2016
+    level: S
+    number: 2
+    title: Tandem Bicycle
+    aliases:
+      - level: J
+        number: 5
+    internal:
+      titleSource: research/01-recon/past-problems-analysis.md
+  - id: ccc16s3
+    year: 2016
+    level: S
+    number: 3
+    title: Phonomenal Reviews
+    internal:
+      titleSource: research/01-recon/past-problems-analysis.md
+  - id: ccc16s4
+    year: 2016
+    level: S
+    number: 4
+    title: Combining Riceballs
+    internal:
+      titleSource: research/01-recon/past-problems-analysis.md
+  - id: ccc16s5
+    year: 2016
+    level: S
+    number: 5
+    title: Circle of Life
+    internal:
+      titleSource: research/01-recon/past-problems-analysis.md
+  - id: ccc17j1
+    year: 2017
+    level: J
+    number: 1
+    title: Quadrant Selection
+    internal:
+      titleSource: research/01-recon/past-problems-analysis.md
+  - id: ccc17j2
+    year: 2017
+    level: J
+    number: 2
+    title: Shifty Sum
+    internal:
+      titleSource: research/01-recon/past-problems-analysis.md
+  - id: ccc17j3
+    year: 2017
+    level: J
+    number: 3
+    title: Exactly Electrical
+    internal:
+      titleSource: research/01-recon/past-problems-analysis.md
+  - id: ccc17j4
+    year: 2017
+    level: J
+    number: 4
+    title: Favourite Times
+    internal:
+      titleSource: research/01-recon/past-problems-analysis.md
+  - id: ccc17s1
+    year: 2017
+    level: S
+    number: 1
+    title: Sum Game
+    internal:
+      titleSource: research/01-recon/past-problems-analysis.md
+  - id: ccc17s2
+    year: 2017
+    level: S
+    number: 2
+    title: High Tide, Low Tide
+    internal:
+      titleSource: research/01-recon/past-problems-analysis.md
+  - id: ccc17s3
+    year: 2017
+    level: S
+    number: 3
+    title: Nailed It!
+    aliases:
+      - level: J
+        number: 5
+    internal:
+      titleSource: research/01-recon/past-problems-analysis.md
+  - id: ccc17s4
+    year: 2017
+    level: S
+    number: 4
+    title: Minimum Cost Flow
+    internal:
+      titleSource: research/01-recon/past-problems-analysis.md
+  - id: ccc17s5
+    year: 2017
+    level: S
+    number: 5
+    title: RMT
+    internal:
+      titleSource: research/01-recon/past-problems-analysis.md
+  - id: ccc18j1
+    year: 2018
+    level: J
+    number: 1
+    title: Telemarketer or not?
+    internal:
+      titleSource: research/01-recon/past-problems-analysis.md
+  - id: ccc18j2
+    year: 2018
+    level: J
+    number: 2
+    title: Occupy parking
+    internal:
+      titleSource: research/01-recon/past-problems-analysis.md
+  - id: ccc18j3
+    year: 2018
+    level: J
+    number: 3
+    title: Are we there yet?
+    internal:
+      titleSource: research/01-recon/past-problems-analysis.md
+  - id: ccc18j5
+    year: 2018
+    level: J
+    number: 5
+    title: Choose your own path
+    internal:
+      titleSource: research/01-recon/past-problems-analysis.md
+  - id: ccc18s1
+    year: 2018
+    level: S
+    number: 1
+    title: Voronoi Villages
+    internal:
+      titleSource: research/01-recon/past-problems-analysis.md
+  - id: ccc18s2
+    year: 2018
+    level: S
+    number: 2
+    title: Sunflowers
+    aliases:
+      - level: J
+        number: 4
+    internal:
+      titleSource: research/01-recon/past-problems-analysis.md
+  - id: ccc18s3
+    year: 2018
+    level: S
+    number: 3
+    title: RoboThieves
+    internal:
+      titleSource: research/01-recon/past-problems-analysis.md
+  - id: ccc18s4
+    year: 2018
+    level: S
+    number: 4
+    title: Balanced Trees
+    internal:
+      titleSource: research/01-recon/past-problems-analysis.md
+  - id: ccc18s5
+    year: 2018
+    level: S
+    number: 5
+    title: Maximum Strategic Savings
+    internal:
+      titleSource: research/01-recon/past-problems-analysis.md
+  - id: ccc19j1
+    year: 2019
+    level: J
+    number: 1
+    title: Winning Score
+    internal:
+      titleSource: research/01-recon/past-problems-analysis.md
+  - id: ccc19j2
+    year: 2019
+    level: J
+    number: 2
+    title: Time to Decompress
+    internal:
+      titleSource: research/01-recon/past-problems-analysis.md
+  - id: ccc19j3
+    year: 2019
+    level: J
+    number: 3
+    title: Cold Compress
+    internal:
+      titleSource: research/01-recon/past-problems-analysis.md
+  - id: ccc19j5
+    year: 2019
+    level: J
+    number: 5
+    title: Rule of Three
+    internal:
+      titleSource: research/01-recon/past-problems-analysis.md
+  - id: ccc19s1
+    year: 2019
+    level: S
+    number: 1
+    title: Flipper
+    aliases:
+      - level: J
+        number: 4
+    internal:
+      titleSource: research/01-recon/past-problems-analysis.md
+  - id: ccc19s2
+    year: 2019
+    level: S
+    number: 2
+    title: Pretty Average Primes
+    internal:
+      titleSource: research/01-recon/past-problems-analysis.md
+  - id: ccc19s3
+    year: 2019
+    level: S
+    number: 3
+    title: Arithmetic Square
+    internal:
+      titleSource: research/01-recon/past-problems-analysis.md
+  - id: ccc19s4
+    year: 2019
+    level: S
+    number: 4
+    title: Tourism
+    internal:
+      titleSource: research/01-recon/past-problems-analysis.md
+  - id: ccc19s5
+    year: 2019
+    level: S
+    number: 5
+    title: "Triangle: The Data Structure"
+    internal:
+      titleSource: research/01-recon/past-problems-analysis.md
+  - id: ccc20j1
+    year: 2020
+    level: J
+    number: 1
+    title: Dog Treats
+    internal:
+      titleSource: research/01-recon/past-problems-analysis.md
+  - id: ccc20j2
+    year: 2020
+    level: J
+    number: 2
+    title: Epidemiology
+    internal:
+      titleSource: research/01-recon/past-problems-analysis.md
+  - id: ccc20j3
+    year: 2020
+    level: J
+    number: 3
+    title: Art
+    internal:
+      titleSource: research/01-recon/past-problems-analysis.md
+  - id: ccc20j4
+    year: 2020
+    level: J
+    number: 4
+    title: Cyclic Shifts
+    internal:
+      titleSource: research/01-recon/past-problems-analysis.md
+  - id: ccc20s1
+    year: 2020
+    level: S
+    number: 1
+    title: Surmising a Sprinter's Speed
+    internal:
+      titleSource: research/01-recon/past-problems-analysis.md
+  - id: ccc20s2
+    year: 2020
+    level: S
+    number: 2
+    title: Escape Room
+    aliases:
+      - level: J
+        number: 5
+    internal:
+      titleSource: research/01-recon/past-problems-analysis.md
+  - id: ccc20s3
+    year: 2020
+    level: S
+    number: 3
+    title: Searching for Strings
+    internal:
+      titleSource: research/01-recon/past-problems-analysis.md
+  - id: ccc20s4
+    year: 2020
+    level: S
+    number: 4
+    title: Swapping Seats
+    internal:
+      titleSource: research/01-recon/past-problems-analysis.md
+  - id: ccc20s5
+    year: 2020
+    level: S
+    number: 5
+    title: Josh's Double Bacon Deluxe
+    internal:
+      titleSource: research/01-recon/past-problems-analysis.md
+  - id: ccc21j1
+    year: 2021
+    level: J
+    number: 1
+    title: Boiling Water
+    internal:
+      titleSource: research/01-recon/past-problems-analysis.md
+  - id: ccc21j2
+    year: 2021
+    level: J
+    number: 2
+    title: Silent Auction
+    internal:
+      titleSource: research/01-recon/past-problems-analysis.md
+  - id: ccc21j3
+    year: 2021
+    level: J
+    number: 3
+    title: Secret Instructions
+    internal:
+      titleSource: research/01-recon/past-problems-analysis.md
+  - id: ccc21j4
+    year: 2021
+    level: J
+    number: 4
+    title: Arranging Books
+    internal:
+      titleSource: research/01-recon/past-problems-analysis.md
+  - id: ccc21s1
+    year: 2021
+    level: S
+    number: 1
+    title: Crazy Fencing
+    internal:
+      titleSource: research/01-recon/past-problems-analysis.md
+  - id: ccc21s2
+    year: 2021
+    level: S
+    number: 2
+    title: Modern Art
+    aliases:
+      - level: J
+        number: 5
+    internal:
+      titleSource: research/01-recon/past-problems-analysis.md
+  - id: ccc21s3
+    year: 2021
+    level: S
+    number: 3
+    title: Lunch Concert
+    internal:
+      titleSource: research/01-recon/past-problems-analysis.md
+  - id: ccc21s4
+    year: 2021
+    level: S
+    number: 4
+    title: Daily Commute
+    internal:
+      titleSource: research/01-recon/past-problems-analysis.md
+  - id: ccc21s5
+    year: 2021
+    level: S
+    number: 5
+    title: Math Homework
+    internal:
+      titleSource: research/01-recon/past-problems-analysis.md
+  - id: ccc22j1
+    year: 2022
+    level: J
+    number: 1
+    title: Cupcake Party
+    internal:
+      titleSource: research/01-recon/past-problems-analysis.md
+  - id: ccc22j2
+    year: 2022
+    level: J
+    number: 2
+    title: Fergusonball Ratings
+    internal:
+      titleSource: research/01-recon/past-problems-analysis.md
+  - id: ccc22j3
+    year: 2022
+    level: J
+    number: 3
+    title: Harp Tuning
+    internal:
+      titleSource: research/01-recon/past-problems-analysis.md
+  - id: ccc22j5
+    year: 2022
+    level: J
+    number: 5
+    title: Square Pool
+    internal:
+      titleSource: research/01-recon/past-problems-analysis.md
+  - id: ccc22s1
+    year: 2022
+    level: S
+    number: 1
+    title: Good Fours and Good Fives
+    internal:
+      titleSource: research/01-recon/past-problems-analysis.md
+  - id: ccc22s2
+    year: 2022
+    level: S
+    number: 2
+    title: Good Groups
+    aliases:
+      - level: J
+        number: 4
+    internal:
+      titleSource: research/01-recon/past-problems-analysis.md
+      note: "Title corrected to 'Good Groups' (matches the ccc22s* 'Good ___' naming pattern) after the P4 WMOJ live verification run flagged a mismatch against the recon table's 'Group Work' (work/04-app/wmoj-verification-run-1.md)."
+  - id: ccc22s3
+    year: 2022
+    level: S
+    number: 3
+    title: Good Samples
+    internal:
+      titleSource: research/01-recon/past-problems-analysis.md
+  - id: ccc22s4
+    year: 2022
+    level: S
+    number: 4
+    title: Good Triplets
+    internal:
+      titleSource: research/01-recon/past-problems-analysis.md
+  - id: ccc22s5
+    year: 2022
+    level: S
+    number: 5
+    title: Good Influencers
+    internal:
+      titleSource: research/01-recon/past-problems-analysis.md
+  - id: ccc23j1
+    year: 2023
+    level: J
+    number: 1
+    title: Deliv-e-droid
+    internal:
+      titleSource: research/01-recon/past-problems-analysis.md
+  - id: ccc23j2
+    year: 2023
+    level: J
+    number: 2
+    title: Chili Peppers
+    internal:
+      titleSource: research/01-recon/past-problems-analysis.md
+  - id: ccc23j3
+    year: 2023
+    level: J
+    number: 3
+    title: Special Event
+    internal:
+      titleSource: research/01-recon/past-problems-analysis.md
+  - id: ccc23j5
+    year: 2023
+    level: J
+    number: 5
+    title: CCC Word Hunt
+    internal:
+      titleSource: research/01-recon/past-problems-analysis.md
+  - id: ccc23s1
+    year: 2023
+    level: S
+    number: 1
+    title: Trianglane
+    aliases:
+      - level: J
+        number: 4
+    internal:
+      titleSource: research/01-recon/past-problems-analysis.md
+  - id: ccc23s2
+    year: 2023
+    level: S
+    number: 2
+    title: Symmetric Mountains
+    internal:
+      titleSource: research/01-recon/past-problems-analysis.md
+  - id: ccc23s3
+    year: 2023
+    level: S
+    number: 3
+    title: Palindromic Poster
+    internal:
+      titleSource: research/01-recon/past-problems-analysis.md
+  - id: ccc23s4
+    year: 2023
+    level: S
+    number: 4
+    title: Minimum Cost Roads
+    internal:
+      titleSource: research/01-recon/past-problems-analysis.md
+  - id: ccc23s5
+    year: 2023
+    level: S
+    number: 5
+    title: The Filter
+    internal:
+      titleSource: research/01-recon/past-problems-analysis.md
+  - id: ccc24j1
+    year: 2024
+    level: J
+    number: 1
+    title: Conveyor Belt Sushi
+    internal:
+      titleSource: research/01-recon/past-problems-analysis.md
+  - id: ccc24j2
+    year: 2024
+    level: J
+    number: 2
+    title: Dusa And The Yobis
+    internal:
+      titleSource: research/01-recon/past-problems-analysis.md
+  - id: ccc24j3
+    year: 2024
+    level: J
+    number: 3
+    title: Bronze Count
+    internal:
+      titleSource: research/01-recon/past-problems-analysis.md
+  - id: ccc24j4
+    year: 2024
+    level: J
+    number: 4
+    title: Troublesome Keys
+    internal:
+      titleSource: research/01-recon/past-problems-analysis.md
+  - id: ccc24j5
+    year: 2024
+    level: J
+    number: 5
+    title: Harvest Waterloo
+    internal:
+      titleSource: research/01-recon/past-problems-analysis.md
+  - id: ccc24s1
+    year: 2024
+    level: S
+    number: 1
+    title: Hat Circle
+    internal:
+      titleSource: research/01-recon/past-problems-analysis.md
+  - id: ccc24s2
+    year: 2024
+    level: S
+    number: 2
+    title: Heavy-Light Composition
+    internal:
+      titleSource: research/01-recon/past-problems-analysis.md
+  - id: ccc24s3
+    year: 2024
+    level: S
+    number: 3
+    title: Swipe
+    internal:
+      titleSource: research/01-recon/past-problems-analysis.md
+  - id: ccc24s4
+    year: 2024
+    level: S
+    number: 4
+    title: Painting Roads
+    internal:
+      titleSource: research/01-recon/past-problems-analysis.md
+  - id: ccc24s5
+    year: 2024
+    level: S
+    number: 5
+    title: Chocolate Bar Partition
+    internal:
+      titleSource: research/01-recon/past-problems-analysis.md
+  - id: ccc25j1
+    year: 2025
+    level: J
+    number: 1
+    title: Roller Coaster Ride
+    internal:
+      titleSource: research/01-recon/past-problems-analysis.md
+  - id: ccc25j2
+    year: 2025
+    level: J
+    number: 2
+    title: Donut Shop
+    internal:
+      titleSource: research/01-recon/past-problems-analysis.md
+  - id: ccc25j3
+    year: 2025
+    level: J
+    number: 3
+    title: Product Codes
+    internal:
+      titleSource: research/01-recon/past-problems-analysis.md
+  - id: ccc25j4
+    year: 2025
+    level: J
+    number: 4
+    title: Sunny Days
+    internal:
+      titleSource: research/01-recon/past-problems-analysis.md
+  - id: ccc25j5
+    year: 2025
+    level: J
+    number: 5
+    title: Connecting Territories
+    internal:
+      titleSource: research/01-recon/past-problems-analysis.md
+  - id: ccc25s1
+    year: 2025
+    level: S
+    number: 1
+    title: Positioning Peter's Paintings
+    internal:
+      titleSource: research/01-recon/past-problems-analysis.md
+  - id: ccc25s2
+    year: 2025
+    level: S
+    number: 2
+    title: Cryptogram Cracking Club
+    internal:
+      titleSource: research/01-recon/past-problems-analysis.md
+  - id: ccc25s3
+    year: 2025
+    level: S
+    number: 3
+    title: Pretty Pens
+    internal:
+      titleSource: research/01-recon/past-problems-analysis.md
+  - id: ccc25s4
+    year: 2025
+    level: S
+    number: 4
+    title: Floor is Lava
+    internal:
+      titleSource: research/01-recon/past-problems-analysis.md
+  - id: ccc25s5
+    year: 2025
+    level: S
+    number: 5
+    title: To-Do List
+    internal:
+      titleSource: research/01-recon/past-problems-analysis.md
+  - id: ccc26j1
+    year: 2026
+    level: J
+    number: 1
+    title: Concert Tickets
+    internal:
+      titleSource: research/01-recon/past-problems-analysis.md
+  - id: ccc26j2
+    year: 2026
+    level: J
+    number: 2
+    title: Olympic Scores
+    internal:
+      titleSource: research/01-recon/past-problems-analysis.md
+  - id: ccc26j3
+    year: 2026
+    level: J
+    number: 3
+    title: Creative Candy Consumption
+    internal:
+      titleSource: research/01-recon/past-problems-analysis.md
+  - id: ccc26j4
+    year: 2026
+    level: J
+    number: 4
+    title: Snail Path
+    internal:
+      titleSource: research/01-recon/past-problems-analysis.md
+  - id: ccc26s1
+    year: 2026
+    level: S
+    number: 1
+    title: Baby Hop, Giant Hop
+    internal:
+      titleSource: research/01-recon/past-problems-analysis.md
+  - id: ccc26s2
+    year: 2026
+    level: S
+    number: 2
+    title: Beams of Light
+    aliases:
+      - level: J
+        number: 5
+    internal:
+      titleSource: research/01-recon/past-problems-analysis.md
+  - id: ccc26s3
+    year: 2026
+    level: S
+    number: 3
+    title: Common Card Choice
+    internal:
+      titleSource: research/01-recon/past-problems-analysis.md
+  - id: ccc26s4
+    year: 2026
+    level: S
+    number: 4
+    title: Minecarts
+    internal:
+      titleSource: research/01-recon/past-problems-analysis.md
+  - id: ccc26s5
+    year: 2026
+    level: S
+    number: 5
+    title: On the Fence
+    internal:
+      titleSource: research/01-recon/past-problems-analysis.md

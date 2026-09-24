@@ -1,0 +1,26 @@
+# content/concepts.yaml — P4 skeleton, P5 finalises (brief §2 A5).
+#
+# Python feature -> introducing module id (G-PREREQ: content:check parses the AST of every shown
+# example and fails if it uses a feature whose introducing module has not been reached yet by
+# that lesson's module, per course.yaml prereqs). A handful of Stage 0/1 features are seeded to
+# prove the schema; P5 completes the set as it authors lessons and examples.
+
+features:
+  - id: print-call
+    feature: "print()"
+    introducedIn: M1.1
+  - id: for-loop
+    feature: "for loop"
+    introducedIn: M1.5
+  - id: while-loop
+    feature: "while loop"
+    introducedIn: M1.6
+  - id: list-literal
+    feature: "list literal"
+    introducedIn: M1.8
+  - id: function-def
+    feature: "function definition"
+    introducedIn: M1.10
+  - id: recursion
+    feature: recursion
+    introducedIn: M1.14

@@ -1,0 +1,36 @@
+# content/registry/external-links.yaml — allow-list of non-judge external links (plan §4.7,
+# G-LINK-FMT). Judge links never appear here: they come only from judgeUrl() (lib/registry).
+# Anything an MDX lesson or a component links to outside the origin must resolve to one of these
+# entries by id; content:check fails a raw external URL that is not on this list.
+
+links:
+  - id: python-docs
+    label: The Python documentation
+    url: https://docs.python.org/3/
+  - id: python-tutorial
+    label: The Python tutorial
+    url: https://docs.python.org/3/tutorial/
+  - id: cemc-ccc
+    label: The CCC contest page (CEMC)
+    url: https://cemc.uwaterloo.ca/contests/ccc
+  - id: cemc-past-contests
+    label: Past CCC contests (CEMC)
+    url: https://cemc.uwaterloo.ca/resources/past-contests
+  - id: pypy-downloads
+    label: PyPy downloads
+    url: https://www.pypy.org/download.html
+  - id: python-downloads
+    label: Python downloads
+    url: https://www.python.org/downloads/
+  - id: wmoj-home
+    label: WMOJ
+    url: https://wmoj.ca/
+  - id: wmoj-signup
+    label: WMOJ sign-up
+    url: https://wmoj.ca/user/register
+  - id: dmoj-home
+    label: DMOJ
+    url: https://dmoj.ca/
+  - id: dmoj-signup
+    label: DMOJ sign-up
+    url: https://dmoj.ca/register/

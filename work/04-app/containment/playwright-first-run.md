@@ -1,4 +1,7 @@
-# Containment: first Playwright test run (Chromium + WebKit) — BLOCKING FINDING, not resolved unilaterally
+> **Superseded (batch 2):** fixed in `webkit-storage.md` via `CFFIXED_USER_HOME` scoped to the
+> WebKit `launchOptions.env` only. This file is kept as the original finding record.
+
+# Containment: first Playwright test run (Chromium + WebKit) — BLOCKING FINDING, not resolved unilaterally (RESOLVED, see above)
 
 `npm run test:e2e` (6 projects: chromium/webkit × 390×844/768×1024/1440×900) against `next start`
 on a leased port. All 6 smoke tests **passed** functionally. The containment proof does **not**

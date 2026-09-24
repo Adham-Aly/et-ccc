@@ -1,0 +1,17 @@
+# tests/fixtures/gates/G-SCHEMA/course.yaml — deliberately broken: M1.1 names M1.2 as a prereq,
+# but M1.2 comes AFTER it in the course. content:check must catch this "never forward" violation
+# (tests/unit/gates/content-check.test.ts).
+stages:
+  - id: s0
+    number: "0"
+    title: Test stage
+    modules:
+      - id: M1.1
+        title: A
+        prereqs:
+          - M1.2
+        status: planned
+      - id: M1.2
+        title: B
+        prereqs: []
+        status: planned

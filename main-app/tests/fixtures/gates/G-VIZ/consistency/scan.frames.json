@@ -1,0 +1,15 @@
+{"schema":1,
+"kind":"frames",
+"id":"scan",
+"layout":"single",
+"panels":[{"id":"a","viz":"ArrayViz"}],
+"alt":"A left-to-right scan over five numbers that keeps the largest value seen so far.",
+"presets":[
+{"id":"main","label":"Five numbers","steps":[
+{"caption":"The largest value seen so far is the first one.","panels":{"a":{"values":[3,1,4,1,5],"states":"c...."}}},
+{"caption":"The scan reaches 1; the largest value seen so far is 3.","panels":{"a":{"values":[3,1,4,1,5],"states":"dc..."}}},
+{"caption":"The scan reaches 4; the largest value seen so far is 4.","panels":{"a":{"values":[3,1,4,1,5],"states":"ddc.."}}},
+{"caption":"The scan reaches 1; the largest value seen so far is 4.","panels":{"a":{"values":[3,1,4,1,5],"states":"dddc."}}},
+{"caption":"The scan reaches 5; the largest value seen so far is 5.","panels":{"a":{"values":[3,1,4,1,5],"states":"ddddc"}}}
+]}
+]}

@@ -1,0 +1,13 @@
+layout: single
+panels:
+  - { id: a, viz: ArrayViz }
+alt: >-
+  A left-to-right scan over five numbers that keeps the largest value seen so far.
+captions: vizrec
+presets:
+  - { id: main, label: Five numbers, stdin: "3 1 4 1 5\n" }
+consistency:
+  description: The last value the visual keeps equals the output of the example.
+  example: max_scan.py
+  compare: output
+budget: { steps: 3 }

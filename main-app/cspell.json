@@ -13,12 +13,16 @@
   "ignorePaths": [
     "node_modules/**",
     ".next/**",
+    "out/**",
     "playwright-report/**",
     "test-results/**",
     "AGENTS.md",
     "package-lock.json",
     "**/*.trace.json",
     "**/*.frames.json",
-    "app/fonts/**"
+    "app/fonts/**",
+    "*.tsbuildinfo",
+    ".pycheck-scratch/**",
+    ".impeccable/**"
   ]
 }

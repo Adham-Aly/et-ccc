@@ -1,0 +1,5 @@
+terms:
+  - id: widget
+    term: widget
+    definition: A test term, introduced only in module M1.2.
+    introducedIn: M1.2/intro

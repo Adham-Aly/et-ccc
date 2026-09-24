@@ -1,0 +1,21 @@
+---
+title: Intro
+objectives: []
+---
+
+A normal block that is NOT valid Python 3.8 (dict union, added in 3.9) — this must fail
+check:python since it isn't marked `bad38`:
+
+```python
+a = {"x": 1}
+b = {"y": 2}
+c = a | b
+print(c)
+```
+
+A `bad38` block that is actually valid Python 3.8 — this must also fail check:python, since a
+`bad38` block that passes cleanly is itself an error (plan §4.5):
+
+```python bad38
+print("this is fine on 3.8")
+```

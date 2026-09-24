@@ -78,3 +78,34 @@ Computed from the hex tokens (`work/04-app/_scratch/palette.cjs`). Text pairs us
 ### Next batch (waiting for the scaffold hand-over)
 
 `app/globals.css` from the token block, `app/layout.tsx` with `next/font/local`, header/sidebar/sheet layout, all `components/content/**` and `components/ui/**`, every route's presentation, `lib/content/shiki-theme.ts`, then one batched screenshot round at 390/768/1440 and the in-thread finish review + `document` scan pass.
+
+## Batch 2: build record (2026-09-23)
+
+### What was built
+`app/globals.css`, `app/layout.tsx`, `app/not-found.tsx`, `app/dev/design/page.tsx` (preview only, W1's `notFoundOutsideDevPreview()`), `lib/content/shiki-theme.ts`, `components/ui/**`, `components/content/**`, `components/layout/**` (nine page components, header, frame, sidebar, breadcrumb, title-block strip, closing title block, On this page, index row, 404 drawing, design gallery).
+
+### Decisions
+- Prose rules are scoped away from components with `data-ui`; `data-plain` opts a link out of prose styling; `data-exhibit` marks wide items. Reason: prose underlines and list padding leaked into index rows, practice lists and badges in round 1.
+- `cn()` uses `extendTailwindMerge` with the custom theme tokens. Reason: plain tailwind-merge treated `text-label` as a colour and dropped `text-paper` (the primary button text disappeared).
+- Code gutter width is `max(2, digits)ch + 1.5rem`, not a fixed rem. Reason: fixed widths clipped 3-digit numbers against the frame edge. The first and last lines carry the block padding so the gutter rule runs edge to edge.
+- Input and Output sit side by side only when both exist and there is no error. Reason: a traceback in a half-width column wrapped badly.
+- Index rows align ID, title and meta on the first baseline. Reason: the smaller ID text sat 2 px high at every width.
+- The glossary letter strip is a bordered 7- or 13-column grid. Reason: a wrapping flex row left a ragged last line on phones.
+- The mobile drawer is paper; the course navigation below it sits on the board ground. Reason: on pages without course nav, the empty board half looked unfinished. The current item gets a 2 px ink bar, matching the desktop header.
+- Italic is a separate, non-preloaded face; Mono is preloaded because code appears above the fold on lesson pages.
+- The slashed zero in Atkinson Next ("Stage 0", "4.0") is kept as part of the typeface's legibility design.
+- Temporary adapters (`read-state.ts`, `search-source.ts`, UI string defaults) are deleted now that W1's `lib/read-state`, `lib/search/client` and `getUiStrings()` exist.
+
+### Review rounds (`work/04-app/_scratch/shots/w2/`)
+- r1–r4: every existing route at 390×844, 768×1024 and 1440×900, plus element shots of the gallery (r1p–r3p). Fixed everything listed above.
+- r5 (confirm): all routes plus `/search?q=…` states and `/dev/design`; r5p element shots; r5s/r6s interactive states (search dialog empty/results/no-results, mobile drawer at 390 and 768, skip link).
+- Not yet shot: lesson and module pages, sidebar and mark-as-read flows. They need W1's fixture course (`tests/fixtures/content`), which does not exist yet.
+
+### Impeccable
+- `impeccable detect --json components app` (cwd `main-app/`): no findings.
+
+### Orchestrator review fixes (after r5)
+- Status tags moved to a trailing column: the sidebar "Soon" tag sits in `3.25rem | 1fr | auto`, and index rows put Coming soon / Draft in the meta column from 640 px and on their own line under the title on phones (left edge = title edge). Reason: wrapped titles pushed inline tags onto orphan, mis-indented lines. Index rows now only create the columns they use, so an empty marks column no longer leaves a 16 px gap at the right.
+- `.prose-sheet > :first-child { margin-top: 0 }`: `.prose-sheet h2` (3rem) outranked `> *` (0), so a body opening with an H2 got a double gap under the title block. The gallery's first block also dropped its top rule and margin.
+- Slashed zero: Atkinson Next has no plain-zero alternate (no `zero`/`ssNN`/`cvNN`; `aalt` 1–3 unchanged; see `_scratch/fonts/zero-features.png`). Kept, and recorded in DESIGN.md → Numerals.
+- r7 shots: `work/04-app/_scratch/shots/w2/r7/`. One run logged "Can't perform a React state update on a component that hasn't mounted yet" at 768 right after a dev-server cold start. It did not recur in 6 more runs × 3 viewports × 4 routes, so I treat it as a dev-compile artifact. Watch for it in the E2E console-error gate.

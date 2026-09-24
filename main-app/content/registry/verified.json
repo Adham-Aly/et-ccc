@@ -1,0 +1,774 @@
+{
+  "entries": [
+    {
+      "id": "ccc21j1",
+      "status": "ok",
+      "checkedAt": "2026-09-24T03:51:23.745Z",
+      "method": "automated",
+      "titleOnJudge": "Boiling Water"
+    },
+    {
+      "id": "ccc21j2",
+      "status": "ok",
+      "checkedAt": "2026-09-24T03:51:24.319Z",
+      "method": "automated",
+      "titleOnJudge": "Silent Auction"
+    },
+    {
+      "id": "ccc21j3",
+      "status": "ok",
+      "checkedAt": "2026-09-24T03:51:24.962Z",
+      "method": "automated",
+      "titleOnJudge": "Secret Instructions"
+    },
+    {
+      "id": "ccc21j4",
+      "status": "ok",
+      "checkedAt": "2026-09-24T03:51:25.597Z",
+      "method": "automated",
+      "titleOnJudge": "Arranging Books"
+    },
+    {
+      "id": "ccc21s1",
+      "status": "ok",
+      "checkedAt": "2026-09-24T03:51:26.210Z",
+      "method": "automated",
+      "titleOnJudge": "Crazy Fencing"
+    },
+    {
+      "id": "ccc21s2",
+      "status": "ok",
+      "checkedAt": "2026-09-24T03:51:26.808Z",
+      "method": "automated",
+      "titleOnJudge": "Modern Art"
+    },
+    {
+      "id": "ccc21s3",
+      "status": "ok",
+      "checkedAt": "2026-09-24T03:51:27.431Z",
+      "method": "automated",
+      "titleOnJudge": "Lunch Concert"
+    },
+    {
+      "id": "ccc21s4",
+      "status": "ok",
+      "checkedAt": "2026-09-24T03:51:28.073Z",
+      "method": "automated",
+      "titleOnJudge": "Daily Commute"
+    },
+    {
+      "id": "ccc21s5",
+      "status": "ok",
+      "checkedAt": "2026-09-24T03:51:28.701Z",
+      "method": "automated",
+      "titleOnJudge": "Math Homework"
+    },
+    {
+      "id": "ccc22j1",
+      "status": "ok",
+      "checkedAt": "2026-09-24T03:51:29.326Z",
+      "method": "automated",
+      "titleOnJudge": "Cupcake Party"
+    },
+    {
+      "id": "ccc22j2",
+      "status": "ok",
+      "checkedAt": "2026-09-24T03:51:30.030Z",
+      "method": "automated",
+      "titleOnJudge": "Fergusonball Ratings"
+    },
+    {
+      "id": "ccc22j3",
+      "status": "ok",
+      "checkedAt": "2026-09-24T03:51:30.657Z",
+      "method": "automated",
+      "titleOnJudge": "Harp Tuning"
+    },
+    {
+      "id": "ccc22j5",
+      "status": "ok",
+      "checkedAt": "2026-09-24T03:51:31.225Z",
+      "method": "automated",
+      "titleOnJudge": "Square Pool"
+    },
+    {
+      "id": "ccc22s1",
+      "status": "ok",
+      "checkedAt": "2026-09-24T03:51:31.803Z",
+      "method": "automated",
+      "titleOnJudge": "Good Fours and Good Fives"
+    },
+    {
+      "id": "ccc22s2",
+      "status": "ok",
+      "checkedAt": "2026-09-24T03:51:32.371Z",
+      "method": "automated",
+      "titleOnJudge": "Good Groups"
+    },
+    {
+      "id": "ccc22s3",
+      "status": "ok",
+      "checkedAt": "2026-09-24T03:51:32.965Z",
+      "method": "automated",
+      "titleOnJudge": "Good Samples"
+    },
+    {
+      "id": "ccc22s4",
+      "status": "ok",
+      "checkedAt": "2026-09-24T03:51:33.549Z",
+      "method": "automated",
+      "titleOnJudge": "Good Triplets"
+    },
+    {
+      "id": "ccc22s5",
+      "status": "ok",
+      "checkedAt": "2026-09-24T03:51:34.180Z",
+      "method": "automated",
+      "titleOnJudge": "Good Influencers"
+    },
+    {
+      "id": "ccc23j1",
+      "status": "ok",
+      "checkedAt": "2026-09-24T03:51:34.790Z",
+      "method": "automated",
+      "titleOnJudge": "Deliv-e-droid"
+    },
+    {
+      "id": "ccc23j2",
+      "status": "ok",
+      "checkedAt": "2026-09-24T03:51:35.361Z",
+      "method": "automated",
+      "titleOnJudge": "Chili Peppers"
+    },
+    {
+      "id": "ccc23j3",
+      "status": "ok",
+      "checkedAt": "2026-09-24T03:51:35.940Z",
+      "method": "automated",
+      "titleOnJudge": "Special Event"
+    },
+    {
+      "id": "ccc23j5",
+      "status": "ok",
+      "checkedAt": "2026-09-24T03:51:36.499Z",
+      "method": "automated",
+      "titleOnJudge": "CCC Word Hunt"
+    },
+    {
+      "id": "ccc23s1",
+      "status": "ok",
+      "checkedAt": "2026-09-24T03:51:37.195Z",
+      "method": "automated",
+      "titleOnJudge": "Trianglane"
+    },
+    {
+      "id": "ccc23s2",
+      "status": "ok",
+      "checkedAt": "2026-09-24T03:51:37.797Z",
+      "method": "automated",
+      "titleOnJudge": "Symmetric Mountains"
+    },
+    {
+      "id": "ccc23s3",
+      "status": "ok",
+      "checkedAt": "2026-09-24T03:51:38.379Z",
+      "method": "automated",
+      "titleOnJudge": "Palindromic Poster"
+    },
+    {
+      "id": "ccc23s4",
+      "status": "ok",
+      "checkedAt": "2026-09-24T03:51:38.990Z",
+      "method": "automated",
+      "titleOnJudge": "Minimum Cost Roads"
+    },
+    {
+      "id": "ccc23s5",
+      "status": "ok",
+      "checkedAt": "2026-09-24T03:51:39.570Z",
+      "method": "automated",
+      "titleOnJudge": "The Filter"
+    },
+    {
+      "id": "ccc24j1",
+      "status": "ok",
+      "checkedAt": "2026-09-24T03:51:40.138Z",
+      "method": "automated",
+      "titleOnJudge": "Conveyor Belt Sushi"
+    },
+    {
+      "id": "ccc24j2",
+      "status": "ok",
+      "checkedAt": "2026-09-24T03:51:40.705Z",
+      "method": "automated",
+      "titleOnJudge": "Dusa And The Yobis"
+    },
+    {
+      "id": "ccc24j3",
+      "status": "ok",
+      "checkedAt": "2026-09-24T03:51:41.276Z",
+      "method": "automated",
+      "titleOnJudge": "Bronze Count"
+    },
+    {
+      "id": "ccc24j4",
+      "status": "ok",
+      "checkedAt": "2026-09-24T03:51:41.838Z",
+      "method": "automated",
+      "titleOnJudge": "Troublesome Keys"
+    },
+    {
+      "id": "ccc24j5",
+      "status": "ok",
+      "checkedAt": "2026-09-24T03:51:42.414Z",
+      "method": "automated",
+      "titleOnJudge": "Harvest Waterloo"
+    },
+    {
+      "id": "ccc24s1",
+      "status": "ok",
+      "checkedAt": "2026-09-24T03:51:43.077Z",
+      "method": "automated",
+      "titleOnJudge": "Hat Circle"
+    },
+    {
+      "id": "ccc24s2",
+      "status": "ok",
+      "checkedAt": "2026-09-24T03:51:43.675Z",
+      "method": "automated",
+      "titleOnJudge": "Heavy-Light Composition"
+    },
+    {
+      "id": "ccc24s3",
+      "status": "ok",
+      "checkedAt": "2026-09-24T03:51:44.323Z",
+      "method": "automated",
+      "titleOnJudge": "Swipe"
+    },
+    {
+      "id": "ccc24s4",
+      "status": "ok",
+      "checkedAt": "2026-09-24T03:51:44.953Z",
+      "method": "automated",
+      "titleOnJudge": "Painting Roads"
+    },
+    {
+      "id": "ccc24s5",
+      "status": "ok",
+      "checkedAt": "2026-09-24T03:51:45.589Z",
+      "method": "automated",
+      "titleOnJudge": "Chocolate Bar Partition"
+    },
+    {
+      "id": "ccc25j1",
+      "status": "ok",
+      "checkedAt": "2026-09-24T03:51:46.148Z",
+      "method": "automated",
+      "titleOnJudge": "Roller Coaster Ride"
+    },
+    {
+      "id": "ccc25j2",
+      "status": "ok",
+      "checkedAt": "2026-09-24T03:51:46.700Z",
+      "method": "automated",
+      "titleOnJudge": "Donut Shop"
+    },
+    {
+      "id": "ccc25j3",
+      "status": "ok",
+      "checkedAt": "2026-09-24T03:51:47.327Z",
+      "method": "automated",
+      "titleOnJudge": "Product Codes"
+    },
+    {
+      "id": "ccc25j4",
+      "status": "ok",
+      "checkedAt": "2026-09-24T03:51:47.985Z",
+      "method": "automated",
+      "titleOnJudge": "Sunny Days"
+    },
+    {
+      "id": "ccc25j5",
+      "status": "ok",
+      "checkedAt": "2026-09-24T03:51:48.624Z",
+      "method": "automated",
+      "titleOnJudge": "Connecting Territories"
+    },
+    {
+      "id": "ccc25s1",
+      "status": "ok",
+      "checkedAt": "2026-09-24T03:51:49.190Z",
+      "method": "automated",
+      "titleOnJudge": "Positioning Peter's Paintings"
+    },
+    {
+      "id": "ccc25s2",
+      "status": "ok",
+      "checkedAt": "2026-09-24T03:51:49.793Z",
+      "method": "automated",
+      "titleOnJudge": "Cryptogram Cracking Club"
+    },
+    {
+      "id": "ccc25s3",
+      "status": "ok",
+      "checkedAt": "2026-09-24T03:51:50.466Z",
+      "method": "automated",
+      "titleOnJudge": "Pretty Pens"
+    },
+    {
+      "id": "ccc25s4",
+      "status": "ok",
+      "checkedAt": "2026-09-24T03:51:51.134Z",
+      "method": "automated",
+      "titleOnJudge": "Floor is Lava"
+    },
+    {
+      "id": "ccc25s5",
+      "status": "ok",
+      "checkedAt": "2026-09-24T03:51:51.796Z",
+      "method": "automated",
+      "titleOnJudge": "To-Do List"
+    },
+    {
+      "id": "ccc26j1",
+      "status": "ok",
+      "checkedAt": "2026-09-24T03:51:52.378Z",
+      "method": "automated",
+      "titleOnJudge": "Concert Tickets"
+    },
+    {
+      "id": "ccc26j2",
+      "status": "ok",
+      "checkedAt": "2026-09-24T03:51:52.956Z",
+      "method": "automated",
+      "titleOnJudge": "Olympic Scores"
+    },
+    {
+      "id": "ccc26j3",
+      "status": "ok",
+      "checkedAt": "2026-09-24T03:51:53.545Z",
+      "method": "automated",
+      "titleOnJudge": "Creative Candy Consumption"
+    },
+    {
+      "id": "ccc26j4",
+      "status": "ok",
+      "checkedAt": "2026-09-24T03:51:54.125Z",
+      "method": "automated",
+      "titleOnJudge": "Snail Path"
+    },
+    {
+      "id": "ccc26s1",
+      "status": "ok",
+      "checkedAt": "2026-09-24T03:51:54.764Z",
+      "method": "automated",
+      "titleOnJudge": "Baby Hop, Giant Hop"
+    },
+    {
+      "id": "ccc26s2",
+      "status": "ok",
+      "checkedAt": "2026-09-24T03:51:55.451Z",
+      "method": "automated",
+      "titleOnJudge": "Beams of Light"
+    },
+    {
+      "id": "ccc26s3",
+      "status": "ok",
+      "checkedAt": "2026-09-24T03:51:56.112Z",
+      "method": "automated",
+      "titleOnJudge": "Common Card Choice"
+    },
+    {
+      "id": "ccc26s4",
+      "status": "ok",
+      "checkedAt": "2026-09-24T03:51:56.785Z",
+      "method": "automated",
+      "titleOnJudge": "Minecarts"
+    },
+    {
+      "id": "ccc26s5",
+      "status": "ok",
+      "checkedAt": "2026-09-24T03:51:57.401Z",
+      "method": "automated",
+      "titleOnJudge": "On the Fence"
+    },
+    {
+      "id": "ccc14j1",
+      "status": "unverified",
+      "checkedAt": "2026-09-24T03:51:57.403Z",
+      "method": "manual"
+    },
+    {
+      "id": "ccc14j2",
+      "status": "unverified",
+      "checkedAt": "2026-09-24T03:51:57.403Z",
+      "method": "manual"
+    },
+    {
+      "id": "ccc14j3",
+      "status": "unverified",
+      "checkedAt": "2026-09-24T03:51:57.403Z",
+      "method": "manual"
+    },
+    {
+      "id": "ccc14s1",
+      "status": "unverified",
+      "checkedAt": "2026-09-24T03:51:57.403Z",
+      "method": "manual"
+    },
+    {
+      "id": "ccc14s2",
+      "status": "unverified",
+      "checkedAt": "2026-09-24T03:51:57.403Z",
+      "method": "manual"
+    },
+    {
+      "id": "ccc14s3",
+      "status": "unverified",
+      "checkedAt": "2026-09-24T03:51:57.403Z",
+      "method": "manual"
+    },
+    {
+      "id": "ccc14s4",
+      "status": "unverified",
+      "checkedAt": "2026-09-24T03:51:57.403Z",
+      "method": "manual"
+    },
+    {
+      "id": "ccc14s5",
+      "status": "unverified",
+      "checkedAt": "2026-09-24T03:51:57.403Z",
+      "method": "manual"
+    },
+    {
+      "id": "ccc15j1",
+      "status": "unverified",
+      "checkedAt": "2026-09-24T03:51:57.403Z",
+      "method": "manual"
+    },
+    {
+      "id": "ccc15j2",
+      "status": "unverified",
+      "checkedAt": "2026-09-24T03:51:57.403Z",
+      "method": "manual"
+    },
+    {
+      "id": "ccc15j3",
+      "status": "unverified",
+      "checkedAt": "2026-09-24T03:51:57.403Z",
+      "method": "manual"
+    },
+    {
+      "id": "ccc15j4",
+      "status": "unverified",
+      "checkedAt": "2026-09-24T03:51:57.403Z",
+      "method": "manual"
+    },
+    {
+      "id": "ccc15j5",
+      "status": "unverified",
+      "checkedAt": "2026-09-24T03:51:57.403Z",
+      "method": "manual"
+    },
+    {
+      "id": "ccc15s1",
+      "status": "unverified",
+      "checkedAt": "2026-09-24T03:51:57.403Z",
+      "method": "manual"
+    },
+    {
+      "id": "ccc15s2",
+      "status": "unverified",
+      "checkedAt": "2026-09-24T03:51:57.403Z",
+      "method": "manual"
+    },
+    {
+      "id": "ccc15s3",
+      "status": "unverified",
+      "checkedAt": "2026-09-24T03:51:57.403Z",
+      "method": "manual"
+    },
+    {
+      "id": "ccc15s4",
+      "status": "unverified",
+      "checkedAt": "2026-09-24T03:51:57.403Z",
+      "method": "manual"
+    },
+    {
+      "id": "ccc15s5",
+      "status": "unverified",
+      "checkedAt": "2026-09-24T03:51:57.403Z",
+      "method": "manual"
+    },
+    {
+      "id": "ccc16j1",
+      "status": "unverified",
+      "checkedAt": "2026-09-24T03:51:57.403Z",
+      "method": "manual"
+    },
+    {
+      "id": "ccc16j2",
+      "status": "unverified",
+      "checkedAt": "2026-09-24T03:51:57.403Z",
+      "method": "manual"
+    },
+    {
+      "id": "ccc16j3",
+      "status": "unverified",
+      "checkedAt": "2026-09-24T03:51:57.403Z",
+      "method": "manual"
+    },
+    {
+      "id": "ccc16j4",
+      "status": "unverified",
+      "checkedAt": "2026-09-24T03:51:57.403Z",
+      "method": "manual"
+    },
+    {
+      "id": "ccc16s1",
+      "status": "unverified",
+      "checkedAt": "2026-09-24T03:51:57.403Z",
+      "method": "manual"
+    },
+    {
+      "id": "ccc16s2",
+      "status": "unverified",
+      "checkedAt": "2026-09-24T03:51:57.403Z",
+      "method": "manual"
+    },
+    {
+      "id": "ccc16s3",
+      "status": "unverified",
+      "checkedAt": "2026-09-24T03:51:57.403Z",
+      "method": "manual"
+    },
+    {
+      "id": "ccc16s4",
+      "status": "unverified",
+      "checkedAt": "2026-09-24T03:51:57.403Z",
+      "method": "manual"
+    },
+    {
+      "id": "ccc16s5",
+      "status": "unverified",
+      "checkedAt": "2026-09-24T03:51:57.403Z",
+      "method": "manual"
+    },
+    {
+      "id": "ccc17j1",
+      "status": "unverified",
+      "checkedAt": "2026-09-24T03:51:57.403Z",
+      "method": "manual"
+    },
+    {
+      "id": "ccc17j2",
+      "status": "unverified",
+      "checkedAt": "2026-09-24T03:51:57.403Z",
+      "method": "manual"
+    },
+    {
+      "id": "ccc17j3",
+      "status": "unverified",
+      "checkedAt": "2026-09-24T03:51:57.403Z",
+      "method": "manual"
+    },
+    {
+      "id": "ccc17j4",
+      "status": "unverified",
+      "checkedAt": "2026-09-24T03:51:57.403Z",
+      "method": "manual"
+    },
+    {
+      "id": "ccc17s1",
+      "status": "unverified",
+      "checkedAt": "2026-09-24T03:51:57.403Z",
+      "method": "manual"
+    },
+    {
+      "id": "ccc17s2",
+      "status": "unverified",
+      "checkedAt": "2026-09-24T03:51:57.403Z",
+      "method": "manual"
+    },
+    {
+      "id": "ccc17s3",
+      "status": "unverified",
+      "checkedAt": "2026-09-24T03:51:57.403Z",
+      "method": "manual"
+    },
+    {
+      "id": "ccc17s4",
+      "status": "unverified",
+      "checkedAt": "2026-09-24T03:51:57.403Z",
+      "method": "manual"
+    },
+    {
+      "id": "ccc17s5",
+      "status": "unverified",
+      "checkedAt": "2026-09-24T03:51:57.403Z",
+      "method": "manual"
+    },
+    {
+      "id": "ccc18j1",
+      "status": "unverified",
+      "checkedAt": "2026-09-24T03:51:57.403Z",
+      "method": "manual"
+    },
+    {
+      "id": "ccc18j2",
+      "status": "unverified",
+      "checkedAt": "2026-09-24T03:51:57.403Z",
+      "method": "manual"
+    },
+    {
+      "id": "ccc18j3",
+      "status": "unverified",
+      "checkedAt": "2026-09-24T03:51:57.403Z",
+      "method": "manual"
+    },
+    {
+      "id": "ccc18j5",
+      "status": "unverified",
+      "checkedAt": "2026-09-24T03:51:57.403Z",
+      "method": "manual"
+    },
+    {
+      "id": "ccc18s1",
+      "status": "unverified",
+      "checkedAt": "2026-09-24T03:51:57.403Z",
+      "method": "manual"
+    },
+    {
+      "id": "ccc18s2",
+      "status": "unverified",
+      "checkedAt": "2026-09-24T03:51:57.403Z",
+      "method": "manual"
+    },
+    {
+      "id": "ccc18s3",
+      "status": "unverified",
+      "checkedAt": "2026-09-24T03:51:57.403Z",
+      "method": "manual"
+    },
+    {
+      "id": "ccc18s4",
+      "status": "unverified",
+      "checkedAt": "2026-09-24T03:51:57.403Z",
+      "method": "manual"
+    },
+    {
+      "id": "ccc18s5",
+      "status": "unverified",
+      "checkedAt": "2026-09-24T03:51:57.403Z",
+      "method": "manual"
+    },
+    {
+      "id": "ccc19j1",
+      "status": "unverified",
+      "checkedAt": "2026-09-24T03:51:57.403Z",
+      "method": "manual"
+    },
+    {
+      "id": "ccc19j2",
+      "status": "unverified",
+      "checkedAt": "2026-09-24T03:51:57.403Z",
+      "method": "manual"
+    },
+    {
+      "id": "ccc19j3",
+      "status": "unverified",
+      "checkedAt": "2026-09-24T03:51:57.403Z",
+      "method": "manual"
+    },
+    {
+      "id": "ccc19j5",
+      "status": "unverified",
+      "checkedAt": "2026-09-24T03:51:57.403Z",
+      "method": "manual"
+    },
+    {
+      "id": "ccc19s1",
+      "status": "unverified",
+      "checkedAt": "2026-09-24T03:51:57.403Z",
+      "method": "manual"
+    },
+    {
+      "id": "ccc19s2",
+      "status": "unverified",
+      "checkedAt": "2026-09-24T03:51:57.403Z",
+      "method": "manual"
+    },
+    {
+      "id": "ccc19s3",
+      "status": "unverified",
+      "checkedAt": "2026-09-24T03:51:57.403Z",
+      "method": "manual"
+    },
+    {
+      "id": "ccc19s4",
+      "status": "unverified",
+      "checkedAt": "2026-09-24T03:51:57.403Z",
+      "method": "manual"
+    },
+    {
+      "id": "ccc19s5",
+      "status": "unverified",
+      "checkedAt": "2026-09-24T03:51:57.403Z",
+      "method": "manual"
+    },
+    {
+      "id": "ccc20j1",
+      "status": "unverified",
+      "checkedAt": "2026-09-24T03:51:57.403Z",
+      "method": "manual"
+    },
+    {
+      "id": "ccc20j2",
+      "status": "unverified",
+      "checkedAt": "2026-09-24T03:51:57.403Z",
+      "method": "manual"
+    },
+    {
+      "id": "ccc20j3",
+      "status": "unverified",
+      "checkedAt": "2026-09-24T03:51:57.403Z",
+      "method": "manual"
+    },
+    {
+      "id": "ccc20j4",
+      "status": "unverified",
+      "checkedAt": "2026-09-24T03:51:57.403Z",
+      "method": "manual"
+    },
+    {
+      "id": "ccc20s1",
+      "status": "unverified",
+      "checkedAt": "2026-09-24T03:51:57.403Z",
+      "method": "manual"
+    },
+    {
+      "id": "ccc20s2",
+      "status": "unverified",
+      "checkedAt": "2026-09-24T03:51:57.403Z",
+      "method": "manual"
+    },
+    {
+      "id": "ccc20s3",
+      "status": "unverified",
+      "checkedAt": "2026-09-24T03:51:57.403Z",
+      "method": "manual"
+    },
+    {
+      "id": "ccc20s4",
+      "status": "unverified",
+      "checkedAt": "2026-09-24T03:51:57.403Z",
+      "method": "manual"
+    },
+    {
+      "id": "ccc20s5",
+      "status": "unverified",
+      "checkedAt": "2026-09-24T03:51:57.403Z",
+      "method": "manual"
+    }
+  ]
+}

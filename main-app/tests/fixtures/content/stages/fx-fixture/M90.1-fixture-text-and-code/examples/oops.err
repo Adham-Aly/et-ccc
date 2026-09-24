@@ -1,0 +1,4 @@
+Traceback (most recent call last):
+  File "oops.py", line 2, in <module>
+    print(values[3])
+IndexError: list index out of range

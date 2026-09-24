@@ -1,0 +1,15 @@
+layout: single
+panels:
+  - { id: p, viz: PlotViz }
+alt: >-
+  A binary search on the graph of x * x. The shaded band is the range that can still hold the
+  answer; each step checks the middle of it against the target line and keeps the half that can
+  still hold the smallest x whose square reaches the target.
+captions: vizrec
+presets:
+  - { id: thirty, label: Target 30, stdin: "30\n" }
+  - { id: sixty, label: Target 60, stdin: "60\n" }
+consistency:
+  description: The value the range shrinks to equals the output of examples/first_square.py.
+  example: ../examples/first_square.py
+  compare: output

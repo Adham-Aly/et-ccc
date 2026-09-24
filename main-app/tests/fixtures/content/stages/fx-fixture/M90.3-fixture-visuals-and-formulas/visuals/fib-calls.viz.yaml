@@ -1,0 +1,15 @@
+layout: single
+panels:
+  - { id: t, viz: TreeViz }
+alt: >-
+  The tree of calls made by a recursive function that adds the two previous answers. Each call
+  waits for its children, from left to right, and then returns the sum written under it. The
+  same small calls appear more than once.
+captions: vizrec
+presets:
+  - { id: three, label: "n = 3", stdin: "3\n" }
+  - { id: four, label: "n = 4", stdin: "4\n" }
+consistency:
+  description: The value at the root equals the output of examples/fib.py.
+  example: ../examples/fib.py
+  compare: output

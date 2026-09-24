@@ -1,7 +1,507 @@
 @import "tailwindcss";
 
-/* Light mode only (plan §4.9, brief §1.6, G-UI-LIGHT). The design lead replaces this file's
-   tokens and rules from DESIGN.md; this is a minimal placeholder so `next build` passes. */
+/*
+  Design tokens: the single source is main-app/DESIGN.md ("Token Block"). Light mode only
+  (plan §4.9, G-UI-LIGHT). `static` emits every variable even when no utility uses it: the Shiki
+  theme and the visualization library read them.
+*/
+@theme static {
+  --color-*: initial;
+  --font-serif: initial;
+  --text-*: initial;
+  --radius-*: initial;
+  --shadow-*: initial;
+  --ease-*: initial;
+
+  --color-transparent: transparent;
+  --color-current: currentColor;
+  --color-paper: #fbfdfd;
+  --color-paper-sunk: #f3f6f8;
+  --color-board: #e7f2ed;
+  --color-board-deep: #d7e7e0;
+  --color-ink: #172127;
+  --color-ink-2: #414c53;
+  --color-ink-3: #586268;
+  --color-rule: #d7dee0;
+  --color-rule-strong: #7e888d;
+  --color-guide: #8cc7e6;
+  --color-guide-soft: #e2f3fd;
+  --color-blueline: #29519f;
+  --color-blueline-deep: #193b7e;
+  --color-blueline-soft: #e6eefd;
+  --color-check: #f8e277;
+  --color-check-soft: #fef5c7;
+  --color-check-ink: #755411;
+  --color-redline: #b72725;
+  --color-redline-soft: #feefed;
+  --color-green: #22683b;
+  --color-green-soft: #daf5e0;
+  --color-plum: #7f387a;
+  --color-plum-soft: #faeaf8;
+  --color-done: #c4d0d7;
+
+  --color-syn-keyword: #29519f;
+  --color-syn-string: #1f6538;
+  --color-syn-number: #954717;
+  --color-syn-builtin: #156165;
+  --color-syn-comment: #5b656b;
+  --color-syn-punct: #414c53;
+
+  --color-viz-stage: var(--color-paper);
+  --color-viz-grid: var(--color-guide);
+  --color-viz-ink: var(--color-ink);
+  --color-viz-line: var(--color-ink-2);
+  --color-viz-cell-line: var(--color-rule-strong);
+  --color-viz-unvisited: var(--color-paper);
+  --color-viz-frontier: var(--color-guide-soft);
+  --color-viz-frontier-line: var(--color-blueline);
+  --color-viz-current: var(--color-check);
+  --color-viz-current-line: var(--color-ink);
+  --color-viz-done: var(--color-done);
+  --color-viz-done-line: var(--color-ink-2);
+  --color-viz-path: var(--color-green-soft);
+  --color-viz-path-line: var(--color-green);
+  --color-viz-compare: var(--color-plum-soft);
+  --color-viz-compare-line: var(--color-plum);
+  --color-viz-invalid: var(--color-redline-soft);
+  --color-viz-invalid-line: var(--color-redline);
+
+  --font-sans:
+    var(--font-atkinson-next), ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Arial,
+    sans-serif;
+  --font-mono:
+    var(--font-atkinson-mono), ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono",
+    monospace;
+
+  --text-display: 2.75rem;
+  --text-display--line-height: 1.1;
+  --text-display--letter-spacing: -0.02em;
+  --text-title: 2.25rem;
+  --text-title--line-height: 1.15;
+  --text-title--letter-spacing: -0.015em;
+  --text-headline: 1.5rem;
+  --text-headline--line-height: 1.3;
+  --text-headline--letter-spacing: -0.01em;
+  --text-subhead: 1.25rem;
+  --text-subhead--line-height: 1.35;
+  --text-minor: 1.0625rem;
+  --text-minor--line-height: 1.45;
+  --text-body: 1.125rem;
+  --text-body--line-height: 1.7;
+  --text-ui: 1rem;
+  --text-ui--line-height: 1.5;
+  --text-small: 0.9375rem;
+  --text-small--line-height: 1.5;
+  --text-label: 0.8125rem;
+  --text-label--line-height: 1.35;
+  --text-label--letter-spacing: 0.01em;
+  --text-micro: 0.75rem;
+  --text-micro--line-height: 1.2;
+  --text-code: 0.9375rem;
+  --text-code--line-height: 1.6;
+
+  --font-weight-subhead: 650;
+
+  --radius-cell: 2px;
+  --radius-control: 4px;
+  --radius-box: 6px;
+
+  --shadow-overlay: 0 12px 32px -8px rgb(23 33 39 / 0.22), 0 2px 6px rgb(23 33 39 / 0.08);
+
+  --ease-draft: cubic-bezier(0.2, 0, 0, 1);
+}
+
 :root {
   color-scheme: light;
+
+  --header-h: 3.5rem;
+  --sidebar-w: 18rem;
+  --toc-w: 13rem;
+  --measure: 42rem;
+  --measure-wide: 48rem;
+  --measure-table: 56rem;
+  --sheet-max: 76rem;
+
+  --dur-feedback: 120ms;
+  --dur-state: 200ms;
+  --dur-viz: 280ms;
+  --dur-overlay: 250ms;
+
+  --viz-stroke-hair: 1px;
+  --viz-stroke: 1.5px;
+  --viz-stroke-strong: 2px;
+  --viz-stroke-current: 3px;
+  --viz-dash: 4 3;
+  --viz-grid-size: 16px;
+  --viz-grid-opacity: 0.35;
+
+  --backdrop: rgb(23 33 39 / 0.32);
+}
+
+@media (max-width: 39.999rem) {
+  :root {
+    --text-display: 2.125rem;
+    --text-title: 1.875rem;
+    --text-title--line-height: 1.2;
+    --text-headline: 1.375rem;
+    --text-body: 1.0625rem;
+    --text-body--line-height: 1.65;
+    --text-code: 0.875rem;
+    --text-code--line-height: 1.55;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --dur-state: 0ms;
+    --dur-viz: 0ms;
+    --dur-overlay: 120ms;
+  }
+}
+
+/* ---------- Base: browser surfaces ---------- */
+@layer base {
+  html {
+    -webkit-text-size-adjust: 100%;
+    text-rendering: optimizeLegibility;
+    font-kerning: normal;
+    scroll-padding-top: calc(var(--header-h) + 1.5rem);
+    background: var(--color-board);
+  }
+
+  body {
+    font-family: var(--font-sans);
+    font-size: var(--text-ui);
+    line-height: var(--text-ui--line-height);
+    color: var(--color-ink);
+    background: var(--color-board);
+    -webkit-font-smoothing: antialiased;
+    caret-color: var(--color-blueline);
+  }
+
+  ::selection {
+    background: var(--color-check-soft);
+    color: var(--color-ink);
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-blueline);
+    outline-offset: 2px;
+  }
+
+  :focus:not(:focus-visible) {
+    outline: none;
+  }
+
+  * {
+    scrollbar-color: var(--color-rule-strong) transparent;
+  }
+
+  code,
+  kbd,
+  samp,
+  pre {
+    font-family: var(--font-mono);
+    font-weight: 400;
+  }
+
+  button {
+    cursor: pointer;
+  }
+
+  button:disabled,
+  [aria-disabled="true"] {
+    cursor: not-allowed;
+  }
+
+  svg {
+    flex-shrink: 0;
+  }
+}
+
+/* ---------- Utilities ---------- */
+@utility tnum {
+  font-variant-numeric: tabular-nums;
+}
+
+@utility focus-inset {
+  &:focus-visible {
+    outline-offset: -2px;
+  }
+}
+
+@utility sr-only-focusable {
+  &:not(:focus):not(:focus-within) {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+    border: 0;
+  }
+}
+
+/* ---------- Prose rhythm (the lesson column: MDX output) ---------- */
+@layer components {
+  .prose-sheet {
+    font-size: var(--text-body);
+    line-height: var(--text-body--line-height);
+    color: var(--color-ink);
+  }
+
+  .prose-sheet > * {
+    margin-block: 0;
+    max-width: var(--measure);
+  }
+
+  /* Exhibits (code, figures, callouts, details, tables) may run to the wide measure. */
+  .prose-sheet > :is([data-exhibit], figure, table, .katex-display) {
+    max-width: var(--measure-wide);
+  }
+
+  .prose-sheet > * + * {
+    margin-top: 1.25rem;
+  }
+
+  .prose-sheet h2 {
+    font-size: var(--text-headline);
+    line-height: var(--text-headline--line-height);
+    letter-spacing: var(--text-headline--letter-spacing);
+    font-weight: 700;
+    margin-top: 3rem;
+    text-wrap: balance;
+  }
+
+  .prose-sheet h3 {
+    font-size: var(--text-subhead);
+    line-height: var(--text-subhead--line-height);
+    font-weight: 650;
+    margin-top: 2rem;
+    text-wrap: balance;
+  }
+
+  .prose-sheet h4 {
+    font-size: var(--text-minor);
+    line-height: var(--text-minor--line-height);
+    font-weight: 700;
+    margin-top: 1.75rem;
+  }
+
+  .prose-sheet :is(h2, h3, h4) + * {
+    margin-top: 0.75rem;
+  }
+
+  .prose-sheet h3 + * {
+    margin-top: 0.5rem;
+  }
+
+  .prose-sheet > :is(figure, [data-exhibit], aside, details, table, .katex-display) {
+    margin-top: 2rem;
+  }
+
+  .prose-sheet > :is(figure, [data-exhibit], aside, details, table, .katex-display) + * {
+    margin-top: 2rem;
+  }
+
+  /* The block that opens a prose run never adds its own top space (the parent sets it). */
+  .prose-sheet > :first-child {
+    margin-top: 0;
+  }
+
+  /* Element rules never reach inside self-styled components ([data-ui]) or opt-out links. */
+  .prose-sheet a:not([data-plain], [data-ui], [data-ui] *) {
+    color: var(--color-blueline);
+    text-decoration-line: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 0.2em;
+  }
+
+  .prose-sheet a:not([data-plain], [data-ui], [data-ui] *):hover {
+    color: var(--color-blueline-deep);
+    text-decoration-thickness: 2px;
+  }
+
+  .prose-sheet strong:not([data-ui] *) {
+    font-weight: 700;
+  }
+
+  .prose-sheet :is(ul, ol):not([data-ui] *) {
+    padding-left: 1.5rem;
+  }
+
+  .prose-sheet ul:not([data-ui] *) {
+    list-style: disc;
+  }
+
+  .prose-sheet ol:not([data-ui] *) {
+    list-style: decimal;
+  }
+
+  .prose-sheet li:not([data-ui] *) + li {
+    margin-top: 0.375rem;
+  }
+
+  .prose-sheet li:not([data-ui] *)::marker {
+    color: var(--color-ink-3);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .prose-sheet :not(pre) > code:not([data-ui] *) {
+    font-size: 0.9em;
+    background: var(--color-paper-sunk);
+    border: 1px solid var(--color-rule);
+    border-radius: var(--radius-cell);
+    padding: 0.05em 0.3em;
+    white-space: break-spaces;
+  }
+
+  .prose-sheet kbd:not([data-ui] *) {
+    font-size: var(--text-label);
+    border: 1px solid var(--color-rule-strong);
+    border-radius: var(--radius-cell);
+    padding: 0 0.35em;
+    background: var(--color-paper);
+  }
+
+  .prose-sheet hr {
+    border: 0;
+    border-top: 1px solid var(--color-rule);
+    margin-block: 2.5rem;
+  }
+
+  .prose-sheet blockquote {
+    padding-left: 1rem;
+    border-left: 1px solid var(--color-rule-strong);
+    color: var(--color-ink-2);
+  }
+
+  /* Tables in prose: scroll inside their own wrapper when narrow. */
+  .prose-sheet table {
+    display: block;
+    max-width: 100%;
+    overflow-x: auto;
+    border-collapse: collapse;
+    font-size: var(--text-ui);
+    line-height: var(--text-ui--line-height);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .prose-sheet th {
+    font-size: var(--text-label);
+    font-weight: 600;
+    color: var(--color-ink-3);
+    background: var(--color-paper-sunk);
+    text-align: left;
+  }
+
+  .prose-sheet :is(th, td) {
+    padding: 0.625rem 0.75rem;
+    border-bottom: 1px solid var(--color-rule);
+    vertical-align: top;
+  }
+
+  .prose-sheet .katex-display {
+    overflow-x: auto;
+    overflow-y: hidden;
+    padding-block: 0.25rem;
+  }
+
+  /* Heading anchors (rehype-slug ids): keep the target clear of the sticky header. */
+  .prose-sheet :is(h2, h3)[id] {
+    scroll-margin-top: calc(var(--header-h) + 1.5rem);
+  }
+}
+
+/* ---------- Motion primitives ---------- */
+@keyframes ink-in {
+  from {
+    clip-path: inset(0 100% 0 0);
+  }
+  to {
+    clip-path: inset(0 0 0 0);
+  }
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes target-flash {
+  from {
+    background-color: var(--color-check-soft);
+  }
+  to {
+    background-color: transparent;
+  }
+}
+
+/* ---------- Term (native popover, DESIGN.md → Term) ---------- */
+@layer components {
+  .term-trigger {
+    display: inline;
+    padding: 0;
+    border: 0;
+    background: none;
+    font: inherit;
+    color: inherit;
+    text-align: inherit;
+    text-decoration-line: underline;
+    text-decoration-style: dotted;
+    text-decoration-color: var(--color-blueline);
+    text-decoration-thickness: 1px;
+    text-underline-offset: 0.2em;
+    cursor: help;
+    border-radius: var(--radius-cell);
+  }
+
+  .term-trigger:hover {
+    text-decoration-style: solid;
+  }
+
+  .term-pop {
+    width: min(22rem, calc(100vw - 2rem));
+    margin: auto;
+    padding: 0.75rem 1rem;
+    border: 1px solid var(--color-rule);
+    border-radius: var(--radius-box);
+    background: var(--color-paper);
+    color: var(--color-ink);
+    box-shadow: var(--shadow-overlay);
+    font-size: var(--text-small);
+    line-height: var(--text-small--line-height);
+    text-align: left;
+  }
+
+  .term-pop a {
+    color: var(--color-blueline);
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 0.2em;
+  }
+
+  @supports (position-anchor: --a) {
+    .term-pop {
+      margin: 0.375rem 0 0;
+      inset: auto;
+      top: anchor(bottom);
+      left: anchor(left);
+      position-try-fallbacks: flip-block, flip-inline;
+    }
+  }
+}
+
+/* Italic text uses the separately loaded italic face (not preloaded). */
+@layer base {
+  :is(em, i, cite, var, dfn) {
+    font-family: var(--font-atkinson-next-italic), var(--font-sans);
+    font-style: italic;
+  }
 }

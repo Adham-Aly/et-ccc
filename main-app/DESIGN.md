@@ -297,6 +297,7 @@ Fixed rem sizes (Read mode: predictable, no fluid type). Phone values apply belo
 - Tabular figures (`font-variant-numeric: tabular-nums`, the font's `tnum`) for every number that sits in a column or changes in place: module IDs, lesson counts, years and levels ("2023 S1"), step counters, table cells, title blocks. Utility class `tnum`.
 - Prose keeps the default proportional figures.
 - Mono is tabular by construction. The Mono's `zero` feature stays off: its default zero is already slashed.
+- Atkinson Hyperlegible Next draws every zero slashed, at every size, and has no plain-zero alternate (checked: no `zero`, `ssNN` or `cvNN` feature; `aalt` alternates 1–3 leave `0` unchanged; render in `work/04-app/_scratch/fonts/zero-features.png`). The slashed zero stays in headings and body. It is part of the face's character-disambiguation design, the same reason the face was chosen.
 
 ### Named Rules
 **The One Lettering Rule.** One family, one standard. A second display face, italics for decoration, or monospace as a "technical" costume outside code, values and IDs is refused.
@@ -391,12 +392,12 @@ Every interactive component has default, hover, focus-visible, active, and (wher
 - Wordmark: UI 700 at 1.0625rem, ink, links to `/`. Text only; no logo mark.
 - Nav links: UI 500 ink-2, 12 px side padding, full header height hit area. Hover ink + underline. Current section (`aria-current`): ink 600 with a 2 px ink bar flush with the header's bottom edge.
 - **Search trigger** (1024 px and up): a 16rem field-shaped button, paper, 1 px `rule-strong` border, 4 px radius, 36 px tall: search icon, "Search" in ink-3, and a `kbd` "/" at the right (label style, 1 px rule border, 2 px radius). Below 1024 px: a 40 × 40 ghost icon button. Pressing `/` outside a text field opens the dialog (the only keyboard shortcut in the app outside the player).
-- **Mobile menu** (below 1024 px): ghost icon button (Menu icon) opens a Base UI drawer from the left: 20rem max (100% minus 3rem on phones), board ground, overlay shadow and backdrop, 250 ms slide on `--ease-draft` (reduced motion: 120 ms fade). Contains the primary nav and the course navigation. Close button top-right, Escape closes, focus returns to the trigger.
+- **Mobile menu** (below 1024 px): ghost icon button (Menu icon) opens a Base UI drawer from the left: 20rem max (100% minus 3rem on phones), paper ground, overlay shadow and backdrop, 250 ms slide on `--ease-draft` (reduced motion: 120 ms fade). Contains the primary nav on paper (44 px rows; the current section in ink 600 with a 2 px ink bar at its left edge) and, on course pages, the course navigation below a 1 px rule on the board ground (the same sidebar markup). Without course navigation the whole drawer stays paper. Close button top-right, Escape closes, focus returns to the trigger.
 
 ### Sidebar (course navigation)
 - Top: "Course map" link (ghost row with a LayoutList icon).
 - Stage heading: label style ink-3 "Stage 4" then UI 700 ink stage title.
-- Modules of the current stage: rows of ID (tabular, ink-3, fixed 3.25rem column) + title (UI, ink-2), 8 px vertical padding, 4 px radius hover fill board-deep. Planned modules: ink-3 text, no link, a dashed-outline "Soon" tag.
+- Modules of the current stage: rows of ID (tabular, ink-3, fixed 3.25rem column) + title (UI, ink-2), 8 px vertical padding, 4 px radius hover fill board-deep. Planned modules: ink-3 text, no link, a dashed-outline "Soon" tag in a trailing column (grid `3.25rem | 1fr | auto`, all cells on the first baseline), so a wrapped title never pushes the tag onto an orphan line.
 - The current module expands to its lessons: indented 3.25rem, each row a read cell + lesson title (small, ink-2). Read lessons keep their title in ink-2 (the "read drops to a tint" rule: read is quieter, never hidden or struck).
 - **Current lesson** (`aria-current="page"`): a white sheet tab: paper fill, 1 px `rule` border, 4 px radius, ink 600 title. This is the only paper on the board, so it reads as the sheet pulled from the set.
 - Other stages: collapsed list of stage titles at the bottom, each linking to `/learn#stage-n`.
@@ -411,9 +412,9 @@ Every interactive component has default, hover, focus-visible, active, and (wher
 
 ### Course map (`/learn`)
 - One section per stage: H2 "Stage 4 · Title" (the stage number in tabular figures), one-line goal from `course.yaml` (small, ink-2; no payoff or score wording).
-- **Index row (one label grid for every index in the app):** columns: ID (4.5rem, tabular, ink-3) | title (UI 600, ink; module description below in small ink-2 when present) | meta (lesson count, small ink-3, right-aligned, tabular) | marks (one read cell per lesson, 4 px gaps, right-aligned). Rows separated by 1 px rule, 12 px vertical padding, the whole row is the link (hover: board fill; title underline).
-- Planned/drafted modules: ID and title in ink-3, no link, no hover, a dashed "Coming soon" tag in the meta column. Draft (gated/reviewed on previews): normal row plus a Draft badge after the title.
-- Phones: marks move under the title; the meta column moves to the second line.
+- **Index row (one label grid for every index in the app):** ID, title and meta share the first text baseline (`align-self: baseline`), so the smaller ID and meta text sit on the title's line. Columns: ID (4.5rem, tabular, ink-3) | title (UI 600, ink; module description below in small ink-2 when present) | meta (lesson count, small ink-3, right-aligned, tabular) | marks (one read cell per lesson, 4 px gaps, right-aligned). Rows separated by 1 px rule, 12 px vertical padding, the whole row is the link (hover: board fill; title underline).
+- Planned/drafted modules: ID and title in ink-3, no link, no hover, a dashed "Coming soon" tag in the meta column. Status tags (Coming soon, Draft) always sit in that trailing column from 640 px, and on phones on their own line under the title, aligned to the title’s left edge; never inline after the title text. Columns exist only for what a row shows, so an empty column adds no gap. Draft (gated/reviewed on previews): normal row plus a Draft badge in the status slot.
+- Phones: status and meta move to a second line under the title; marks stay at the right.
 
 ### Module page
 - Breadcrumb, H1 module title, title-block strip (Stage, Module ID, Lessons, Draft badge).
@@ -435,16 +436,16 @@ Every interactive component has default, hover, focus-visible, active, and (wher
 - Native `<details>`: 6 px radius, 1 px `rule` border, paper. Summary row: 12 px × 16 px padding, UI 600 ink, a 16 px ChevronRight that rotates 90° when open (150 ms, reduced motion: none). Hover: board fill on the summary. Open: a 1 px rule under the summary, content padded 16 px. No other animation.
 
 ### Code block
-- **Frame:** sheet-sunk fill, 1 px `rule` border, 6 px radius. Long lines scroll inside the block (`overflow-x: auto`, thin scrollbar); code never wraps; the block is focusable (`tabindex="0"`, `role="region"`, `aria-label` from the filename or "Code") so keyboard users can scroll it.
+- **Frame:** sheet-sunk fill, 1 px `rule` border, 6 px radius. Long lines scroll inside the block (`overflow-x: auto`, thin scrollbar); code never wraps; the code sits in a focusable `<section tabindex="0">` with an `aria-label` from the filename, "Code", or the bad38 label, so keyboard users can scroll it. The whole assembly is `<figure data-exhibit data-ui data-code-assembly>`, max width `--measure-wide`.
 - **Head strip** (always present): 36 px tall, 1 px rule bottom edge. Left: the filename (e.g. `prefix.py`) in code style ink-2, or "Python" in label style when it is a fenced block. Right: the copy button (ghost, Copy icon + "Copy" label at 640 px and up, icon-only below). Copied state: Check icon + "Copied" for 2 s, announced via `aria-live="polite"`. Copy failure: "Press Ctrl+C to copy" hint in small ink-2 and the code is selected.
-- **Line numbers** (shown when the block has more than 3 lines or any highlight): a 2.5rem gutter (3rem at 100+ lines), right-aligned tabular Mono in ink-3, 1 px rule right edge, not selectable (`user-select: none`) and not copied.
+- **Line numbers** (shown when the block has more than 3 lines or any highlight): a gutter of `calc(max(2, digits)ch + 1.5rem)` (12 px either side of the widest number; code starts 16 px after the rule), sticky at the left edge while the code scrolls, right-aligned tabular Mono in ink-3, 1 px rule right edge running the full block height (the first and last lines carry the 12 px block padding in both cells), not selectable (`user-select: none`) and not copied.
 - **Highlighted lines** (`highlight="3,4"`): the full row gets check-soft fill; the line number becomes ink 700. Nothing else changes (no side stripe).
 - **Caption** (optional): below the frame, small ink-2, 8 px gap, left-aligned. Not numbered.
 - **`bad38` block** ("not valid on the CCC grader"): frame border and head strip in redline: head strip fill redline-soft, a 16 px OctagonX icon and the label "Not valid on the CCC grader" (label style, redline) replacing the filename; frame border 1 px redline. The copy button stays. The label is text, so the state never relies on colour.
 - **Shiki theme** (`lib/content/shiki-theme.ts`, generated from these tokens): background sheet-sunk, foreground ink; scopes: `keyword`, `storage`, `keyword.operator.logical.python` (`and`/`or`/`not`/`in`/`is`) → syn-keyword; `string`, `string.quoted` → syn-string; `constant.numeric`, `constant.language` (`True`/`False`/`None`) → syn-number; `support.function.builtin`, `support.type` (`print`, `input`, `len`, `range`, `int`, `list`…) → syn-builtin; `comment` → syn-comment (not italic); `entity.name.function` (the name after `def`) → ink, bold; `variable.parameter` → ink; `keyword.operator`, `punctuation` → syn-punct; `constant.character.format.placeholder`, `meta.fstring` braces → syn-keyword; `invalid` → redline, underline. No italics anywhere in code.
 
 ### Input / Output panels
-- Shown under a code block when the example has `.in`/`.out`, joined to it as one assembly: 12 px gap, then a row of two panels side by side at 640 px and up (each 50%), stacked below. Each panel: 6 px radius, 1 px `rule` border, paper fill, code typography, 12 px × 16 px padding; head label in label style ink-3 with an icon: "Input" (ArrowDownToLine), "Output" (ArrowUpFromLine). Output is always the committed generated `.out` (never typed). Empty output: "(no output)" in small ink-3 italic. Long output: max 20 lines visible, then the panel scrolls inside itself.
+- Shown under a code block when the example has `.in`/`.out`, joined to it as one assembly: 12 px gap, then Input and Output side by side at 640 px and up (each 50%) only when both are present and there is no error; a lone panel, and every traceback, takes the full width. Stacked below 640 px. Each panel: 6 px radius, 1 px `rule` border, paper fill, code typography, 12 px × 16 px padding; head label in label style ink-3 with an icon: "Input" (ArrowDownToLine), "Output" (ArrowUpFromLine). Output is always the committed generated `.out` (never typed). Empty output: "(no output)" in small ink-3 italic. Long output: max 20 lines visible, then the panel scrolls inside itself.
 - `<Output file>` alone renders the Output panel only.
 
 ### Error traceback panel (`expectError`)
@@ -471,7 +472,7 @@ Every interactive component has default, hover, focus-visible, active, and (wher
 - H1, one-line intro, then sections by year (H2 "2026", descending), each a table: columns "Problem" (e.g. "S1", tabular 600), "Title" (link + judge badge), "Taught in" (module ID links in small, tabular). Header row: label style ink-3 on sheet-sunk, 1 px rule; body rows 1 px rule dividers, 12 px vertical padding. Junior and Senior are grouped within a year (J rows, then S rows) with the level in the Problem column ("J4", "S2"); crossovers render once in each level with "(same problem as 2022 S2)". Below 640 px each row becomes two lines (Problem + Title / Taught in). No filters, no status.
 
 ### Glossary (`/glossary`)
-- H1, a letter strip (A–Z links, label style, 32 px square hit targets on fine pointers, 44 px coarse; letters with no terms are ink-3 and not links), then sections by letter (H2 letter), each a `<dl>`: `<dt>` term (UI 700 ink, with an `id` for anchors), `<dd>` definition (body style, ink) and "Introduced in M1.1 Values, types, variables" (small, link). Rows ruled like index rows. `:target` term row gets check-soft fill for 2 s then fades (reduced motion: stays until blur).
+- H1, a letter grid (A–Z as a ruled grid of cells: 7 columns × 2.75rem on phones, 13 columns × 2.5rem at 640 px and up; 40 px tall, 44 px on coarse pointers; letters with terms are blueline 700 links, letters with none are ink-3 and not links), then sections by letter (H2 letter), each a `<dl>`: `<dt>` term (UI 700 ink, with an `id` for anchors), `<dd>` definition (body style, ink) and "Introduced in M1.1 Values, types, variables" (small, link). Rows ruled like index rows. `:target` term row gets check-soft fill for 2 s then fades (reduced motion: stays until blur).
 
 ### Search dialog and `/search`
 - Base UI Dialog, 40rem wide (100% minus 2rem on phones, full height below 640 px), anchored 12vh from the top, paper, 6 px radius, overlay shadow and backdrop; 200 ms fade + 0.98 → 1 scale on `--ease-draft` (reduced motion: fade only).
@@ -491,6 +492,15 @@ Every interactive component has default, hover, focus-visible, active, and (wher
 
 ### KaTeX
 - Math inherits ink; display math centred inside the column with 24 px vertical space and scrolls horizontally inside itself when too wide.
+
+### Implementation rules (as built)
+- **Fonts** (`app/layout.tsx`, `next/font/local`): Atkinson Hyperlegible Next roman and Mono are preloaded (Mono appears above the fold in every code block); the italic is a separate face, not preloaded, applied by one rule to `em, i, cite, var, dfn`. Next roman uses an Arial-adjusted fallback; Mono has no adjusted fallback.
+- **Prose scoping**: `.prose-sheet` styles only direct prose. Components that draw their own chrome carry `data-ui`, and prose element rules skip `[data-ui]` and everything inside it (links, lists, list items). Links that must not look like prose links carry `data-plain`. Wide exhibits (code assemblies, callouts, practice, tables, figures, display math) carry `data-exhibit` and take `--measure-wide` with 2rem above and below.
+- **Class merging**: `cn()` uses `extendTailwindMerge` with the custom `text-*` sizes, radii, shadow and ease declared, so a size class such as `text-label` never removes a colour class.
+- **Titles with code**: module and lesson titles may contain backtick spans; `RichTitle` renders them as inline `<code>` in the sidebar, index rows and continue block.
+- **Copy**: every UI string comes from `content/ui/strings.yaml` through `ui()` (server) or props (client). Client components never import copy.
+- **Client code** is limited to the plan §4.8 set: copy button, mark-as-read, live read cells, continue block, search dialog and page, mobile drawer. Term uses a native popover and needs no script.
+- **`/dev/design`** (preview builds only, 404 in production) shows every component in every state, with sample problems resolved from the registry. It is the target for pixel review and visual baselines.
 
 ## Visual Language
 

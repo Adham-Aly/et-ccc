@@ -1,0 +1,14 @@
+{"schema":1,
+"kind":"frames",
+"id":"calls",
+"layout":"single",
+"panels":[{"id":"t","viz":"TreeViz"}],
+"alt":"A call tree whose node ids count the calls in order, so the same id lands in different places in the two presets.",
+"presets":[
+{"id":"three","label":"n = 3","steps":[
+{"caption":"The whole call tree for this input, drawn at once.","panels":{"t":{"root":{"id":"c0","label":"f(3)","children":[{"id":"c1","label":"f(2)","children":[{"id":"c2","label":"f(1)"},{"id":"c3","label":"f(0)"}]},{"id":"c4","label":"f(1)"}]}}}}
+]},
+{"id":"four","label":"n = 4","steps":[
+{"caption":"The whole call tree for this input, drawn at once.","panels":{"t":{"root":{"id":"c0","label":"f(4)","children":[{"id":"c1","label":"f(3)","children":[{"id":"c2","label":"f(2)","children":[{"id":"c3","label":"f(1)"},{"id":"c4","label":"f(0)"}]},{"id":"c5","label":"f(1)"}]},{"id":"c6","label":"f(2)","children":[{"id":"c7","label":"f(1)"},{"id":"c8","label":"f(0)"}]}]}}}}
+]}
+]}

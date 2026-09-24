@@ -1,0 +1,20 @@
+layout: row
+panels:
+  - { id: grid, viz: GridViz, title: Grid }
+  - { id: queue, viz: StructViz, title: Queue }
+alt: >-
+  Breadth-first search on a small grid. Starting from S, the cell at the front of the queue
+  becomes current and its open neighbours join the back of the queue with a distance one
+  larger, until E is reached; then one shortest path is marked.
+captions: vizrec
+presets:
+  - id: open
+    label: Open grid
+    stdin: "4 5\nS....\n.....\n.....\n....E\n"
+  - id: walls
+    label: Grid with walls
+    stdin: "5 6\nS.#...\n..#.#.\n..#.#.\n....#E\n.##...\n"
+consistency:
+  description: The distance the visual reaches E with equals the output of examples/bfs_grid.py on each preset.
+  example: ../examples/bfs_grid.py
+  compare: output

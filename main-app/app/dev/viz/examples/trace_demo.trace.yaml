@@ -1,0 +1,10 @@
+example: trace_demo.py
+alt: >-
+  A short program traced line by line: two names refer to one list, a loop adds up the list
+  inside a function call, and a recursive function builds a countdown list, with each call's
+  frame on the call stack.
+presets:
+  - { id: two, label: "Input 2", stdin: "2\n" }
+  - { id: three, label: "Input 3", stdin: "3\n" }
+notes:
+  "15": Both names now point to the same list object; there is only one list.

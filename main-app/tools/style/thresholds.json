@@ -1,0 +1,21 @@
+{
+  "_comment": "P4 skeleton thresholds (plan §6.3 G-STYLE): a defensible starting split so the gate exists and works end to end. P5 recalibrates every number here against the approved voice sample and the accepted pilot lessons (M1.1, M4.13, M6.1) — changes after that only via a changelog entry, never a silent edit.",
+  "hardCategories": [
+    "tier1",
+    "ai-placeholder",
+    "ai-citation-markup",
+    "ai-utm-source",
+    "normalization-flag"
+  ],
+  "softDefaultPerThousandWords": 5,
+  "softCategoryOverridesPerThousandWords": {
+    "tier2": 3,
+    "tier3": 4,
+    "em-dash": 3
+  },
+  "readability": {
+    "fleschKincaidGradeMaxStages": ["s0", "s1", "s2"],
+    "fleschKincaidGradeMax": 9,
+    "warnSentenceWordCount": 30
+  }
+}

@@ -1,0 +1,28 @@
+# tests/fixtures/content/course.yaml — the "fx" fixture stage (plan §4.6.2, brief §5). Mounted
+# only in non-production builds (lib/content/course.ts), merged after every real stage. Neutral
+# placeholder teaching prose that still obeys every content rule in brief §1.6 — it is visible on
+# previews, so it is held to the same bar as real content, not a scratch space.
+#
+# Module ids use the M90.x range, well outside the real course's M0-M7/C ranges, so nothing here
+# can ever collide with a real module id (content:check's G-SCHEMA uniqueness check would catch
+# it if it did).
+stages:
+  - id: fx
+    number: FX
+    title: Fixture
+    goal: Exercise every MDX component and content rule the pipeline supports, end to end.
+    modules:
+      - id: M90.1
+        title: "Fixture: text and code components"
+        prereqs: []
+        status: accepted
+      - id: M90.2
+        title: "Fixture: technique and practice list"
+        prereqs:
+          - M90.1
+        status: reviewed
+      - id: M90.3
+        title: "Fixture: scenes and formulas"
+        prereqs:
+          - M90.2
+        status: accepted

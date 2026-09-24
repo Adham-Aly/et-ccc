@@ -29,6 +29,13 @@ const FAST_GATES = [
   ["G-TYPES", "typecheck"],
   ["G-UNIT", "test:unit"],
   ["G-UI-LIGHT", "lint:light"],
+  ["G-SCHEMA/LINK/PREREQ", "content:check"],
+  ["G-PY-38/G-PY-RUN", "check:python"],
+  ["G-STYLE", "style:check"],
+  ["G-R14", "lint:r14"],
+  ["G-SPELL", "spell"],
+  ["G-MDX", "lint:mdx"],
+  ["G-VIZ", "check:viz"],
 ];
 const FULL_GATES = [...FAST_GATES, ["G-BUILD", "build"]];
 

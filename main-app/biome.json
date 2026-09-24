@@ -15,8 +15,8 @@
       "!**/AGENTS.md",
       "!**/next-env.d.ts",
       "!**/*.generated.*",
-      "!**/content/**/*.trace.json",
-      "!**/content/**/*.frames.json",
+      "!**/*.trace.json",
+      "!**/*.frames.json",
       "!**/package-lock.json",
       "!app/fonts"
     ]
@@ -44,6 +44,11 @@
       "quoteStyle": "double",
       "semicolons": "always",
       "trailingCommas": "all"
+    }
+  },
+  "css": {
+    "parser": {
+      "tailwindDirectives": true
     }
   },
   "overrides": [

@@ -1,0 +1,18 @@
+{"schema":1,
+"kind":"frames",
+"id":"scan",
+"layout":"single",
+"panels":[{"id":"a","viz":"ArrayViz"}],
+"alt":"A left-to-right scan over five numbers that keeps the largest value seen so far.",
+"presets":[
+{"id":"main","label":"Five numbers","steps":[
+{"caption":"The largest value seen so far is the first one.","panels":{"a":{"values":[100000,100001,100002,100003,100004,100005,100006,100007],"states":"c......."}}},
+{"caption":"The scan reaches 100001; the largest value seen so far is 100001.","panels":{"a":{"values":[100000,100001,100002,100003,100004,100005,100006,100007],"states":"dc......"}}},
+{"caption":"The scan reaches 100002; the largest value seen so far is 100002.","panels":{"a":{"values":[100000,100001,100002,100003,100004,100005,100006,100007],"states":"ddc....."}}},
+{"caption":"The scan reaches 100003; the largest value seen so far is 100003.","panels":{"a":{"values":[100000,100001,100002,100003,100004,100005,100006,100007],"states":"dddc...."}}},
+{"caption":"The scan reaches 100004; the largest value seen so far is 100004.","panels":{"a":{"values":[100000,100001,100002,100003,100004,100005,100006,100007],"states":"ddddc..."}}},
+{"caption":"The scan reaches 100005; the largest value seen so far is 100005.","panels":{"a":{"values":[100000,100001,100002,100003,100004,100005,100006,100007],"states":"dddddc.."}}},
+{"caption":"The scan reaches 100006; the largest value seen so far is 100006.","panels":{"a":{"values":[100000,100001,100002,100003,100004,100005,100006,100007],"states":"ddddddc."}}},
+{"caption":"The scan reaches 100007; the largest value seen so far is 100007.","panels":{"a":{"values":[100000,100001,100002,100003,100004,100005,100006,100007],"states":"dddddddc"}}}
+]}
+]}
