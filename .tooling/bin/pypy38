@@ -1,0 +1,4 @@
+#!/bin/bash
+# PyPy 3.8 v7.3.11 (authoring-time checks and example runs, plan §4.5).
+. "$(dirname "$0")/_wrap.sh"
+wrap_exec "$ET_T/pypy38" "$ET_T/pypy38/bin/pypy3.8" "$@"

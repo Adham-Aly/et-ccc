@@ -1,0 +1,664 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>et-ccc — Plan v2, in Brief</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Libre+Franklin:wght@500;600;700;800&family=Source+Sans+3:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#1b1e23;
+    --paper:#faf9f5;
+    --panel:#ffffff;
+    --border:#e4dfd2;
+    --border-soft:#ede9dd;
+    --muted:#666a63;
+    --accent:#2c6a58;      /* opus / primary */
+    --accent-soft:#e5efe9;
+    --accent-line:#bcd8cb;
+    --sonnet:#3a5583;      /* sonnet */
+    --sonnet-soft:#e8edf5;
+    --sonnet-line:#c2cfe3;
+    --warn:#9a5b12;        /* decisions needed */
+    --warn-soft:#faf0dd;
+    --warn-line:#e8cd9c;
+    --cut:#a1433c;         /* removed in v2 */
+    --cut-soft:#f8ecea;
+    color-scheme: light;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--paper);
+    color:var(--ink);
+    font-family:"Source Sans 3", system-ui, sans-serif;
+    font-size:16px;
+    line-height:1.55;
+    padding:0 16px;
+  }
+  .wrap{max-width:840px;margin:0 auto;padding-block:36px 64px;}
+  h1,h2,h3{font-family:"Libre Franklin", system-ui, sans-serif;color:var(--ink);text-wrap:balance;margin:0;}
+  code,.mono{font-family:"IBM Plex Mono", ui-monospace, monospace;}
+  a{color:var(--accent);}
+  .kicker{
+    font-family:"IBM Plex Mono", monospace;
+    font-size:12px;
+    letter-spacing:.09em;
+    text-transform:uppercase;
+    color:var(--muted);
+  }
+
+  /* ---------- header ---------- */
+  header.top{padding-bottom:28px;border-bottom:1px solid var(--border);margin-bottom:34px;}
+  header.top h1{font-size:clamp(28px,5vw,38px);font-weight:800;margin-top:8px;line-height:1.12;}
+  header.top p.sub{margin:12px 0 0;color:var(--muted);font-size:16.5px;max-width:60ch;}
+  .chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:18px;}
+  .chip{
+    font-size:12.5px;font-family:"IBM Plex Mono",monospace;
+    border:1px solid var(--border);border-radius:100px;
+    padding:5px 12px;color:var(--muted);background:var(--panel);
+  }
+  .chip.status{border-color:var(--warn-line);background:var(--warn-soft);color:var(--warn);font-weight:600;}
+
+  /* ---------- sections ---------- */
+  section.sec{margin-top:46px;}
+  .sec-head{display:flex;align-items:baseline;gap:12px;margin-bottom:16px;}
+  .sec-num{
+    font-family:"IBM Plex Mono",monospace;font-size:14px;color:var(--accent);
+    border:1px solid var(--accent-line);background:var(--accent-soft);
+    border-radius:6px;padding:2px 8px;flex:none;
+  }
+  .sec-head h2{font-size:21px;font-weight:700;}
+  .lede{color:var(--muted);margin:0 0 18px;max-width:66ch;}
+
+  /* ---------- change list (sec 1) ---------- */
+  .changes{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+  @media (max-width:640px){.changes{grid-template-columns:1fr;}}
+  .change{
+    border:1px solid var(--border);background:var(--panel);border-radius:10px;
+    padding:13px 15px;display:flex;gap:10px;
+  }
+  .change .n{font-family:"IBM Plex Mono",monospace;font-weight:600;color:var(--accent);flex:none;}
+  .change .t{font-weight:600;font-size:14.5px;margin:0 0 3px;}
+  .change .d{font-size:13.8px;color:var(--muted);margin:0;}
+  .viz-line{
+    margin-top:12px;border-left:3px solid var(--accent-line);background:var(--accent-soft);
+    padding:11px 14px;border-radius:0 8px 8px 0;font-size:14.5px;color:#1e4638;
+  }
+
+  /* ---------- app summary + arch sketch (sec 2) ---------- */
+  .app-stats{display:flex;flex-wrap:wrap;gap:8px;margin:14px 0 22px;}
+  .stat{
+    border:1px solid var(--border);background:var(--panel);border-radius:8px;
+    padding:8px 12px;font-size:13px;color:var(--muted);
+  }
+  .stat b{color:var(--ink);font-family:"IBM Plex Mono",monospace;font-size:13.5px;}
+  .flow{
+    display:flex;align-items:stretch;gap:0;flex-wrap:wrap;
+    border:1px solid var(--border-soft);background:var(--panel);border-radius:12px;padding:18px;
+  }
+  .flow-box{
+    flex:1 1 140px;min-width:130px;border:1px solid var(--border);border-radius:9px;
+    background:var(--paper);padding:11px 12px;font-size:13px;
+  }
+  .flow-box .k{font-family:"IBM Plex Mono",monospace;font-size:10.5px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;}
+  .flow-box .v{margin-top:4px;font-weight:600;font-size:13.5px;}
+  .flow-box .s{margin-top:3px;color:var(--muted);font-size:12px;}
+  .flow-arrow{
+    flex:0 0 26px;display:flex;align-items:center;justify-content:center;
+    color:var(--muted);font-size:16px;
+  }
+  .flow-arrow .right{display:inline;}
+  .flow-arrow .down{display:none;}
+  @media (max-width:640px){
+    .flow{flex-direction:column;}
+    .flow-arrow{transform:rotate(90deg);width:100%;padding:2px 0;}
+  }
+
+  /* ---------- hierarchy diagram (sec 3) ---------- */
+  .hier{
+    border:1px solid var(--border-soft);background:var(--panel);border-radius:12px;
+    padding:20px;display:flex;flex-direction:column;align-items:center;gap:2px;margin-bottom:22px;
+  }
+  .tier{
+    width:100%;max-width:460px;border:1.5px solid var(--accent-line);background:var(--accent-soft);
+    border-radius:10px;padding:12px 16px;text-align:center;
+  }
+  .tier.t1{border-color:var(--sonnet-line);background:var(--sonnet-soft);max-width:400px;}
+  .tier.t2{border-color:var(--border);background:var(--paper);max-width:340px;}
+  .tier .name{font-weight:700;font-size:14.5px;}
+  .tier .desc{font-size:12.5px;color:var(--muted);margin-top:2px;}
+  .connector{color:var(--muted);font-size:15px;line-height:1;padding:2px 0;}
+  .side-note{
+    margin-top:10px;font-size:12.5px;color:var(--muted);border-top:1px dashed var(--border);
+    padding-top:10px;width:100%;max-width:460px;text-align:center;
+  }
+  .side-note b{color:var(--ink);}
+
+  /* ---------- phase agent cards (sec 3) ---------- */
+  .phase-card{
+    border:1px solid var(--border);background:var(--panel);border-radius:11px;
+    padding:15px 17px;margin-bottom:11px;
+  }
+  .phase-card .row1{display:flex;flex-wrap:wrap;align-items:center;gap:9px;margin-bottom:9px;}
+  .phase-card .pid{
+    font-family:"IBM Plex Mono",monospace;font-weight:700;font-size:13.5px;
+    background:var(--ink);color:var(--paper);border-radius:6px;padding:2px 8px;flex:none;
+  }
+  .phase-card .ptitle{font-weight:700;font-size:15px;}
+  .phase-card .meta{margin-left:auto;display:flex;gap:6px;flex-wrap:wrap;}
+  .badge{
+    font-family:"IBM Plex Mono",monospace;font-size:11px;font-weight:600;
+    border-radius:100px;padding:3px 9px;white-space:nowrap;
+  }
+  .badge.opus{background:var(--accent-soft);color:var(--accent);border:1px solid var(--accent-line);}
+  .badge.sonnet{background:var(--sonnet-soft);color:var(--sonnet);border:1px solid var(--sonnet-line);}
+  .badge.num{background:var(--paper);color:var(--muted);border:1px solid var(--border);}
+  .roles{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:5px;}
+  .roles li{font-size:13.3px;display:flex;gap:8px;align-items:baseline;}
+  .roles li .rb{flex:none;}
+  .roles li .rd{color:var(--muted);}
+  .roles li .rd b{color:var(--ink);font-weight:600;}
+  .conc{font-size:12px;color:var(--muted);margin-top:9px;border-top:1px solid var(--border-soft);padding-top:8px;}
+
+  /* ---------- 41 vs 294 comparison ---------- */
+  .compare{
+    border:1px solid var(--border-soft);background:var(--panel);border-radius:12px;
+    padding:18px 20px;margin:18px 0 22px;
+  }
+  .cbar-group{margin-bottom:16px;}
+  .cbar-group:last-of-type{margin-bottom:0;}
+  .cbar-top{display:flex;justify-content:space-between;align-items:baseline;gap:10px;margin-bottom:6px;}
+  .cbar-label{font-size:13px;font-weight:600;}
+  .cbar-val{font-family:"IBM Plex Mono",monospace;font-size:14px;font-weight:700;flex:none;}
+  .cbar-track{background:var(--paper);border-radius:6px;height:14px;overflow:hidden;border:1px solid var(--border-soft);}
+  .cbar-fill{height:100%;border-radius:6px 0 0 6px;}
+  .cbar-fill.v1{background:#8a8d86;}
+  .cbar-fill.v2{background:var(--accent);}
+  .cbar-sub{margin-top:5px;font-size:12px;color:var(--muted);}
+  .compare .note{margin-top:14px;font-size:12.5px;color:var(--muted);border-top:1px solid var(--border-soft);padding-top:12px;}
+
+  .subhead{font-weight:700;font-size:14.5px;margin:22px 0 9px;}
+  .prose-list{margin:0;padding-left:18px;}
+  .prose-list li{font-size:14px;margin-bottom:7px;color:#2c2f2a;}
+  .prose-list li::marker{color:var(--muted);}
+  .checkin-list{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:8px;}
+  .checkin-list li{
+    font-size:14px;display:flex;gap:9px;border-left:3px solid var(--accent-line);
+    background:var(--accent-soft);padding:9px 12px;border-radius:0 8px 8px 0;
+  }
+  .checkin-list li b{color:var(--accent);font-family:"IBM Plex Mono",monospace;font-size:12px;flex:none;padding-top:2px;}
+
+  /* ---------- timeline (sec 4) ---------- */
+  .timeline{border-left:2px solid var(--border);margin-left:8px;padding-left:22px;display:flex;flex-direction:column;gap:16px;}
+  .tl-item{position:relative;}
+  .tl-item::before{
+    content:"";position:absolute;left:-28px;top:4px;width:11px;height:11px;border-radius:50%;
+    background:var(--panel);border:2px solid var(--muted);
+  }
+  .tl-item.checkpoint::before{background:var(--accent);border-color:var(--accent);}
+  .tl-item.hard::before{
+    border-radius:2px;transform:rotate(45deg);background:var(--warn);border-color:var(--warn);width:10px;height:10px;top:6px;
+  }
+  .tl-head{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap;}
+  .tl-pid{font-family:"IBM Plex Mono",monospace;font-weight:700;font-size:13.5px;color:var(--ink);}
+  .tl-title{font-weight:600;font-size:14.5px;}
+  .tl-desc{font-size:13.3px;color:var(--muted);margin-top:2px;}
+  .tl-gate{
+    margin-top:5px;font-size:12.5px;font-weight:600;display:inline-flex;gap:6px;align-items:center;
+    padding:4px 10px;border-radius:100px;
+  }
+  .tl-gate.soft{background:var(--accent-soft);color:var(--accent);}
+  .tl-gate.hard{background:var(--warn-soft);color:var(--warn);}
+
+  /* ---------- decision cards (sec 5) ---------- */
+  .group-label{
+    font-family:"IBM Plex Mono",monospace;font-size:12px;letter-spacing:.05em;text-transform:uppercase;
+    color:var(--muted);margin:26px 0 10px;display:flex;align-items:center;gap:10px;
+  }
+  .group-label:first-of-type{margin-top:6px;}
+  .group-label::after{content:"";flex:1;height:1px;background:var(--border);}
+  .dcard{
+    border:1px solid var(--border);background:var(--panel);border-radius:11px;
+    padding:14px 16px;margin-bottom:10px;
+  }
+  .dcard .dhead{display:flex;gap:10px;align-items:baseline;margin-bottom:7px;}
+  .dcard .dnum{
+    font-family:"IBM Plex Mono",monospace;font-weight:700;font-size:12.5px;color:var(--warn);
+    background:var(--warn-soft);border:1px solid var(--warn-line);border-radius:6px;padding:1px 7px;flex:none;
+  }
+  .dcard .dq{font-weight:600;font-size:14.3px;}
+  .dcard .drec{font-size:13.5px;margin:0 0 5px;}
+  .dcard .drec b{color:var(--accent);font-weight:600;}
+  .dcard .dtrade{font-size:12.8px;color:var(--muted);margin:0;}
+  .dcard .dtrade b{color:var(--ink);font-weight:600;font-style:normal;}
+
+  .template{
+    margin-top:26px;border:1px solid var(--border-soft);background:var(--panel);border-radius:12px;
+    padding:16px 18px;
+  }
+  .template .thead{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;gap:10px;flex-wrap:wrap;}
+  .template h3{font-size:14.5px;}
+  #copyBtn{
+    font-family:"IBM Plex Mono",monospace;font-size:12.5px;font-weight:600;color:var(--accent);
+    background:var(--accent-soft);border:1px solid var(--accent-line);border-radius:7px;
+    padding:6px 13px;cursor:pointer;
+  }
+  #copyBtn:hover{background:var(--accent);color:#fff;}
+  #copyBtn:active{transform:translateY(1px);}
+  pre#replyText{
+    background:var(--paper);border:1px solid var(--border-soft);border-radius:9px;
+    padding:13px 15px;font-family:"IBM Plex Mono",monospace;font-size:12.6px;line-height:1.65;
+    white-space:pre-wrap;word-break:break-word;margin:0;color:#2c2f2a;overflow-x:auto;
+  }
+
+  footer{margin-top:44px;padding-top:16px;border-top:1px solid var(--border);font-size:12px;color:var(--muted);}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="top">
+    <span class="kicker">et-ccc · phase 2 · redo v2 · manager report</span>
+    <h1>The plan, redone</h1>
+    <p class="sub">A lean reading app instead of an interactive judge, and an orchestration budget cut to about a seventh of v1. Source: <code>context/implementation-plan.md</code> v2.0.</p>
+    <div class="chips">
+      <span class="chip status">Pending your approval</span>
+      <span class="chip">2026-09-23</span>
+      <span class="chip">Written by plan-reviser, Opus 5.5</span>
+      <span class="chip">41 agents planned (cap 48)</span>
+    </div>
+  </header>
+
+  <!-- ===================== 1. WHAT CHANGED ===================== -->
+  <section class="sec">
+    <div class="sec-head"><span class="sec-num">01</span><h2>What changed from v1</h2></div>
+    <p class="lede">v1 was rejected for misreading the product: an interactive judge, not a reading app, and far too large to run. Six changes answer that directly.</p>
+    <div class="changes">
+      <div class="change"><span class="n">1</span><div><p class="t">Reading only</p><p class="d">Pyodide, the in-browser runner, the editor, exercises and grading are gone. Code in lessons is read-only, with a copy button.</p></div></div>
+      <div class="change"><span class="n">2</span><div><p class="t">Vercel, not local</p><p class="d">A plain Next.js app, every page built ahead of time. No backend, no database, no server code to run or secure.</p></div></div>
+      <div class="change"><span class="n">3</span><div><p class="t">Practice via links</p><p class="d">WMOJ for 2021&ndash;2026, DMOJ for 2020 and earlier, WMOJ preferred. No problems live inside the app itself.</p></div></div>
+      <div class="change"><span class="n">4</span><div><p class="t">Private GitHub repo</p><p class="d">Created with the existing <code>gh</code> login. Nothing changes globally on the Mac; not yet executed &mdash; waits on P3.</p></div></div>
+      <div class="change"><span class="n">5</span><div><p class="t">Far fewer agents</p><p class="d">41 spawns over 7 phases, at most 3 workers at once, versus about 294 over 16 phases in v1.</p></div></div>
+      <div class="change"><span class="n">6</span><div><p class="t">New: real visuals</p><p class="d">Extensive animated step-throughs and code traces, added mid-redo on your instruction (D-021).</p></div></div>
+    </div>
+    <p class="viz-line"><b>On visuals:</b> every animation replays a trace recorded by running the real Python once while the lesson is written. Nothing executes in the learner's browser, so the no-code-execution rule still holds.</p>
+  </section>
+
+  <!-- ===================== 2. THE APP ===================== -->
+  <section class="sec">
+    <div class="sec-head"><span class="sec-num">02</span><h2>The app in a few lines</h2></div>
+    <p class="lede">A free, Python-only course that takes a complete beginner to CCC Senior level, built as static pages and served from Vercel. Lessons explain, show read-only code, and animate what is happening. To practice, the page links out to the real judge.</p>
+    <div class="app-stats">
+      <span class="stat"><b>105</b> modules</span>
+      <span class="stat"><b>~230</b> lessons</span>
+      <span class="stat"><b>~300k</b> words</span>
+      <span class="stat"><b>119</b> registry problems</span>
+      <span class="stat"><b>~400&ndash;550</b> visuals</span>
+      <span class="stat"><b>0</b> backend routes</span>
+    </div>
+    <div class="flow">
+      <div class="flow-box"><div class="k">Authoring</div><div class="v">MDX + Python</div><div class="s">lessons, examples, visual recorders</div></div>
+      <div class="flow-arrow"><span class="right">&rarr;</span><span class="down">&darr;</span></div>
+      <div class="flow-box"><div class="k">Build-time only</div><div class="v">Python runs once</div><div class="s">outputs, traces, frames &mdash; committed as data</div></div>
+      <div class="flow-arrow"><span class="right">&rarr;</span><span class="down">&darr;</span></div>
+      <div class="flow-box"><div class="k">Next.js build</div><div class="v">Static generation</div><div class="s">every page prerendered, no server</div></div>
+      <div class="flow-arrow"><span class="right">&rarr;</span><span class="down">&darr;</span></div>
+      <div class="flow-box"><div class="k">Vercel</div><div class="v">CDN hosting</div><div class="s">preview per branch, production from main</div></div>
+      <div class="flow-arrow"><span class="right">&rarr;</span><span class="down">&darr;</span></div>
+      <div class="flow-box"><div class="k">Learner</div><div class="v">Reads &amp; steps</div><div class="s">then clicks out to WMOJ / DMOJ to submit</div></div>
+    </div>
+  </section>
+
+  <!-- ===================== 3. AGENT ORCHESTRATION ===================== -->
+  <section class="sec">
+    <div class="sec-head"><span class="sec-num">03</span><h2>Agent orchestration, in practice</h2></div>
+    <p class="lede">This is the section that matters most for how the build actually runs day to day.</p>
+
+    <div class="subhead">The hierarchy</div>
+    <div class="hier">
+      <div class="tier">
+        <div class="name">Main session (tier 0)</div>
+        <div class="desc">Talks to you, launches one phase orchestrator at a time, launches the Manager report after each phase</div>
+      </div>
+      <div class="connector">&darr;&nbsp;launches, one phase at a time</div>
+      <div class="tier t1">
+        <div class="name">Phase orchestrator (tier 1)</div>
+        <div class="desc">Opus or Sonnet, per phase &middot; plans the phase, dispatches workers, integrates their output</div>
+      </div>
+      <div class="connector">&darr;&nbsp;dispatches, at most 3 at once</div>
+      <div class="tier t2">
+        <div class="name">Workers (tier 2)</div>
+        <div class="desc">Authors, reviewers, engineers &middot; write results to files &middot; never spawn subagents</div>
+      </div>
+      <div class="side-note">No sub-orchestrators, no swarms, no Workflow tool. <b>Main &rarr; orchestrator &rarr; workers</b> is the only shape used.</div>
+    </div>
+
+    <div class="subhead">Who runs in each phase</div>
+
+    <div class="phase-card">
+      <div class="row1"><span class="pid">P3</span><span class="ptitle">Setup</span>
+        <span class="meta"><span class="badge opus">Opus orchestrator</span><span class="badge num">2 spawns</span></span></div>
+      <ul class="roles">
+        <li><span class="rb badge opus">Opus</span><span class="rd"><b>Orchestrator</b> does the work itself: containment tooling, creates the private GitHub repo, installs Node/PyPy/skills.</span></li>
+        <li><span class="rb badge sonnet">Sonnet</span><span class="rd"><b>Containment auditor</b> independently proves nothing leaked outside the workspace.</span></li>
+      </ul>
+      <div class="conc">Max concurrency: 1 &mdash; the orchestrator works alone, then the auditor checks.</div>
+    </div>
+
+    <div class="phase-card">
+      <div class="row1"><span class="pid">P4</span><span class="ptitle">App</span>
+        <span class="meta"><span class="badge opus">Opus orchestrator</span><span class="badge num">6 spawns</span></span></div>
+      <ul class="roles">
+        <li><span class="rb badge sonnet">Sonnet</span><span class="rd"><b>App engineer</b> scaffolds Next.js, builds the content pipeline, registry code and quality gates.</span></li>
+        <li><span class="rb badge opus">Opus</span><span class="rd"><b>Design lead</b> runs Impeccable, writes <code>PRODUCT.md</code>/<code>DESIGN.md</code>, sets tokens and layout.</span></li>
+        <li><span class="rb badge opus">Opus</span><span class="rd"><b>Visualization engineer</b> builds the animation library, code tracer and player.</span></li>
+        <li><span class="rb badge sonnet">Sonnet</span><span class="rd"><b>QA engineer</b> builds E2E, visual regression, accessibility and performance checks.</span></li>
+        <li><span class="rb badge opus">Opus</span><span class="rd"><b>Reviewer</b> checks architecture, code, pixels and motion.</span></li>
+      </ul>
+      <div class="conc">Max concurrency: 3 &mdash; scaffold first, then design lead / app engineer / viz engineer together, then QA, then review.</div>
+    </div>
+
+    <div class="phase-card">
+      <div class="row1"><span class="pid">P5</span><span class="ptitle">Voice, registry &amp; pilot</span>
+        <span class="meta"><span class="badge opus">Opus orchestrator</span><span class="badge num">4 spawns</span></span></div>
+      <ul class="roles">
+        <li><span class="rb badge sonnet">Sonnet</span><span class="rd"><b>Registry &amp; data</b> fills all 119 problem entries, runs WMOJ verification, generates the DMOJ checklist.</span></li>
+        <li><span class="rb badge opus">Opus</span><span class="rd"><b>Voice &amp; pilot author</b> writes the style guide, UI copy, and the 3 pilot lessons with their visuals.</span></li>
+        <li><span class="rb badge opus">Opus</span><span class="rd"><b>Pilot reviewer</b> grades the pilots against every gate.</span></li>
+      </ul>
+      <div class="conc">Max concurrency: up to 3.</div>
+    </div>
+
+    <div class="phase-card">
+      <div class="row1"><span class="pid">P6</span><span class="ptitle">Content A &middot; Stages 0&ndash;2, 33 modules</span>
+        <span class="meta"><span class="badge sonnet">Sonnet orchestrator</span><span class="badge num">6 spawns</span></span></div>
+      <ul class="roles">
+        <li><span class="rb badge sonnet">Sonnet</span><span class="rd"><b>4 authors</b>, about 8 modules each, following the approved pilot exemplars.</span></li>
+        <li><span class="rb badge opus">Opus</span><span class="rd"><b>Reviewer</b> checks every module before it is accepted.</span></li>
+      </ul>
+      <div class="conc">Max concurrency: 3 authors at once; the first module of the phase runs alone first as a calibration check.</div>
+    </div>
+
+    <div class="phase-card">
+      <div class="row1"><span class="pid">P7</span><span class="ptitle">Content B &middot; Stages 3&ndash;4, 28 modules</span>
+        <span class="meta"><span class="badge sonnet">Sonnet orchestrator</span><span class="badge num">6 spawns</span></span></div>
+      <ul class="roles">
+        <li><span class="rb badge sonnet">Sonnet</span><span class="rd"><b>4 authors</b>, about 7 modules each.</span></li>
+        <li><span class="rb badge opus">Opus</span><span class="rd"><b>Reviewer</b>, same role as P6.</span></li>
+      </ul>
+      <div class="conc">Max concurrency: 3 authors at once.</div>
+    </div>
+
+    <div class="phase-card">
+      <div class="row1"><span class="pid">P8</span><span class="ptitle">Content C &middot; Stages 5&ndash;7, 41 modules</span>
+        <span class="meta"><span class="badge opus">Opus orchestrator</span><span class="badge num">7 spawns</span></span></div>
+      <ul class="roles">
+        <li><span class="rb badge opus">Opus</span><span class="rd"><b>5 authors</b>, about 8 modules each &mdash; the hardest material (segment trees, DP, graphs) gets Opus, not Sonnet.</span></li>
+        <li><span class="rb badge opus">Opus</span><span class="rd"><b>Reviewer</b>, same role as P6/P7.</span></li>
+      </ul>
+      <div class="conc">Max concurrency: 3 authors at once.</div>
+    </div>
+
+    <div class="phase-card">
+      <div class="row1"><span class="pid">P9</span><span class="ptitle">Review &amp; release</span>
+        <span class="meta"><span class="badge opus">Opus orchestrator</span><span class="badge num">3 spawns</span></span></div>
+      <ul class="roles">
+        <li><span class="rb badge opus">Opus</span><span class="rd"><b>Final reviewer</b> runs a whole-course consistency and visual-consistency pass.</span></li>
+        <li><span class="rb badge sonnet">Sonnet</span><span class="rd"><b>Release QA</b> runs the full suites, re-checks links, audits containment, writes the README.</span></li>
+      </ul>
+      <div class="conc">Max concurrency: 2.</div>
+    </div>
+
+    <div class="phase-card">
+      <div class="row1"><span class="ptitle">Manager reports</span>
+        <span class="meta"><span class="badge sonnet">Sonnet</span><span class="badge num">7 spawns</span></span></div>
+      <ul class="roles">
+        <li><span class="rb badge sonnet">Sonnet</span><span class="rd">One report agent per phase, spawned directly by the main session, not through an orchestrator. Reads the phase log and screenshots, writes the HTML page you're reading now.</span></li>
+      </ul>
+    </div>
+
+    <div class="subhead">Total, against v1</div>
+    <div class="compare">
+      <div class="cbar-group">
+        <div class="cbar-top"><span class="cbar-label">v1 (rejected)</span><span class="cbar-val">~294</span></div>
+        <div class="cbar-track"><div class="cbar-fill v1" style="width:100%"></div></div>
+        <div class="cbar-sub">16 phases &middot; up to 5 workers at once</div>
+      </div>
+      <div class="cbar-group">
+        <div class="cbar-top"><span class="cbar-label">v2 (this plan)</span><span class="cbar-val">41</span></div>
+        <div class="cbar-track"><div class="cbar-fill v2" style="width:14%"></div></div>
+        <div class="cbar-sub">7 phases &middot; at most 3 workers at once</div>
+      </div>
+      <p class="note">41 spawns (19 Opus, 22 Sonnet), cap 48, over 7 phases, at most 3 concurrent. About 7&times; fewer. The savings: no runtime/exercise phases, content in 3 phases instead of 8, one reviewer per phase instead of per-batch verifiers, contiguous module runs per author, and Sonnet for Stages 0&ndash;4.</p>
+    </div>
+
+    <div class="subhead">How context moves between phases</div>
+    <ul class="prose-list">
+      <li>Nothing important travels only in a message. Every agent writes results to files first and returns a short pointer to them.</li>
+      <li><code>progress.md</code> holds phase status and worker checklists; it's the first thing any agent reads on a cold start.</li>
+      <li><code>decisions.md</code> is an append-only log of every ruling, including yours.</li>
+      <li>Each phase closes with <code>phase-logs/phase-NN-*.md</code>, which the next phase reads first.</li>
+      <li>Content status lives in each module's own file (<code>planned &rarr; drafted &rarr; gated &rarr; reviewed &rarr; accepted</code>), rebuilt into a ledger on demand, never hand-edited.</li>
+    </ul>
+
+    <div class="subhead">On interruption or redo</div>
+    <ul class="prose-list">
+      <li><b style="font-weight:600">Interrupted:</b> the next agent reads <code>progress.md</code>, finds the phase marked in progress, and resumes from the first unfinished item. If a worker's process is gone, one same-role, same-model replacement is spawned with the same files and instructions; that counts against the phase's spawn cap.</li>
+      <li><b style="font-weight:600">Redo:</b> the old phase log is archived as <code>.v&lt;k&gt;</code>, superseded files move aside, your critique is logged, and the new run must address it explicitly in its own log. This report is itself the product of exactly that process, following your critique of v1.</li>
+    </ul>
+
+    <div class="subhead">Where you check in</div>
+    <ul class="checkin-list">
+      <li><b>P4</b> Approve the look, feel and visual/animation style on the live Vercel preview.</li>
+      <li><b>P5</b> Hard gate. Approve voice, format and visuals from the 3 pilot lessons before any content phase starts.</li>
+      <li><b>P6&ndash;8</b> A sample review on the preview before each content batch merges to production.</li>
+      <li><b>P9</b> Hard gate. Final acceptance before the site goes to production.</li>
+      <li><b>Every phase</b> You get this same kind of report on the Desktop automatically, and 13 open questions are waiting on you now (section 05).</li>
+    </ul>
+  </section>
+
+  <!-- ===================== 4. PHASE TIMELINE ===================== -->
+  <section class="sec">
+    <div class="sec-head"><span class="sec-num">04</span><h2>Phase timeline</h2></div>
+    <div class="timeline">
+      <div class="tl-item">
+        <div class="tl-head"><span class="tl-pid">P3</span><span class="tl-title">Setup</span></div>
+        <div class="tl-desc">Tooling, containment proof, private GitHub repo created.</div>
+      </div>
+      <div class="tl-item checkpoint">
+        <div class="tl-head"><span class="tl-pid">P4</span><span class="tl-title">App</span></div>
+        <div class="tl-desc">Next.js foundation, design system, visuals engine, deploy pipeline.</div>
+        <div class="tl-gate soft">&#9679; Manager: approve look, feel &amp; visual style on the preview</div>
+      </div>
+      <div class="tl-item hard">
+        <div class="tl-head"><span class="tl-pid">P5</span><span class="tl-title">Voice, registry &amp; pilot</span></div>
+        <div class="tl-desc">Style guide, 119-problem registry, 3 pilot lessons with visuals.</div>
+        <div class="tl-gate hard">&#9670; HARD GATE: voice, format &amp; visuals approved</div>
+      </div>
+      <div class="tl-item checkpoint">
+        <div class="tl-head"><span class="tl-pid">P6</span><span class="tl-title">Content A</span></div>
+        <div class="tl-desc">Stages 0&ndash;2, 33 modules.</div>
+        <div class="tl-gate soft">&#9679; Manager: sample review before merge</div>
+      </div>
+      <div class="tl-item checkpoint">
+        <div class="tl-head"><span class="tl-pid">P7</span><span class="tl-title">Content B</span></div>
+        <div class="tl-desc">Stages 3&ndash;4, 28 modules.</div>
+        <div class="tl-gate soft">&#9679; Manager: sample review before merge</div>
+      </div>
+      <div class="tl-item checkpoint">
+        <div class="tl-head"><span class="tl-pid">P8</span><span class="tl-title">Content C</span></div>
+        <div class="tl-desc">Stages 5&ndash;7, 41 modules &mdash; the hardest material, Opus authors.</div>
+        <div class="tl-gate soft">&#9679; Manager: sample review before merge</div>
+      </div>
+      <div class="tl-item hard">
+        <div class="tl-head"><span class="tl-pid">P9</span><span class="tl-title">Review &amp; release</span></div>
+        <div class="tl-desc">Whole-course consistency pass, link re-verification, production release.</div>
+        <div class="tl-gate hard">&#9670; HARD GATE: final acceptance, ships to production</div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-head"><span class="tl-pid">P10</span><span class="tl-title">Maintenance</span></div>
+        <div class="tl-desc">On demand: link re-checks, patch bumps, new CCC years.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== 5. DECISIONS ===================== -->
+  <section class="sec">
+    <div class="sec-head"><span class="sec-num">05</span><h2>Decisions waiting on you</h2></div>
+    <p class="lede">Beyond approving the plan itself, 13 open questions are waiting, grouped by the phase each one blocks. Each has a recommendation; a default is used only where the plan says work may continue on it.</p>
+
+    <div class="group-label">Needed before P3</div>
+
+    <div class="dcard">
+      <div class="dhead"><span class="dnum">Q-17</span><span class="dq">Repo name, commit identity, and a standing commit instruction?</span></div>
+      <p class="drec"><b>Recommend:</b> name it <code>et-ccc</code> (private), use your existing git identity, and auto-commit &amp; push each phase branch at phase end, merging to <code>main</code> only after you approve.</p>
+      <p class="dtrade">Tradeoff: saves back-and-forth, but work lands in git before you've reviewed it &mdash; merges to <code>main</code> still wait for your OK.</p>
+    </div>
+
+    <div class="dcard">
+      <div class="dhead"><span class="dnum">Q-13</span><span class="dq">Some traces land outside the workspace no matter what &mdash; acceptable?</span></div>
+      <p class="drec"><b>Recommend:</b> acknowledge Playwright's browser cache, Claude Code's own session files, and reading your existing <code>gh</code> login as system- or harness-owned, and keep them listed openly.</p>
+      <p class="dtrade">Tradeoff: total containment of installed tooling stays intact; only pre-existing system housekeeping we don't control isn't.</p>
+    </div>
+
+    <div class="dcard">
+      <div class="dhead"><span class="dnum">Q-14</span><span class="dq">Can we fix the process files, which are already out of date?</span></div>
+      <p class="drec"><b>Recommend:</b> yes &mdash; the main session updates <code>operating-rules.md</code>, <code>00-START-HERE.md</code> and <code>project-brief.md</code> right after you approve the plan.</p>
+      <p class="dtrade">Tradeoff: keeps the process docs accurate; a small edit outside any phase's normal remit.</p>
+    </div>
+
+    <div class="dcard">
+      <div class="dhead"><span class="dnum">Q-15</span><span class="dq">Should the writing-style checker run on the project's own Node instead of the Mac's system Node?</span></div>
+      <p class="drec"><b>Recommend:</b> yes &mdash; it's patched and matches the Node version Vercel builds with.</p>
+      <p class="dtrade">Tradeoff: none real; keeps containment total.</p>
+    </div>
+
+    <div class="group-label">Needed before P4</div>
+
+    <div class="dcard">
+      <div class="dhead"><span class="dnum">Q-18</span><span class="dq">Which Vercel account, and should previews stay password-protected?</span></div>
+      <p class="drec"><b>Recommend:</b> your personal account, Hobby plan; keep previews protected with a bypass secret for automated tests; production stays public.</p>
+      <p class="dtrade">Tradeoff: protected previews hide drafts from outsiders, but need a bypass secret wired into test tooling &mdash; if your plan lacks that, we test against production after each merge instead.</p>
+    </div>
+
+    <div class="dcard">
+      <div class="dhead"><span class="dnum">Q-21</span><span class="dq">Should learners be able to edit a visual's input, not just step through presets?</span></div>
+      <p class="drec"><b>Recommend:</b> not in v2 &mdash; each visual ships 2&ndash;3 authored presets recorded from the real Python.</p>
+      <p class="dtrade">Tradeoff: custom inputs would need a second, browser-side copy of every algorithm, which reopens the no-code-execution rule and doubles the correctness burden.</p>
+    </div>
+
+    <div class="group-label">Needed before P5</div>
+
+    <div class="dcard">
+      <div class="dhead"><span class="dnum">Q-19</span><span class="dq">What device and OS will the learner actually use?</span></div>
+      <p class="drec"><b>Recommend:</b> tell us macOS, Windows or ChromeOS; default plan assumes a laptop with a bundled-Python editor (for example Thonny), with PyPy 3.8 added at Stage 2.</p>
+      <p class="dtrade">Tradeoff: a wrong guess means the setup lesson doesn't match the real device &mdash; cheap to fix now, awkward once content is written.</p>
+    </div>
+
+    <div class="dcard">
+      <div class="dhead"><span class="dnum">Q-20</span><span class="dq">How much full solution content should lessons include?</span></div>
+      <p class="drec"><b>Recommend:</b> about 50&ndash;70 key CCC problems get full in-lesson walkthroughs, plus a short optional hint on every practice link; no dedicated page per problem.</p>
+      <p class="dtrade">Tradeoff: keeps writing effort bounded; a full editorial page per problem stays possible later, as its own phase.</p>
+    </div>
+
+    <div class="dcard">
+      <div class="dhead"><span class="dnum">Q-2</span><span class="dq">Can lessons mention a problem's own subtask breakdown when teaching partial marks?</span></div>
+      <p class="drec"><b>Recommend:</b> yes, as a fact about one specific problem, never as a target or cutoff.</p>
+      <p class="dtrade">Tradeoff: a genuinely useful teaching detail, without reopening the no-score-targets rule.</p>
+    </div>
+
+    <div class="dcard">
+      <div class="dhead"><span class="dnum">Q-4</span><span class="dq">Who writes the hand-written teaching-voice sample?</span></div>
+      <p class="drec"><b>Recommend:</b> you write about 400&ndash;600 words, or substantially rewrite a draft we provide.</p>
+      <p class="dtrade">Tradeoff: a genuine sample gives the style checker a real target; skipping it risks the whole course reading synthetic.</p>
+    </div>
+
+    <div class="dcard">
+      <div class="dhead"><span class="dnum">Q-7</span><span class="dq">Can we use older CCC years on DMOJ where no 2014&ndash;2026 problem fits a technique?</span></div>
+      <p class="drec"><b>Recommend:</b> yes, still CCC, same link rule, added to the registry with verification. No non-CCC problems.</p>
+      <p class="dtrade">Tradeoff: fills real gaps (for example lazy propagation, LCA) without loosening what counts as practice.</p>
+    </div>
+
+    <div class="dcard">
+      <div class="dhead"><span class="dnum">Q-10</span><span class="dq">Drop module M7.14, the "C++ bridge"?</span></div>
+      <p class="drec"><b>Recommend:</b> yes &mdash; it conflicts with the Python-only rule and the no-comparison-framing rule.</p>
+      <p class="dtrade">Tradeoff: none; module count lands exactly at 105 either way.</p>
+    </div>
+
+    <div class="group-label">Needed before P10</div>
+
+    <div class="dcard">
+      <div class="dhead"><span class="dnum">Q-9</span><span class="dq">Once CCC 2027 problems exist, do they go to WMOJ like 2021&ndash;2026?</span></div>
+      <p class="drec"><b>Recommend:</b> almost certainly yes; decide when they actually appear. Until then the build refuses years after 2026 rather than guessing.</p>
+      <p class="dtrade">Tradeoff: no action needed before P10; flagged now so it isn't forgotten.</p>
+    </div>
+
+    <div class="template">
+      <div class="thead">
+        <h3>Copyable reply</h3>
+        <button id="copyBtn" type="button">Copy</button>
+      </div>
+      <pre id="replyText">Plan v2.0 (P2-B): approve / hold
+
+Q-17  repo name: ___  identity: ___  auto-commit at phase end: yes / no
+Q-13  traces outside the workspace: acknowledged
+Q-14  update process files after approval: yes / no
+Q-15  avoid-ai-writing on workspace Node: yes / no
+
+Q-18  Vercel account: ___  keep previews protected: yes / no
+Q-21  custom inputs in visuals: yes / no (recommend no)
+
+Q-19  learner's device/OS: ___
+Q-20  solution-walkthrough count: agree with 50-70 / adjust to ___
+Q-2   subtask facts in lessons: yes / no
+Q-4   voice sample: I will write it / use a draft you provide
+Q-7   older CCC years on DMOJ for gap modules: yes / no
+Q-10  drop M7.14: yes / no
+
+Q-9   CCC 2027+ link rule: noted, decide later</pre>
+    </div>
+  </section>
+
+  <footer>
+    Full plan: <code>context/implementation-plan.md</code> v2.0 &middot; Phase log: <code>context/phase-logs/phase-02-plan.md</code> &middot; Not published anywhere; this file lives only on your Desktop and in <code>manager-reports/</code>.
+  </footer>
+
+</div>
+<script>
+(function(){
+  var btn = document.getElementById('copyBtn');
+  var pre = document.getElementById('replyText');
+  if(!btn||!pre) return;
+  btn.addEventListener('click', function(){
+    var text = pre.textContent;
+    function done(ok){
+      var original = 'Copy';
+      btn.textContent = ok ? 'Copied' : 'Select the text below';
+      setTimeout(function(){ btn.textContent = original; }, 1600);
+    }
+    try{
+      if(navigator.clipboard && navigator.clipboard.writeText){
+        navigator.clipboard.writeText(text).then(function(){done(true);}).catch(function(){fallback();});
+      } else {
+        fallback();
+      }
+    }catch(e){ fallback(); }
+    function fallback(){
+      try{
+        var range = document.createRange();
+        range.selectNodeContents(pre);
+        var sel = window.getSelection();
+        sel.removeAllRanges();
+        sel.addRange(range);
+        var ok = document.execCommand('copy');
+        done(ok);
+      }catch(e){ done(false); }
+    }
+  });
+})();
+</script>
+</body>
+</html>

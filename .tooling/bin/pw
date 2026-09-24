@@ -1,0 +1,4 @@
+#!/bin/bash
+# Playwright CLI from main-app's pinned devDependency (installed in P4). Browsers go to PLAYWRIGHT_BROWSERS_PATH.
+. "$(dirname "$0")/_wrap.sh"
+wrap_exec "$ET_CCC_ROOT/main-app/node_modules" "$ET_CCC_ROOT/main-app/node_modules/.bin/playwright" "$@"

@@ -1,0 +1,261 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>CCC Recon Report</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700&family=Public+Sans:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@500&display=swap">
+<style>
+  :root {
+    color-scheme: light;
+    --ground: #F7F9FB;
+    --surface: #FFFFFF;
+    --ink: #16202E;
+    --ink-soft: #4A5668;
+    --ink-faint: #7A8596;
+    --line: #DDE3EA;
+    --accent: #1F5FA8;
+    --accent-soft: #E6EEF8;
+    --decide: #A35A00;
+    --decide-ground: #FFF6E8;
+    --decide-line: #F0C98A;
+    --good: #2E7D4F;
+    --risk: #B4442E;
+    --display: "Bricolage Grotesque", "Avenir Next", "Segoe UI", system-ui, sans-serif;
+    --body: "Public Sans", "Helvetica Neue", Arial, system-ui, sans-serif;
+    --mono: "IBM Plex Mono", ui-monospace, Menlo, Consolas, monospace;
+  }
+  * { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+  body {
+    margin: 0;
+    background: var(--ground);
+    color: var(--ink);
+    font-family: var(--body);
+    font-size: 16px;
+    line-height: 1.6;
+    padding-inline: 16px;
+    padding-block: 40px 64px;
+  }
+  .page { max-width: 720px; margin: 0 auto; display: grid; gap: 48px; }
+  h1, h2, h3 { font-family: var(--display); text-wrap: balance; margin: 0; line-height: 1.15; }
+  h1 { font-size: clamp(30px, 6vw, 42px); font-weight: 700; letter-spacing: -0.01em; }
+  h2 { font-size: 24px; font-weight: 700; }
+  h3 { font-size: 18px; font-weight: 600; }
+  p { margin: 0; }
+  .eyebrow {
+    font-size: 12px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase;
+    color: var(--accent);
+  }
+  section { display: grid; gap: 16px; }
+  .lede { font-size: 18px; color: var(--ink-soft); max-width: 62ch; }
+  .meta { font-size: 14px; color: var(--ink-faint); }
+
+  /* Header */
+  header { display: grid; gap: 14px; padding-bottom: 32px; border-bottom: 1px solid var(--line); }
+
+  /* Contest facts */
+  .facts { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1px; background: var(--line); border: 1px solid var(--line); border-radius: 10px; overflow: hidden; }
+  .fact { background: var(--surface); padding: 16px; display: grid; gap: 2px; }
+  .fact b { font-family: var(--display); font-size: 30px; font-weight: 700; line-height: 1; font-variant-numeric: tabular-nums; }
+  .fact span { font-size: 14px; color: var(--ink-soft); line-height: 1.35; }
+  .bullets { margin: 0; padding-left: 20px; display: grid; gap: 8px; max-width: 65ch; }
+  .bullets li::marker { color: var(--ink-faint); }
+
+  /* Journey */
+  .journey { list-style: none; margin: 0; padding: 0; display: grid; }
+  .stop { display: grid; grid-template-columns: 36px 1fr; gap: 14px; position: relative; padding-bottom: 18px; }
+  .stop:not(:last-child)::before {
+    content: ""; position: absolute; left: 17px; top: 34px; bottom: 0; width: 2px; background: var(--line);
+  }
+  .dot {
+    width: 36px; height: 36px; border-radius: 50%; display: grid; place-items: center;
+    font-family: var(--mono); font-size: 14px; font-weight: 500;
+    background: var(--surface); border: 2px solid var(--accent); color: var(--accent);
+  }
+  .stop.senior .dot { background: var(--accent); color: #fff; }
+  .stop-body { display: grid; gap: 2px; padding-top: 5px; }
+  .stop-body h3 { font-size: 17px; }
+  .stop-body p { font-size: 15px; color: var(--ink-soft); }
+  .payoff { font-family: var(--mono); font-size: 13px; color: var(--accent); }
+  .sidetrack {
+    margin-top: 4px; padding: 14px 16px; border: 1px dashed var(--accent); border-radius: 10px;
+    background: var(--accent-soft); font-size: 15px; color: var(--ink);
+  }
+
+  /* Score scale */
+  .scale-wrap { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 20px 16px 16px; display: grid; gap: 16px; }
+  .scale { position: relative; height: 28px; border-radius: 6px; background: #EEF2F6; }
+  .band { position: absolute; top: 0; bottom: 0; border-radius: 6px; }
+  .band.dist { background: #CFDDEE; }
+  .band.cco { background: #9FBCE0; }
+  .band.target { background: var(--accent); }
+  .tick { position: absolute; top: -6px; bottom: -6px; width: 2px; background: var(--ink); }
+  .axis { display: flex; justify-content: space-between; font-family: var(--mono); font-size: 12px; color: var(--ink-faint); margin-top: -8px; }
+  .legend { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; font-size: 15px; }
+  .legend li { display: grid; grid-template-columns: 14px 1fr auto; gap: 10px; align-items: center; }
+  .legend i { width: 14px; height: 14px; border-radius: 3px; display: block; }
+  .legend .num { font-family: var(--mono); font-size: 13px; color: var(--ink-soft); font-variant-numeric: tabular-nums; }
+  .legend .hl { font-weight: 600; }
+
+  /* Decisions */
+  .decisions { background: var(--decide-ground); border: 2px solid var(--decide-line); border-radius: 14px; padding: 24px 20px; display: grid; gap: 20px; }
+  .decisions .eyebrow { color: var(--decide); }
+  .decision { background: var(--surface); border: 1px solid var(--decide-line); border-radius: 10px; padding: 18px; display: grid; gap: 12px; }
+  .decision-head { display: flex; flex-wrap: wrap; gap: 8px 12px; align-items: baseline; justify-content: space-between; }
+  .ask { font-size: 13px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--decide); }
+  .rec { font-size: 17px; }
+  .rec strong { font-weight: 600; }
+  .tradeoffs { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .tradeoffs div { display: grid; gap: 6px; align-content: start; }
+  .tradeoffs h4 { margin: 0; font-size: 13px; letter-spacing: 0.06em; text-transform: uppercase; font-weight: 600; }
+  .tradeoffs .pro h4 { color: var(--good); }
+  .tradeoffs .con h4 { color: var(--risk); }
+  .tradeoffs ul { margin: 0; padding-left: 18px; font-size: 15px; color: var(--ink-soft); display: grid; gap: 4px; }
+  .options { font-size: 15px; color: var(--ink-soft); border-top: 1px solid var(--line); padding-top: 12px; }
+  .options b { color: var(--ink); font-weight: 600; }
+
+  /* Gaps and next */
+  .plain { list-style: none; margin: 0; padding: 0; display: grid; border-top: 1px solid var(--line); }
+  .plain li { padding: 12px 0; border-bottom: 1px solid var(--line); font-size: 15px; color: var(--ink-soft); }
+  .plain li b { color: var(--ink); font-weight: 600; }
+  .steps { margin: 0; padding-left: 22px; display: grid; gap: 10px; max-width: 65ch; }
+  .steps li::marker { font-family: var(--mono); color: var(--accent); }
+  footer { font-size: 13px; color: var(--ink-faint); border-top: 1px solid var(--line); padding-top: 16px; }
+
+  @media (max-width: 560px) {
+    .facts { grid-template-columns: repeat(2, 1fr); }
+    .tradeoffs { grid-template-columns: 1fr; }
+    .decisions { padding: 20px 14px; }
+  }
+</style>
+</head>
+<body>
+<main class="page">
+
+  <header>
+    <p class="eyebrow">Phase 1 of the project &middot; Research</p>
+    <h1>What it takes to ace the CCC in Python</h1>
+    <p class="lede">We looked into the Canadian Computing Competition (CCC) and worked out everything a complete beginner needs to learn, in order, to reach a top score on the Senior contest using Python.</p>
+    <p class="meta">Completed 21 September 2026 &middot; Checked against the contest organiser's own website, not memory</p>
+  </header>
+
+  <section aria-labelledby="done">
+    <h2 id="done">What this phase did</h2>
+    <ul class="bullets">
+      <li>Studied the contest's current format and rules.</li>
+      <li>Went through every past contest problem from 2014 to 2026 (over 100 problems).</li>
+      <li>Turned that into a <strong>step-by-step learning plan of 105 lessons</strong>. Each lesson is linked to the real past problems that use it.</li>
+      <li>Compared tools that help keep the future learning app looking polished, and picked one to recommend.</li>
+    </ul>
+    <p class="meta">Nothing was installed and no app work has started.</p>
+  </section>
+
+  <section aria-labelledby="format">
+    <h2 id="format">The contest at a glance</h2>
+    <div class="facts">
+      <div class="fact"><b>5</b><span>problems, from easy to very hard</span></div>
+      <div class="fact"><b>75</b><span>marks in total (15 each)</span></div>
+      <div class="fact"><b>3 h</b><span>online, supervised at school</span></div>
+      <div class="fact"><b>0</b><span>perfect scores in 2026</span></div>
+    </div>
+    <ul class="bullets">
+      <li>Students can resubmit answers; only their best attempt counts, and wrong tries cost nothing.</li>
+      <li>Part marks are available for solving the easier parts of each problem.</li>
+      <li>AI tools and pre-written code are banned, so students must know the techniques by heart.</li>
+      <li>Python is allowed, but it runs an older version of the language. The course will teach only what that version supports, plus ways to make programs fast enough.</li>
+    </ul>
+  </section>
+
+  <section aria-labelledby="journey-h">
+    <h2 id="journey-h">The learning journey</h2>
+    <p class="lede" style="font-size:16px">Eight stages, each unlocking harder contest problems. The contest has a beginner "Junior" paper and the harder "Senior" paper we are aiming at.</p>
+    <ol class="journey">
+      <li class="stop"><span class="dot">0</span><div class="stop-body"><h3>Getting set up</h3><p>What a program is; writing, running and submitting one.</p></div></li>
+      <li class="stop"><span class="dot">1</span><div class="stop-body"><h3>Python basics</h3><p>The core building blocks of the language.</p><span class="payoff">Unlocks: easiest Junior problems</span></div></li>
+      <li class="stop"><span class="dot">2</span><div class="stop-body"><h3>Problem-solving habits</h3><p>Reading a problem, planning, testing and fixing mistakes.</p></div></li>
+      <li class="stop"><span class="dot">3</span><div class="stop-body"><h3>Junior problems 1&ndash;3</h3><p>Solving the first three Junior problems reliably.</p><span class="payoff">About 45 / 75 on Junior</span></div></li>
+      <li class="stop"><span class="dot">4</span><div class="stop-body"><h3>Hard Junior + first Senior problems</h3><p>Full Junior paper and Senior problems 1&ndash;2.</p><span class="payoff">About 30 / 75 on Senior</span></div></li>
+      <li class="stop senior"><span class="dot">5</span><div class="stop-body"><h3>Senior problem 3</h3><p>The problem most students score almost nothing on.</p><span class="payoff">About 35&ndash;45 on Senior (award level)</span></div></li>
+      <li class="stop senior"><span class="dot">6</span><div class="stop-body"><h3>Senior problem 4</h3><p>Mostly map-and-route style puzzles.</p><span class="payoff">About 55&ndash;65 on Senior</span></div></li>
+      <li class="stop senior"><span class="dot">7</span><div class="stop-body"><h3>Senior problem 5</h3><p>The hardest problems, and knowing which ones Python can't finish in time.</p><span class="payoff">65&ndash;75 on Senior</span></div></li>
+    </ol>
+    <p class="sidetrack"><strong>Running alongside every stage:</strong> contest skills, such as time management, grabbing part marks, and full practice contests.</p>
+  </section>
+
+  <section aria-labelledby="target">
+    <h2 id="target">How hard is a top score?</h2>
+    <p>Very hard, and getting harder. Nobody in Canada scored 75 out of 75 in 2026; the best was 69. The organiser itself says a perfect score may not always be possible in Python, because a few of the hardest problems need more speed than Python can give.</p>
+    <div class="scale-wrap" role="img" aria-label="Senior score scale from 0 to 75 showing the award range 26 to 34, top-contest invitation range about 50 to 60, realistic target 63 to 68, the 2026 top score of 69 and a perfect 75.">
+      <div class="scale">
+        <span class="band dist" style="left:34.7%;width:10.6%"></span>
+        <span class="band cco" style="left:66.7%;width:13.3%"></span>
+        <span class="band target" style="left:84%;width:6.7%"></span>
+        <span class="tick" style="left:92%"></span>
+      </div>
+      <div class="axis"><span>0</span><span>25</span><span>50</span><span>75</span></div>
+      <ul class="legend">
+        <li><i style="background:#CFDDEE"></i><span>Award of distinction (recent years)</span><span class="num">26&ndash;34</span></li>
+        <li><i style="background:#9FBCE0"></i><span>Likely invite to the national final round</span><span class="num">~50&ndash;60</span></li>
+        <li class="hl"><i style="background:var(--accent)"></i><span>Our realistic target in Python</span><span class="num">63&ndash;68</span></li>
+        <li><i style="background:var(--ink);width:4px;justify-self:center"></i><span>Best score in Canada, 2026</span><span class="num">69</span></li>
+        <li><i style="background:transparent;border:2px solid var(--ink-faint)"></i><span>Perfect score (stretch goal)</span><span class="num">75</span></li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="decisions" aria-labelledby="decide">
+    <p class="eyebrow">Needs your approval</p>
+    <h2 id="decide">Two decisions before we continue</h2>
+
+    <article class="decision">
+      <div class="decision-head">
+        <h3>1. Design tool for the app</h3>
+        <span class="ask">Approve or choose backup</span>
+      </div>
+      <p class="rec">We recommend <strong>Impeccable</strong>, a popular free design helper. <em>Why:</em> it is the only option that keeps all of the app's many lesson pages looking consistent, and it checks readability automatically.</p>
+      <div class="tradeoffs">
+        <div class="pro"><h4>Upside</h4><ul><li>Consistent, polished look across dozens of pages</li><li>Built-in checks for readability and accessibility</li><li>Actively maintained, widely used</li></ul></div>
+        <div class="con"><h4>Downside</h4><ul><li>Made by an outside developer, not Anthropic</li><li>Heavier: downloads extra software and runs automatic checks</li><li>Changes often, so we would lock a version</li></ul></div>
+      </div>
+      <p class="options"><b>Backup:</b> Anthropic's own "frontend-design" tool. Simpler, no outside software, but does less to keep pages consistent. Choose it if you prefer no third-party code.</p>
+    </article>
+
+    <article class="decision">
+      <div class="decision-head">
+        <h3>2. Score target</h3>
+        <span class="ask">Confirm framing</span>
+      </div>
+      <p class="rec">The course <strong>teaches everything needed for 75/75</strong>, but tells learners honestly that <strong>about 63&ndash;68</strong> is the realistic best in Python.</p>
+      <div class="tradeoffs">
+        <div class="pro"><h4>Upside</h4><ul><li>Honest, sets fair expectations</li><li>Still covers the full perfect-score material</li></ul></div>
+        <div class="con"><h4>Downside</h4><ul><li>Might feel less ambitious to some learners</li><li>The 63&ndash;68 figure is our estimate, not an official number</li></ul></div>
+      </div>
+    </article>
+  </section>
+
+  <section aria-labelledby="gaps">
+    <h2 id="gaps">Known gaps</h2>
+    <ul class="plain">
+      <li><b>Python speed on the hardest problems is partly estimated.</b> A key practice website blocked our research, so we could not confirm every case.</li>
+      <li><b>The 2026 official solutions are not yet published</b>, so the newest hardest problem is not fully understood.</li>
+      <li><b>Score cut-offs for awards and the national round are estimates</b>; the organiser does not publish them.</li>
+      <li><b>The contest's Python version could be upgraded</b> for 2027. We will re-check before the app launches.</li>
+    </ul>
+  </section>
+
+  <section aria-labelledby="next">
+    <h2 id="next">What comes next</h2>
+    <ol class="steps">
+      <li>You approve (or change) the two decisions above.</li>
+      <li>We start writing the actual lessons, following the 105-lesson plan.</li>
+      <li>The design tool is installed only after your approval. Building the app itself waits for a later go-ahead.</li>
+    </ol>
+  </section>
+
+  <footer>ET-CCC project &middot; Phase 1 manager report &middot; Local file, not published</footer>
+</main>
+</body>
+</html>

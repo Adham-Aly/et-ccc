@@ -1,0 +1,30 @@
+# et-ccc .gitignore (plan §10.3)
+
+# Tool state lives in .tooling/ (plan §9.1); only config and docs are tracked
+.tooling/*
+!.tooling/env.sh
+!.tooling/npmrc
+!.tooling/bin/
+!.tooling/README.md
+!.tooling/contain-allowlist.txt
+
+# Build and test output
+node_modules/
+.next/
+out/
+test-results/
+playwright-report/
+*.tsbuildinfo
+
+# Phase scratch and run files
+work/**/_scratch/
+work/**/_run/
+
+# Secrets and machine-local config
+.env*
+.vercel/
+.claude/settings.local.json
+.impeccable/config.local.json
+
+# OS
+.DS_Store

@@ -1,0 +1,12 @@
+#!/bin/bash
+# System gh (Homebrew, pre-existing, the Manager's login) with cache/state redirected into .tooling/xdg.
+# Blocks every subcommand that would change the Manager's gh login or config (plan §10.2).
+. "$(dirname "$0")/_wrap.sh"
+case "${1:-} ${2:-}" in
+  "auth login"|"auth logout"|"auth refresh"|"auth setup-git"|"auth switch"|"auth token")
+    wrap_die "gh $1 $2 is forbidden: it changes or exposes the Manager's login. If auth is missing, ask the Manager to run gh auth login in their own terminal (plan §10.2).";;
+  "config set"|"config clear-cache") wrap_die "gh config writes are forbidden (the config lives in ~/.config/gh)";;
+  "extension "*|"ext "*) wrap_die "gh extensions are forbidden (they install into the user data dir)";;
+  "alias set"|"alias delete"|"alias import") wrap_die "gh alias writes are forbidden (they change ~/.config/gh)";;
+esac
+wrap_exec "/opt/homebrew" "/opt/homebrew/bin/gh" "$@"

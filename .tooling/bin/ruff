@@ -1,0 +1,4 @@
+#!/bin/bash
+# ruff from the tools venv (built from the workspace PyPy 3.8).
+. "$(dirname "$0")/_wrap.sh"
+wrap_exec "$ET_T/venvs/tools" "$ET_T/venvs/tools/bin/ruff" "$@"

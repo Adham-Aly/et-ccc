@@ -1,0 +1,1372 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="light">
+<title>CCC Course Build Plan</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700&family=Public+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+  :root {
+    color-scheme: light;
+    --ground: #F7F9FB;
+    --surface: #FFFFFF;
+    --sunk: #EFF3F7;
+    --ink: #16202E;
+    --ink-soft: #4A5668;
+    --ink-faint: #717C8D;
+    --line: #DDE3EA;
+    --line-strong: #C5CED9;
+    --accent: #1F5FA8;
+    --accent-soft: #E6EEF8;
+    --decide: #9A5300;
+    --decide-ground: #FFF6E8;
+    --decide-line: #F0C98A;
+    --good: #2E7D4F;
+    --good-soft: #E5F3EA;
+    --risk: #B4442E;
+    --risk-soft: #FBEAE6;
+    --opus: #1F5FA8;
+    --sonnet: #2BA39A;
+    --code-ground: #FBFCFD;
+    --display: "Bricolage Grotesque", "Avenir Next", "Segoe UI", system-ui, sans-serif;
+    --body: "Public Sans", "Helvetica Neue", Arial, system-ui, sans-serif;
+    --mono: "IBM Plex Mono", ui-monospace, Menlo, Consolas, monospace;
+  }
+  * { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; scroll-behavior: smooth; }
+  @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+  body {
+    margin: 0;
+    background: var(--ground);
+    color: var(--ink);
+    font-family: var(--body);
+    font-size: 16px;
+    line-height: 1.6;
+    padding-inline: 16px;
+    padding-block: 0 72px;
+  }
+  a { color: var(--accent); text-underline-offset: 2px; }
+  a:focus-visible, button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 4px; }
+  h1, h2, h3, h4 { font-family: var(--display); text-wrap: balance; margin: 0; line-height: 1.15; }
+  h1 { font-size: clamp(32px, 6vw, 46px); font-weight: 700; letter-spacing: -0.015em; }
+  h2 { font-size: clamp(24px, 4vw, 30px); font-weight: 700; letter-spacing: -0.01em; }
+  h3 { font-size: 19px; font-weight: 600; }
+  h4 { font-size: 16px; font-weight: 600; }
+  p { margin: 0; }
+  ul, ol { margin: 0; }
+  code, .mono { font-family: var(--mono); font-size: 0.88em; }
+  code { background: var(--sunk); padding: 1px 5px; border-radius: 4px; overflow-wrap: anywhere; }
+  .eyebrow { font-size: 12px; font-weight: 600; letter-spacing: 0.09em; text-transform: uppercase; color: var(--accent); }
+  .soft { color: var(--ink-soft); }
+  .faint { color: var(--ink-faint); font-size: 14px; }
+  .prose { max-width: 66ch; }
+  .stack { display: grid; gap: 14px; }
+  .stack-lg { display: grid; gap: 28px; }
+
+  /* Shell */
+  .shell { max-width: 1120px; margin: 0 auto; display: grid; grid-template-columns: minmax(0, 1fr); }
+  main { display: grid; gap: 72px; min-width: 0; padding-block: 8px 0; }
+  main > section { display: grid; gap: 22px; scroll-margin-top: 72px; min-width: 0; }
+  .sec-head { display: grid; gap: 8px; }
+  .sec-head .num { font-family: var(--mono); font-size: 13px; color: var(--ink-faint); }
+
+  /* TOC */
+  nav.toc {
+    position: sticky; top: env(safe-area-inset-top, 0px); z-index: 10;
+    margin-inline: -16px; padding: 10px 16px;
+    background: rgba(247, 249, 251, 0.96);
+    backdrop-filter: blur(6px);
+    border-bottom: 1px solid var(--line);
+    overflow-x: auto; scrollbar-width: none;
+  }
+  nav.toc::-webkit-scrollbar { display: none; }
+  nav.toc .toc-title { display: none; }
+  nav.toc ol { list-style: none; padding: 0; display: flex; gap: 6px; white-space: nowrap; }
+  nav.toc a {
+    display: block; text-decoration: none; color: var(--ink-soft);
+    font-size: 14px; font-weight: 500; padding: 6px 10px; border-radius: 6px;
+  }
+  nav.toc a:hover { background: var(--sunk); color: var(--ink); }
+  nav.toc a.active { background: var(--accent-soft); color: var(--accent); }
+  nav.toc a.toc-decide { color: var(--decide); background: var(--decide-ground); border: 1px solid var(--decide-line); padding: 5px 10px; }
+  nav.toc a.toc-decide.active { background: #FDE9C8; }
+  nav.toc .toc-n { font-family: var(--mono); font-size: 12px; color: var(--ink-faint); margin-right: 6px; }
+  nav.toc a.active .toc-n { color: var(--accent); }
+  nav.toc a.toc-decide .toc-n { color: var(--decide); }
+
+  @media (min-width: 1040px) {
+    body { padding-block: 0 96px; }
+    .shell { grid-template-columns: 210px minmax(0, 780px); gap: 56px; justify-content: center; }
+    nav.toc {
+      top: 0; margin: 0; padding: 40px 0 24px; border: 0; background: none; backdrop-filter: none;
+      align-self: start; max-height: 100vh; overflow-y: auto;
+    }
+    nav.toc .toc-title { display: block; font-size: 12px; font-weight: 600; letter-spacing: 0.09em; text-transform: uppercase; color: var(--ink-faint); margin-bottom: 10px; padding-left: 10px; }
+    nav.toc ol { flex-direction: column; white-space: normal; gap: 2px; }
+    nav.toc a.toc-decide { margin-top: 2px; }
+    main { padding-top: 40px; }
+    main > section { scroll-margin-top: 24px; }
+  }
+
+  /* Header */
+  header.top { display: grid; gap: 16px; padding-bottom: 28px; border-bottom: 1px solid var(--line); }
+  .lede { font-size: 18px; color: var(--ink-soft); max-width: 64ch; }
+  .meta { display: flex; flex-wrap: wrap; gap: 8px 18px; font-size: 14px; color: var(--ink-faint); }
+  .meta b { color: var(--ink-soft); font-weight: 600; }
+
+  .callout-decide {
+    display: grid; gap: 10px; padding: 18px 20px; border-radius: 12px;
+    background: var(--decide-ground); border: 1px solid var(--decide-line);
+  }
+  .callout-decide h3 { color: var(--decide); font-size: 18px; }
+  .callout-decide .row { display: flex; flex-wrap: wrap; gap: 8px; }
+  .idchip {
+    display: inline-flex; align-items: center; font-family: var(--mono); font-size: 13px; font-weight: 500;
+    padding: 2px 8px; border-radius: 6px; background: var(--surface); border: 1px solid var(--decide-line); color: var(--decide); text-decoration: none;
+  }
+  .idchip:hover { background: #FDE9C8; }
+
+  .tiles { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 1px; background: var(--line); border: 1px solid var(--line); border-radius: 12px; overflow: hidden; }
+  .tile { background: var(--surface); padding: 16px; display: grid; gap: 2px; align-content: start; }
+  .tile b { font-family: var(--display); font-size: 30px; font-weight: 700; line-height: 1.05; font-variant-numeric: tabular-nums; }
+  .tile span { font-size: 14px; color: var(--ink-soft); line-height: 1.35; }
+  @media (max-width: 640px) { .tiles { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+
+  /* Generic blocks */
+  .card { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 18px 20px; display: grid; gap: 10px; min-width: 0; align-content: start; }
+  a[href^="#d-"] { white-space: nowrap; }
+  .compat { border-top: 1px solid var(--line); background: var(--code-ground); padding: 12px 0 14px; font-family: var(--mono); font-size: 13.5px; line-height: 1.75; }
+  .compat .cap { font-family: var(--body); font-size: 12px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--ink-faint); padding: 0 14px 4px; }
+  .grid2 { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
+  .grid3 { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; }
+  @media (max-width: 760px) { .grid2, .grid3 { grid-template-columns: minmax(0, 1fr); } }
+  ul.clean { padding-left: 20px; display: grid; gap: 6px; align-content: start; }
+  ul.clean li::marker { color: var(--ink-faint); }
+  .rules { list-style: none; padding: 0; display: grid; gap: 8px; }
+  .rules li { display: grid; grid-template-columns: 22px 1fr; gap: 8px; align-items: start; }
+  .rules li::before { content: ""; width: 8px; height: 8px; margin: 9px 0 0 6px; border-radius: 2px; background: var(--accent); }
+  .term { border-bottom: 1px dotted var(--ink-faint); }
+  .def { color: var(--ink-soft); font-size: 15px; }
+
+  .tablewrap { overflow-x: auto; border: 1px solid var(--line); border-radius: 12px; background: var(--surface); }
+  table { border-collapse: collapse; width: 100%; font-size: 15px; }
+  th, td { text-align: left; vertical-align: top; padding: 10px 14px; border-bottom: 1px solid var(--line); }
+  th { font-size: 12px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--ink-faint); background: var(--ground); }
+  tr:last-child td { border-bottom: 0; }
+  td.nowrap, th.nowrap { white-space: nowrap; }
+  td .mono { color: var(--ink-soft); }
+  .tbl-min { min-width: 560px; }
+
+  .pill { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 600; padding: 2px 8px; border-radius: 999px; white-space: nowrap; }
+  .pill.good { background: var(--good-soft); color: var(--good); }
+  .pill.bad { background: var(--risk-soft); color: var(--risk); }
+  .pill.info { background: var(--accent-soft); color: var(--accent); }
+  .pill.hard { background: var(--risk-soft); color: var(--risk); }
+  .pill.check { background: var(--accent-soft); color: var(--accent); }
+  .pill.swarm { background: var(--decide-ground); color: var(--decide); border: 1px solid var(--decide-line); }
+  .pill.opus { background: var(--accent-soft); color: var(--opus); }
+  .pill.sonnet { background: #E3F4F2; color: #1C6F68; }
+
+  /* Journey flow */
+  .flow { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+  .flow .step { background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 6px 12px; font-size: 14px; font-weight: 500; }
+  .flow .arr { color: var(--ink-faint); font-size: 14px; }
+
+  /* Lesson shape */
+  .shape { display: grid; gap: 0; border: 1px solid var(--line); border-radius: 12px; overflow: hidden; background: var(--surface); }
+  .shape-row { display: grid; grid-template-columns: 130px 1fr 150px; gap: 16px; padding: 14px 18px; border-bottom: 1px solid var(--line); align-items: start; }
+  .shape-row:last-child { border-bottom: 0; }
+  .shape-row .stg { font-family: var(--display); font-weight: 600; font-size: 16px; }
+  .shape-row .stg small { display: block; font-family: var(--body); font-weight: 400; font-size: 13px; color: var(--ink-faint); }
+  .support { display: grid; gap: 4px; font-size: 13px; color: var(--ink-faint); }
+  .support .bar { height: 6px; border-radius: 3px; background: var(--sunk); overflow: hidden; }
+  .support .bar i { display: block; height: 100%; background: var(--accent); border-radius: 3px; }
+  @media (max-width: 640px) { .shape-row { grid-template-columns: minmax(0, 1fr); gap: 8px; } }
+
+  /* Exercise types */
+  .ex-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 10px; }
+  .ex { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 12px 14px; display: grid; gap: 4px; align-content: start; }
+  .ex b { font-size: 15px; }
+  .ex span { font-size: 14px; color: var(--ink-soft); line-height: 1.45; }
+
+  .ladder { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 6px; }
+  .ladder div { background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 10px; display: grid; gap: 2px; }
+  .ladder div b { font-family: var(--mono); font-size: 12px; color: var(--ink-faint); font-weight: 500; }
+  .ladder div span { font-size: 14px; font-weight: 600; }
+  .ladder div:last-child { background: var(--sunk); }
+  @media (max-width: 560px) { .ladder { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+
+  /* Runner mock */
+  .mock { border: 1px solid var(--line-strong); border-radius: 12px; overflow: hidden; background: var(--surface); box-shadow: 0 1px 2px rgba(22,32,46,0.05), 0 8px 24px rgba(22,32,46,0.06); }
+  .mock-bar { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px; align-items: center; padding: 10px 14px; border-bottom: 1px solid var(--line); background: var(--ground); font-size: 14px; }
+  .mock-bar .crumb { color: var(--ink-soft); }
+  .mock-bar .crumb b { color: var(--ink); font-weight: 600; }
+  .mock-body { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); }
+  @media (max-width: 720px) { .mock-body { grid-template-columns: minmax(0, 1fr); } }
+  .editor { background: var(--code-ground); border-right: 1px solid var(--line); padding: 14px 0; font-family: var(--mono); font-size: 13.5px; line-height: 1.75; overflow-x: auto; }
+  @media (max-width: 720px) { .editor { border-right: 0; border-bottom: 1px solid var(--line); } }
+  .editor .ln { display: grid; grid-template-columns: 34px 1fr; white-space: pre; }
+  .editor .ln i { font-style: normal; color: #A7B0BC; text-align: right; padding-right: 12px; user-select: none; }
+  .k { color: #7A3E9D; } .f { color: #1F5FA8; } .n { color: #9A5300; } .s { color: #2E7D4F; }
+  .squig { text-decoration: underline wavy var(--risk); text-underline-offset: 3px; }
+  .diag { margin: 8px 14px 0 46px; padding: 8px 10px; border-radius: 6px; background: var(--risk-soft); color: #7D2E1F; font-family: var(--body); font-size: 13px; line-height: 1.45; white-space: normal; }
+  .out { padding: 14px; display: grid; gap: 12px; align-content: start; }
+  .btns { display: flex; gap: 8px; flex-wrap: wrap; }
+  .btn { font: 600 14px var(--body); padding: 7px 14px; border-radius: 8px; border: 1px solid var(--line-strong); background: var(--surface); color: var(--ink); }
+  .btn.primary { background: var(--accent); border-color: var(--accent); color: #fff; }
+  .btn.disabled { opacity: 0.5; }
+  .tests { display: grid; gap: 6px; font-size: 14px; }
+  .tests div { display: flex; justify-content: space-between; gap: 10px; align-items: center; padding: 6px 10px; border: 1px solid var(--line); border-radius: 8px; }
+  .tests .t { color: var(--ink-faint); font-family: var(--mono); font-size: 12px; font-variant-numeric: tabular-nums; }
+  .speed { font-size: 13px; color: var(--ink-soft); padding: 8px 10px; background: var(--sunk); border-radius: 8px; line-height: 1.45; }
+  .explain { font-size: 13px; padding: 8px 10px; border-radius: 8px; background: var(--accent-soft); color: #173F6E; line-height: 1.45; }
+  .status-dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: var(--good); margin-right: 6px; }
+
+  /* Problem page anatomy */
+  .anat { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 8px; counter-reset: a; }
+  .anat div { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; font-size: 14px; display: grid; gap: 2px; }
+  .anat div b { font-size: 14px; }
+  .anat div span { color: var(--ink-soft); line-height: 1.45; }
+  .links-rule { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+  @media (max-width: 640px) { .links-rule { grid-template-columns: minmax(0, 1fr); } }
+  .judge { border: 1px solid var(--line); border-radius: 12px; padding: 16px; background: var(--surface); display: grid; gap: 6px; }
+  .judge .yrs { font-family: var(--display); font-size: 22px; font-weight: 700; }
+  .judge .url { font-family: var(--mono); font-size: 13px; background: var(--sunk); padding: 6px 8px; border-radius: 6px; overflow-wrap: anywhere; }
+
+  /* Review spacing */
+  .spaced { position: relative; height: 64px; margin: 6px 8px 0; }
+  .spaced .axis { position: absolute; left: 0; right: 0; top: 18px; height: 2px; background: var(--line-strong); }
+  .spaced .dot { position: absolute; top: 11px; width: 16px; height: 16px; margin-left: -8px; border-radius: 50%; background: var(--accent); border: 3px solid var(--surface); box-shadow: 0 0 0 1px var(--accent); }
+  .spaced .dot.start { background: var(--surface); box-shadow: 0 0 0 1px var(--line-strong); }
+  .spaced .lab { position: absolute; top: 34px; transform: translateX(-50%); font-size: 12px; color: var(--ink-soft); white-space: nowrap; font-variant-numeric: tabular-nums; }
+
+  /* Architecture diagram */
+  .arch { display: grid; grid-template-columns: minmax(0, 1fr) 28px minmax(0, 0.8fr) 28px minmax(0, 1fr); align-items: stretch; gap: 0; }
+  .zone { border: 1px solid var(--line); border-radius: 12px; background: var(--surface); padding: 14px; display: grid; gap: 8px; align-content: start; }
+  .zone h4 { font-size: 15px; }
+  .zone .where { font-size: 12px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--ink-faint); }
+  .box { border: 1px solid var(--line); border-radius: 8px; padding: 8px 10px; font-size: 14px; background: var(--ground); line-height: 1.4; }
+  .box small { display: block; color: var(--ink-faint); font-size: 12.5px; }
+  .box.hl { background: var(--accent-soft); border-color: #BCD0EA; }
+  .down { text-align: center; color: var(--ink-faint); font-size: 13px; line-height: 1; }
+  .conn { display: flex; align-items: center; justify-content: center; color: var(--ink-faint); }
+  .conn svg { width: 28px; height: 16px; }
+  .external { margin-top: 12px; display: flex; flex-wrap: wrap; gap: 10px; align-items: center; justify-content: flex-end; font-size: 14px; color: var(--ink-soft); }
+  .external .box { background: var(--surface); border-style: dashed; }
+  @media (max-width: 760px) {
+    .arch { grid-template-columns: minmax(0, 1fr); }
+    .conn { height: 28px; }
+    .conn svg { transform: rotate(90deg); }
+    .external { justify-content: flex-start; }
+  }
+
+  /* Stage path */
+  .path { list-style: none; padding: 0; display: grid; }
+  .stage { display: grid; grid-template-columns: 44px minmax(0, 1fr); gap: 14px; position: relative; padding-bottom: 18px; }
+  .stage::before { content: ""; position: absolute; left: 21px; top: 44px; bottom: 0; width: 2px; background: var(--line); }
+  .stage:last-child::before { display: none; }
+  .stage .mk { width: 44px; height: 44px; border-radius: 50%; background: var(--surface); border: 2px solid var(--accent); display: grid; place-items: center; font-family: var(--display); font-weight: 700; color: var(--accent); font-size: 15px; }
+  .stage .body { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 14px 16px; display: grid; gap: 8px; }
+  .stage .body h3 { font-size: 17px; }
+  .stage .topics { font-size: 14px; color: var(--ink-soft); line-height: 1.5; }
+  .stage .facts { display: flex; flex-wrap: wrap; gap: 6px; }
+  .fact-chip { font-size: 13px; padding: 2px 9px; border-radius: 6px; background: var(--sunk); color: var(--ink-soft); white-space: nowrap; }
+  .fact-chip b { color: var(--ink); font-weight: 600; font-variant-numeric: tabular-nums; }
+  .fact-chip.c { background: var(--decide-ground); color: var(--decide); }
+  .lessbar { display: grid; grid-template-columns: 1fr 64px; gap: 10px; align-items: center; font-size: 12px; color: var(--ink-faint); }
+  .lessbar .bar { height: 6px; background: var(--sunk); border-radius: 3px; overflow: hidden; }
+  .lessbar .bar i { display: block; height: 100%; background: var(--accent); border-radius: 3px; }
+
+  /* Quality */
+  .layers { display: grid; gap: 10px; }
+  .layer { display: grid; grid-template-columns: 44px minmax(0, 1fr); gap: 14px; align-items: start; background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 14px 16px; }
+  .layer .ln { width: 44px; height: 44px; border-radius: 10px; background: var(--accent-soft); color: var(--accent); display: grid; place-items: center; font-family: var(--display); font-weight: 700; font-size: 18px; }
+  .layer p { font-size: 15px; color: var(--ink-soft); }
+  .gate h3 { font-size: 17px; }
+  .gate ul { padding-left: 18px; display: grid; gap: 5px; font-size: 15px; color: var(--ink-soft); }
+  .gate ul li::marker { color: var(--ink-faint); }
+  .gate .when { font-size: 13px; color: var(--ink-faint); }
+  .pipe { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 6px; }
+  .pipe div { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; display: grid; gap: 3px; align-content: start; position: relative; }
+  .pipe div b { font-size: 14px; }
+  .pipe div span { font-size: 13px; color: var(--ink-soft); line-height: 1.4; }
+  .pipe div em { font-style: normal; font-family: var(--mono); font-size: 11.5px; color: var(--ink-faint); }
+  .pipe div.done { background: var(--good-soft); border-color: #BFE0CB; }
+  @media (max-width: 760px) { .pipe { grid-template-columns: minmax(0, 1fr); } }
+
+  /* Roadmap */
+  .strip { display: grid; grid-template-columns: repeat(17, minmax(0, 1fr)); gap: 3px; }
+  .strip div { height: 40px; border-radius: 6px; display: grid; place-items: center; font-family: var(--mono); font-size: 12px; font-weight: 500; position: relative; }
+  .strip .g1 { background: #DCE7F4; color: #1B4D86; }
+  .strip .g2 { background: #FDE9C8; color: #7C4300; }
+  .strip .g3 { background: #D8EFEC; color: #1C6F68; }
+  .strip .g4 { background: #E7E1F4; color: #4D3A7D; }
+  .strip .g5 { background: var(--sunk); color: var(--ink-soft); }
+  .strip .gate::after { content: ""; position: absolute; top: -5px; right: -3px; width: 10px; height: 10px; border-radius: 50%; background: var(--risk); border: 2px solid var(--ground); }
+  @media (max-width: 640px) { .strip { grid-template-columns: repeat(9, minmax(0, 1fr)); } }
+  .legend { display: flex; flex-wrap: wrap; gap: 8px 16px; font-size: 13px; color: var(--ink-soft); }
+  .legend span { display: inline-flex; align-items: center; gap: 6px; }
+  .legend i { width: 12px; height: 12px; border-radius: 3px; display: inline-block; }
+  .legend i.dot { border-radius: 50%; width: 10px; height: 10px; background: var(--risk); }
+
+  .group-label { font-size: 12px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-faint); padding: 10px 0 6px 58px; }
+  .tl { list-style: none; padding: 0; display: grid; }
+  .ph { display: grid; grid-template-columns: 44px minmax(0, 1fr); gap: 14px; position: relative; padding-bottom: 12px; }
+  .ph::before { content: ""; position: absolute; left: 21px; top: 0; bottom: 0; width: 2px; background: var(--line); }
+  .tl .ph:first-child::before { top: 22px; }
+  .tl .ph:last-child::before { bottom: calc(100% - 22px); }
+  .ph .mk { position: relative; z-index: 1; width: 44px; height: 44px; border-radius: 10px; display: grid; place-items: center; font-family: var(--mono); font-weight: 500; font-size: 13px; }
+  .ph.g1 .mk { background: #DCE7F4; color: #1B4D86; }
+  .ph.g2 .mk { background: #FDE9C8; color: #7C4300; }
+  .ph.g3 .mk { background: #D8EFEC; color: #1C6F68; }
+  .ph.g4 .mk { background: #E7E1F4; color: #4D3A7D; }
+  .ph.g5 .mk { background: var(--sunk); color: var(--ink-soft); }
+  .ph .body { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 12px 16px; display: grid; gap: 6px; }
+  .ph.hardgate .body { border-color: #E8B4A8; box-shadow: inset 3px 0 0 var(--risk); }
+  .ph .top { display: flex; flex-wrap: wrap; gap: 6px 10px; align-items: baseline; justify-content: space-between; }
+  .ph h3 { font-size: 16.5px; }
+  .ph p { font-size: 15px; color: var(--ink-soft); }
+  .ph .tags { display: flex; flex-wrap: wrap; gap: 6px; }
+  .ph .agents { font-size: 13px; color: var(--ink-faint); font-variant-numeric: tabular-nums; white-space: nowrap; }
+
+  /* Agents */
+  .tree { display: grid; gap: 0; justify-items: center; }
+  .tier { width: 100%; max-width: 560px; border: 1px solid var(--line); border-radius: 12px; background: var(--surface); padding: 12px 16px; display: grid; gap: 4px; }
+  .tier .tl2 { display: flex; flex-wrap: wrap; gap: 8px; justify-content: space-between; align-items: baseline; }
+  .tier b { font-family: var(--display); font-size: 16px; font-weight: 600; }
+  .tier span.d { font-size: 14px; color: var(--ink-soft); }
+  .tier.you { background: var(--decide-ground); border-color: var(--decide-line); max-width: 360px; }
+  .tier.main { max-width: 460px; }
+  .vline { width: 2px; height: 22px; background: var(--line-strong); }
+  .workers { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 6px; width: 100%; max-width: 560px; }
+  .workers div { border-radius: 8px; padding: 8px 4px; text-align: center; font-size: 12px; font-weight: 600; }
+  .workers .o { background: var(--accent-soft); color: var(--opus); }
+  .workers .s { background: #E3F4F2; color: #1C6F68; }
+  .tree .note { font-size: 13px; color: var(--ink-faint); margin-top: 8px; text-align: center; max-width: 560px; }
+
+  .chart { display: grid; gap: 6px; }
+  .crow { display: grid; grid-template-columns: 150px minmax(0, 1fr) 104px; gap: 10px; align-items: center; font-size: 13.5px; }
+  .crow .nm { color: var(--ink-soft); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .crow .nm b { font-family: var(--mono); font-weight: 500; color: var(--ink); margin-right: 6px; }
+  .crow .track { display: flex; gap: 2px; height: 16px; }
+  .crow .track i { display: block; height: 100%; }
+  .crow .track i.o { background: var(--opus); border-radius: 4px 0 0 4px; }
+  .crow .track i.s { background: var(--sonnet); border-radius: 0 4px 4px 0; }
+  .crow .track i.o:last-child { border-radius: 4px; }
+  .crow .track i.s:first-child { border-radius: 4px; }
+  .crow .val { font-variant-numeric: tabular-nums; color: var(--ink-soft); font-size: 13px; white-space: nowrap; }
+  .crow .val b { color: var(--ink); }
+  .crow.total { border-top: 1px solid var(--line); padding-top: 8px; margin-top: 4px; }
+  @media (max-width: 560px) {
+    .crow { grid-template-columns: 44px minmax(0, 1fr) 84px; }
+    .crow .nm span { display: none; }
+  }
+  .chart-legend { display: flex; flex-wrap: wrap; gap: 14px; font-size: 13px; color: var(--ink-soft); }
+  .chart-legend span { display: inline-flex; gap: 6px; align-items: center; }
+  .chart-legend i { width: 12px; height: 12px; border-radius: 3px; display: inline-block; }
+
+  /* Decisions */
+  .dgroup { display: grid; gap: 12px; }
+  .dgroup > h3 { display: flex; flex-wrap: wrap; gap: 8px; align-items: baseline; }
+  .dgroup > h3 small { font-family: var(--body); font-weight: 400; font-size: 14px; color: var(--ink-faint); }
+  .dcards { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+  @media (max-width: 760px) { .dcards { grid-template-columns: minmax(0, 1fr); } }
+  .dcard { background: var(--surface); border: 1px solid var(--decide-line); border-radius: 12px; padding: 16px 18px; display: grid; gap: 10px; align-content: start; scroll-margin-top: 80px; }
+  .dcard.wide { grid-column: 1 / -1; }
+  .dcard.fyi { border-color: var(--line); }
+  .dcard .dh { display: flex; gap: 10px; align-items: baseline; justify-content: space-between; flex-wrap: wrap; }
+  .dcard .did { font-family: var(--mono); font-size: 14px; font-weight: 500; color: #fff; background: var(--decide); padding: 2px 9px; border-radius: 6px; }
+  .dcard.fyi .did { background: var(--ink-faint); }
+  .dcard .by { font-size: 12.5px; color: var(--ink-faint); }
+  .dcard .q { font-family: var(--display); font-size: 17px; font-weight: 600; line-height: 1.3; }
+  .dcard dl { margin: 0; display: grid; gap: 8px; font-size: 15px; }
+  .dcard dt { font-size: 12px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--ink-faint); }
+  .dcard dd { margin: 0; color: var(--ink-soft); }
+  .dcard dd.rec { color: var(--ink); }
+  .reply { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 16px 18px; display: grid; gap: 10px; }
+  .reply pre { margin: 0; background: var(--sunk); border-radius: 8px; padding: 12px 14px; font-family: var(--mono); font-size: 13px; line-height: 1.7; overflow-x: auto; }
+  .reply .rh { display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-wrap: wrap; }
+  .copy { font: 600 13px var(--body); padding: 6px 12px; border-radius: 8px; border: 1px solid var(--line-strong); background: var(--surface); color: var(--ink); cursor: pointer; }
+  .copy:hover { background: var(--sunk); }
+
+  .risk-sev { font-size: 12px; font-weight: 600; }
+  footer { margin-top: 24px; padding-top: 20px; border-top: 1px solid var(--line); font-size: 14px; color: var(--ink-faint); display: grid; gap: 4px; }
+</style>
+</head>
+<body>
+<div class="shell">
+
+<nav class="toc" aria-label="Contents">
+  <div class="toc-title">Contents</div>
+  <ol>
+    <li><a href="#app"><span class="toc-n">1</span>The app</a></li>
+    <li><a href="#learner"><span class="toc-n">2</span>Learner's experience</a></li>
+    <li><a href="#architecture"><span class="toc-n">3</span>Architecture</a></li>
+    <li><a href="#curriculum"><span class="toc-n">4</span>Curriculum</a></li>
+    <li><a href="#quality"><span class="toc-n">5</span>Quality checks</a></li>
+    <li><a href="#roadmap"><span class="toc-n">6</span>Build roadmap</a></li>
+    <li><a href="#agents"><span class="toc-n">7</span>Agent team</a></li>
+    <li><a href="#decisions" class="toc-decide"><span class="toc-n">8</span>Your decisions</a></li>
+    <li><a href="#risks"><span class="toc-n">9</span>Risks and gaps</a></li>
+  </ol>
+</nav>
+
+<main>
+
+<header class="top">
+  <div class="eyebrow">Phase 2 report · Implementation plan</div>
+  <h1>How the CCC course will be built</h1>
+  <p class="lede">This is the short version of the implementation plan. It covers what the learner will see, how the app works, how quality is checked, the order of work, the agent team, and the decisions that need you. Nothing gets built until you approve the plan.</p>
+  <div class="meta">
+    <span><b>Date</b> 23 September 2026</span>
+    <span><b>Plan</b> v1.0, waiting for your approval</span>
+    <span><b>Full plan</b> <code>context/implementation-plan.md</code></span>
+  </div>
+  <div class="callout-decide">
+    <h3>16 items need your reply</h3>
+    <p>Five of them block the first build phase: approving the plan, version control, system traces, two small process edits, and which Node the writing checker uses. Each item has a recommendation, so a reply like “all recommendations accepted” works too.</p>
+    <div class="row">
+      <a class="idchip" href="#d-p2a">P2-A</a><a class="idchip" href="#d-q3">Q-3</a><a class="idchip" href="#d-q13">Q-13</a><a class="idchip" href="#d-q14">Q-14</a><a class="idchip" href="#d-q15">Q-15</a>
+      <a class="idchip" href="#decisions" style="border-style:dashed">See all</a>
+    </div>
+  </div>
+  <div class="tiles" role="list">
+    <div class="tile" role="listitem"><b>~233</b><span>lessons across 105 modules</span></div>
+    <div class="tile" role="listitem"><b>119</b><span>CCC problem pages, 2014 to 2026</span></div>
+    <div class="tile" role="listitem"><b>~1,230</b><span>auto-graded exercises</span></div>
+    <div class="tile" role="listitem"><b>17</b><span>build phases, P3 to P19</span></div>
+  </div>
+</header>
+
+<!-- 1 -->
+<section id="app">
+  <div class="sec-head"><span class="num">01</span><h2>What the app is</h2></div>
+  <div class="stack prose">
+    <p>A free website that takes one learner from never having written code to solving CCC Senior problems S1 to S5 in Python. It is built for the specific learner you have in mind, working alone at their own pace.</p>
+    <p>There are no accounts and no server. The pages, the Python that runs the learner's code, and their saved progress all live in their web browser. When the learner wants to test a solution at real contest speed, the app links out to two free online judges, WMOJ and DMOJ.</p>
+  </div>
+  <ul class="rules prose">
+    <li><span><b>Light mode only</b>, in the app and in these reports.</span></li>
+    <li><span><b>Python only</b>, written for Python 3.8, the version the contest grader runs.</span></li>
+    <li><span><b>No score targets.</b> This is a hard rule: the app never mentions target scores, cutoffs, expected results, or claims that Python “can't” solve something. It stays about learning.</span></li>
+    <li><span><b>Problem statements are paraphrased</b>, never copied, and every problem page credits the CEMC. The app is free and non-commercial, as the CEMC licence requires.</span></li>
+  </ul>
+</section>
+
+<!-- 2 -->
+<section id="learner">
+  <div class="sec-head"><span class="num">02</span><h2>The learner's experience</h2></div>
+  <p class="prose soft">A typical session: open the home page, follow the suggested next step, work through a lesson, and clear a few review items.</p>
+  <div class="flow" aria-label="A typical session">
+    <span class="step">Home: “Recommended next”</span><span class="arr">→</span>
+    <span class="step">Lesson with exercises</span><span class="arr">→</span>
+    <span class="step">Module checkpoint</span><span class="arr">→</span>
+    <span class="step">Practice problems</span><span class="arr">→</span>
+    <span class="step">Today's review</span>
+  </div>
+  <p class="prose soft">The home page shows the recommended next step, how many review items are due today, recent activity, and a reminder to back up progress. It shows no scores.</p>
+
+  <div class="stack">
+    <h3>A lesson</h3>
+    <p class="prose soft">Lessons change shape as the learner grows. Early on they move in very small steps with a lot of support. Later the support fades and lessons start from a real contest problem.</p>
+    <div class="shape">
+      <div class="shape-row">
+        <div class="stg">Stages 0–1<small>first programs, Python basics</small></div>
+        <div>See a worked example, predict what it prints, run it, change one thing, then write your own. One new idea per section.</div>
+        <div class="support">Support: highest<div class="bar"><i style="width:100%"></i></div></div>
+      </div>
+      <div class="shape-row">
+        <div class="stg">Stages 2–3<small>problem solving, easier Junior problems</small></div>
+        <div>The same steps every time: read, find the limits, work the sample by hand, plan in words, code, test edge cases, submit.</div>
+        <div class="support">Support: fading<div class="bar"><i style="width:70%"></i></div></div>
+      </div>
+      <div class="shape-row">
+        <div class="stg">Stage 4<small>core techniques</small></div>
+        <div>See the idea drawn out step by step, study the standard code pattern, rebuild it from scrambled lines, drill it, then use it on a real CCC problem.</div>
+        <div class="support">Support: medium<div class="bar"><i style="width:45%"></i></div></div>
+      </div>
+      <div class="shape-row">
+        <div class="stg">Stages 5–7<small>Senior S3 to S5</small></div>
+        <div>Problem first: read the subtask table, solve the easy parts first, use hints to reach the key idea, read the full explanation, make it fast, solve it again days later.</div>
+        <div class="support">Support: on demand<div class="bar"><i style="width:20%"></i></div></div>
+      </div>
+    </div>
+    <p class="prose faint">Every new term is defined where it first appears and collected in a glossary. Diagrams of grids, graphs, trees and tables are drawn by hand for the course, and some can be stepped through one move at a time.</p>
+  </div>
+
+  <div class="stack">
+    <h3>Exercises</h3>
+    <p class="prose soft">About 1,230 graded exercises, checked automatically. The mix shifts from short checks early on to full programs later.</p>
+    <div class="ex-grid">
+      <div class="ex"><b>Predict the output</b><span>Type what the code will print, then run it to check.</span></div>
+      <div class="ex"><b>Multiple choice</b><span>Each wrong answer explains the mistake behind it.</span></div>
+      <div class="ex"><b>Parsons puzzle</b><span>Put scrambled lines of code in order. Works by keyboard as well as by dragging.</span></div>
+      <div class="ex"><b>Fill in the blanks</b><span>Complete a program. The blanks get bigger over time.</span></div>
+      <div class="ex"><b>Trace table</b><span>Track each variable line by line, one cell at a time.</span></div>
+      <div class="ex"><b>Write or modify code</b><span>Graded against groups of test cases.</span></div>
+      <div class="ex"><b>Debug</b><span>Find and fix the bug in a broken program.</span></div>
+      <div class="ex"><b>Speed pick</b><span>Choose how fast a piece of code grows with input size.</span></div>
+      <div class="ex"><b>Explain in plain English</b><span>Write what code does, then compare with a model answer.</span></div>
+      <div class="ex"><b>Verdict diagnosis</b><span>Given the judge's response, work out what went wrong.</span></div>
+      <div class="ex"><b>CCC problem ladder</b><span>A real problem in steps that match its subtasks.</span></div>
+      <div class="ex"><b>Template drill</b><span>Type a standard algorithm from memory. No time goals.</span></div>
+    </div>
+    <p class="prose soft">Hints are the same everywhere, five steps from gentle to full:</p>
+    <div class="ladder">
+      <div><b>1</b><span>Nudge</span></div>
+      <div><b>2</b><span>Approach, with a lesson link</span></div>
+      <div><b>3</b><span>Plan</span></div>
+      <div><b>4</b><span>Key code</span></div>
+      <div><b>5</b><span>Full solution</span></div>
+    </div>
+    <p class="prose faint">The full solution opens only after at least one run or three minutes on the exercise. Viewing it brings the exercise back for another try a few days later.</p>
+  </div>
+
+  <div class="stack">
+    <h3>The Python runner</h3>
+    <p class="prose soft">The learner writes and runs Python right in the page. Below is roughly what it will look like; the real design comes from the design phase (P4).</p>
+    <div class="mock" role="img" aria-label="Illustration of the code runner: an editor with a short Python program, Run and Submit buttons, test results showing two passing groups and one time limit exceeded, and a separate example of the Python 3.8 warning.">
+      <div class="mock-bar">
+        <span class="crumb">Stage 1 · Loops · <b>Add up N numbers</b></span>
+        <span class="pill good"><span class="status-dot"></span>Python ready</span>
+      </div>
+      <div class="mock-body">
+        <div class="editor" aria-hidden="true">
+          <div class="ln"><i>1</i><span>n = <span class="f">int</span>(<span class="f">input</span>())</span></div>
+          <div class="ln"><i>2</i><span>total = <span class="n">0</span></span></div>
+          <div class="ln"><i>3</i><span><span class="k">for</span> _ <span class="k">in</span> <span class="f">range</span>(n):</span></div>
+          <div class="ln"><i>4</i><span>    total += <span class="f">int</span>(<span class="f">input</span>())</span></div>
+          <div class="ln"><i>5</i><span><span class="f">print</span>(total)</span></div>
+        </div>
+        <div class="out" aria-hidden="true">
+          <div class="btns"><span class="btn">Run</span><span class="btn primary">Submit</span></div>
+          <div class="tests">
+            <div><span>Sample 1</span><span><span class="pill good">Correct</span> <span class="t">0.04 s</span></span></div>
+            <div><span>Small cases</span><span><span class="pill good">Correct</span> <span class="t">0.11 s</span></span></div>
+            <div><span>Large cases</span><span><span class="pill bad">Time Limit Exceeded</span></span></div>
+          </div>
+          <div class="speed">Ran in your browser · 0.42 s. Browser Python is slower than the contest grader, so this time is a rough guide only.</div>
+          <div class="explain">Tip from the error explainer: “EOFError” means your program tried to read more lines than the input had.</div>
+        </div>
+      </div>
+      <div class="compat" aria-hidden="true">
+        <div class="cap">The 3.8 check, in another exercise</div>
+        <div class="editor" style="padding:0;border:0;background:none">
+          <div class="ln"><i>1</i><span><span class="k">from</span> math <span class="k">import</span> <span class="squig">lcm</span></span></div>
+          <div class="diag">lcm was added in Python 3.9. The contest grader runs Python 3.8, so Submit is paused until this is changed. See lesson M1.15.</div>
+        </div>
+      </div>
+    </div>
+    <div class="grid2">
+      <div class="card">
+        <h4>How it works</h4>
+        <ul class="clean def">
+          <li><b>Run</b> tries the code on the learner's own input. <b>Submit</b> grades it against the tests.</li>
+          <li>Results use the contest grader's own words: Correct, Wrong Answer, Time Limit Exceeded, Run-time Error.</li>
+          <li>A program stuck in a loop is stopped at the time limit and a fresh Python is ready at once, so there is no waiting.</li>
+          <li>The first visit downloads the Python engine once (about 6 MB).</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h4>Made for beginners</h4>
+        <ul class="clean def">
+          <li>An <b>error explainer</b> turns common errors into plain language with a link to the right lesson.</li>
+          <li>The editor <b>flags Python features newer than 3.8</b> as you type. They block Submit but never Run.</li>
+          <li>A warning appears if the code prints a prompt like <code>input("Enter:")</code>, a classic way to fail on the real grader.</li>
+          <li><b>Honest about speed:</b> time limits adjust for slow devices, and real timing is checked on the judge.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="stack">
+    <h3>Practice problems and judge links</h3>
+    <p class="prose soft">Every one of the 119 unique CCC Junior and Senior problems from 2014 to 2026 has a page from day one. Until its full walkthrough is written, a page shows the title, the subtask table, the judge link and where it is used in the course. A finished page has:</p>
+    <div class="anat">
+      <div><b>Summary</b><span>A paraphrased statement with samples and credit to the CEMC.</span></div>
+      <div><b>Subtask table</b><span>The problem's own parts, generated from data.</span></div>
+      <div><b>Ladder</b><span>Brute force, then better, then full. Each step graded in the browser, with hints.</span></div>
+      <div><b>Walkthrough</b><span>Read, solve the easy parts first, key insight, full solution, speed pass, solve again later.</span></div>
+      <div><b>Check the speed for real</b><span>The judge link, plus how to time it locally.</span></div>
+      <div><b>Used in</b><span>Links back to the lessons that use it, and a reflection box.</span></div>
+    </div>
+    <div class="links-rule">
+      <div class="judge">
+        <span class="faint">Problems from</span>
+        <span class="yrs">2020 to 2026 → WMOJ</span>
+        <span class="url">https://wmoj.ca/problems/ccc25j1</span>
+      </div>
+      <div class="judge">
+        <span class="faint">Problems from</span>
+        <span class="yrs">Before 2020 → DMOJ</span>
+        <span class="url">https://dmoj.ca/problem/ccc19s1/</span>
+      </div>
+    </div>
+    <ul class="clean prose def">
+      <li>Links are never typed by hand. They are generated from one master list of problems, and a check fails the build if a hand-typed judge link appears anywhere.</li>
+      <li><b>WMOJ has none of the 2020 problems.</b> The plan recommends sending those 9 to DMOJ as an exception. This is your call (<a href="#d-q1">Q-1</a>).</li>
+      <li>A few problems appear in both the Junior and Senior contests. Both judges host them once, under the Senior name, so the app shows them as “2022 J4 (same problem as 2022 S2)”.</li>
+    </ul>
+  </div>
+
+  <div class="stack">
+    <h3>Progress, review and practice tools</h3>
+    <div class="grid2">
+      <div class="card">
+        <h4>Completion and mastery</h4>
+        <ul class="clean def">
+          <li>A <b>module</b> is complete when its lessons are done and its checkpoint is passed: 6 to 12 mixed questions, mostly on this module and some on earlier ones. Two tries each.</li>
+          <li>A failed checkpoint points to the exact lessons to revisit and offers a retake with fresh questions.</li>
+          <li><b>Mastered</b> means the checkpoint was passed without hints and a review a week or more later was passed too. It shows as a quiet badge, never a percentage.</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h4>Guided, never locked</h4>
+        <ul class="clean def">
+          <li>A “Recommended next” path is always shown.</li>
+          <li>If a lesson needs something not yet finished, a banner says so and offers a link or “continue anyway”.</li>
+          <li>A confident learner can skip ahead by taking a checkpoint cold.</li>
+        </ul>
+      </div>
+    </div>
+    <div class="card">
+      <h4>Spaced review</h4>
+      <p class="def">Items come back at growing gaps, measured in days after learning, up to 10 a day. A correct answer moves an item to the next gap. A problem solved with the walkthrough open returns after a week as “solve from scratch”.</p>
+      <div class="spaced" aria-label="Review gaps: day 1, 3, 7, 16 and 35">
+        <div class="axis"></div>
+        
+        <span class="dot" style="left:2.86%"></span><span class="lab" style="left:2.86%">1</span>
+        <span class="dot" style="left:8.57%"></span><span class="lab" style="left:8.57%">3</span>
+        <span class="dot" style="left:20%"></span><span class="lab" style="left:20%">7</span>
+        <span class="dot" style="left:45.7%"></span><span class="lab" style="left:45.7%">16</span>
+        <span class="dot" style="left:100%"></span><span class="lab" style="left:100%;transform:translateX(-100%)">35 days</span>
+      </div>
+    </div>
+    <div class="grid3">
+      <div class="card">
+        <h4>Template drills</h4>
+        <p class="def">16 standard algorithms typed from memory in a blank editor, because the contest bans prewritten code. Shows personal best and trend, with no time goals.</p>
+      </div>
+      <div class="card">
+        <h4>Mock contests</h4>
+        <p class="def">26 past papers (13 Junior, 13 Senior) with a 3-hour timer and grader-style feedback per subtask, if you allow it (<a href="#d-q2">Q-2</a>).</p>
+      </div>
+      <div class="card">
+        <h4>Saving progress</h4>
+        <p class="def">Saved in the browser automatically. One-click export and import of a backup file, with a “last backup N days ago” reminder.</p>
+      </div>
+    </div>
+    <p class="prose faint">Other pages: a first-visit guide, the course map, a problem browser with filters, search, glossary, settings, and an about page with credits.</p>
+  </div>
+</section>
+
+<!-- 3 -->
+<section id="architecture">
+  <div class="sec-head"><span class="num">03</span><h2>Architecture at a glance</h2></div>
+  <p class="prose soft">The whole app is a <span class="term">static site</span>: a folder of plain web files with no server behind it. Content is written and checked on this Mac, turned into that folder, and everything else happens in the learner's browser.</p>
+  <div>
+    <div class="arch" role="img" aria-label="Diagram: content is written and checked on this Mac, built into plain website files, which are served to the learner's browser, where pages, the Python engine and saved progress live.">
+      <div class="zone">
+        <span class="where">On this Mac, while building</span>
+        <div class="box">Lessons and pages<small>text with built-in components (MDX)</small></div>
+        <div class="box">Data files<small>problem list, course order, glossary (YAML)</small></div>
+        <div class="box">Real Python files<small>solutions, starters, tests</small></div>
+        <div class="down">↓</div>
+        <div class="box hl">Automatic checks<small>and generated facts: expected outputs, links, limits</small></div>
+        <div class="down">↓</div>
+        <div class="box">Next.js build</div>
+      </div>
+      <div class="conn" aria-hidden="true"><svg viewBox="0 0 28 16"><path d="M2 8h22M18 3l6 5-6 5" fill="none" stroke="currentColor" stroke-width="1.6"/></svg></div>
+      <div class="zone">
+        <span class="where">Served</span>
+        <h4>Plain website files</h4>
+        <div class="box">Pages, styles, search index</div>
+        <div class="box">Python engine<small>about 6 MB, self-hosted</small></div>
+        <div class="box">Test cases<small>fetched when needed</small></div>
+        <p class="faint">Run locally for now. Where it is hosted is your call (<a href="#d-q5">Q-5</a>).</p>
+      </div>
+      <div class="conn" aria-hidden="true"><svg viewBox="0 0 28 16"><path d="M2 8h22M18 3l6 5-6 5" fill="none" stroke="currentColor" stroke-width="1.6"/></svg></div>
+      <div class="zone">
+        <span class="where">Learner's browser</span>
+        <div class="box">Lesson pages</div>
+        <div class="box hl">Python runner<small>Pyodide in a background thread</small></div>
+        <div class="box hl">Saved progress<small>the browser's built-in database</small></div>
+        <div class="box">Backup file<small>export and import</small></div>
+        <p class="faint">Nothing is sent anywhere. A test fails if the page ever contacts another site.</p>
+      </div>
+    </div>
+    <div class="external"><span>Links out, for real judging:</span><span class="box">WMOJ</span><span class="box">DMOJ</span></div>
+  </div>
+
+  <div class="stack">
+    <h3>The stack</h3>
+    <p class="prose soft">All versions are pinned exactly and were checked on 23 September 2026.</p>
+    <div class="tablewrap">
+      <table class="tbl-min">
+        <thead><tr><th>Part</th><th>Choice</th><th>In plain words</th></tr></thead>
+        <tbody>
+          <tr><td>Framework</td><td class="nowrap">Next.js 16.3.6<br><span class="mono">React 19.3, TypeScript 6.0.3</span></td><td>Builds the site. “Static export” means it outputs plain files, so no server is needed.</td></tr>
+          <tr><td>Look and components</td><td class="nowrap">Tailwind 4.3, shadcn on Base UI 1.8</td><td>Styling and ready-made building blocks, driven by the design record the Impeccable skill keeps.</td></tr>
+          <tr><td>Code editor</td><td class="nowrap">CodeMirror 6</td><td>Light and works on phones. The VS Code editor (Monaco) was rejected: no mobile support and too heavy.</td></tr>
+          <tr><td>Python in the browser</td><td class="nowrap">Pyodide 314.0.7</td><td>Real Python compiled to run inside a web page. Runs in a Web Worker, a background thread, so the page never freezes.</td></tr>
+          <tr><td>Content</td><td class="nowrap">MDX, YAML with Zod, .py files</td><td>Prose, data and code kept in separate files. Zod checks that every data file has the right shape.</td></tr>
+          <tr><td>Saved progress</td><td class="nowrap">IndexedDB</td><td>The browser's built-in database. Bigger and sturdier than simple browser storage.</td></tr>
+          <tr><td>Search, highlighting</td><td class="nowrap">MiniSearch, Shiki</td><td>Search index and code colouring prepared at build time.</td></tr>
+          <tr><td>Testing</td><td class="nowrap">Vitest 5, Playwright 1.63, axe</td><td>Unit tests; scripted clicks through the real app in Chrome, Firefox and Safari engines; accessibility checks.</td></tr>
+          <tr><td>Code style</td><td class="nowrap">Biome 2.5</td><td>Finds errors and formats code. Replaces ESLint 9, which reached end of life in August.</td></tr>
+          <tr><td>Speed budgets</td><td class="nowrap">Lighthouse CI</td><td>Measures page speed. Results stay on this Mac; its default public upload is never used.</td></tr>
+          <tr><td>Contest Python</td><td class="nowrap">PyPy 3.8 (7.3.11 and 7.3.9)</td><td>The fast Python the grader uses. Every solution in the course is run on it. 7.3.9 is the grader's exact version and runs through Rosetta, Apple's layer for Intel programs.</td></tr>
+          <tr><td>Node.js</td><td class="nowrap">26.x, private copy</td><td>Kept inside the workspace. The Homebrew Node on this Mac (26.0.0) is missing security patches and is never used.</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="card">
+    <h4>One principle behind the content</h4>
+    <p class="def">Nothing that can be checked is typed by hand. Judge links, expected outputs, trace tables, subtask tables and constraint numbers are all computed from data or by running the code. That removes a whole class of mistakes across roughly 490,000 words.</p>
+  </div>
+</section>
+
+<!-- 4 -->
+<section id="curriculum">
+  <div class="sec-head"><span class="num">04</span><h2>The curriculum journey</h2></div>
+  <p class="prose soft">Eight stages lead from zero to Senior S5. A separate track of ten contest-skills modules (rules, time management, stress testing and so on) is slotted into the stage where each is needed; they are shown in amber. Counts are estimates that the pilot will adjust.</p>
+  <ol class="path">
+    <li class="stage"><span class="mk">S0</span><div class="body">
+      <h3>Orientation</h3>
+      <p class="topics">What a program is, input and output, reading errors, how judging works, signing up on WMOJ and DMOJ. Goal: write, run, test and submit a program that reads input and prints output.</p>
+      <div class="facts"><span class="fact-chip"><b>7</b> modules</span><span class="fact-chip c">C.1 contest rules</span></div>
+      <div class="lessbar"><div class="bar"><i style="width:22%"></i></div><span>~10 lessons</span></div>
+    </div></li>
+    <li class="stage"><span class="mk">S1</span><div class="body">
+      <h3>Python fundamentals</h3>
+      <p class="topics">Values and variables, input, conditions, loops, strings, lists, dictionaries and sets, functions, output formatting, recursion basics, and what Python 3.8 does not have.</p>
+      <div class="facts"><span class="fact-chip"><b>15</b> modules</span></div>
+      <div class="lessbar"><div class="bar"><i style="width:100%"></i></div><span>~45 lessons</span></div>
+    </div></li>
+    <li class="stage"><span class="mk">S2</span><div class="body">
+      <h3>Problem-solving foundations</h3>
+      <p class="topics">Reading a problem statement, planning before coding, simulation, brute force, edge cases, testing, debugging, estimating how fast code runs. The local setup lessons land here if you agree (<a href="#d-q11">Q-11</a>).</p>
+      <div class="facts"><span class="fact-chip"><b>9</b> modules</span><span class="fact-chip c">C.2 Python docs</span><span class="fact-chip c">C.10 local judging</span></div>
+      <div class="lessbar"><div class="bar"><i style="width:40%"></i></div><span>~18 lessons</span></div>
+    </div></li>
+    <li class="stage"><span class="mk">S3</span><div class="body">
+      <h3>Junior J1 to J3</h3>
+      <p class="topics">Counting, string processing, lookup tables, grids, clock and calendar arithmetic, fast input and output.</p>
+      <div class="facts"><span class="fact-chip"><b>10</b> modules</span><span class="fact-chip"><b>39</b> problem pages (J1–J3)</span><span class="fact-chip c">C.4 subtasks</span><span class="fact-chip c">C.6 stress testing</span></div>
+      <div class="lessbar"><div class="bar"><i style="width:44%"></i></div><span>~20 lessons</span></div>
+    </div></li>
+    <li class="stage"><span class="mk">S4</span><div class="body">
+      <h3>Junior J4–J5 and Senior S1–S2</h3>
+      <p class="topics">Hashing, sorting and greedy, prefix sums, stacks and queues, two pointers, backtracking, first dynamic programming, graphs and breadth-first search.</p>
+      <div class="facts"><span class="fact-chip"><b>15</b> modules</span><span class="fact-chip"><b>41</b> problem pages (J4, J5, S1, S2)</span><span class="fact-chip c">C.3 drills</span><span class="fact-chip c">C.7 grader feedback</span></div>
+      <div class="lessbar"><div class="bar"><i style="width:80%"></i></div><span>~36 lessons</span></div>
+    </div></li>
+    <li class="stage"><span class="mk">S5</span><div class="body">
+      <h3>Senior S3</h3>
+      <p class="topics">Constructive problems, finding patterns from small cases, binary search, iterative depth-first search, trees, union-find, heaps, interval DP.</p>
+      <div class="facts"><span class="fact-chip"><b>13</b> modules</span><span class="fact-chip"><b>13</b> problem pages (S3)</span><span class="fact-chip c">C.5 time management</span><span class="fact-chip c">C.8 output edge cases</span></div>
+      <div class="lessbar"><div class="bar"><i style="width:71%"></i></div><span>~32 lessons</span></div>
+    </div></li>
+    <li class="stage"><span class="mk">S6</span><div class="body">
+      <h3>Senior S4</h3>
+      <p class="topics">Shortest paths, modelling problems as graphs, spanning trees, tree DP, advanced DP, sweep lines, counting, Fenwick trees, monotonic stacks.</p>
+      <div class="facts"><span class="fact-chip"><b>13</b> modules</span><span class="fact-chip"><b>13</b> problem pages (S4)</span></div>
+      <div class="lessbar"><div class="bar"><i style="width:67%"></i></div><span>~30 lessons</span></div>
+    </div></li>
+    <li class="stage"><span class="mk">S7</span><div class="body">
+      <h3>Senior S5 and advanced</h3>
+      <p class="topics">Segment trees, sparse tables, greedy proofs, probability, number theory, square-root tricks, making Python fast at scale, lowest common ancestor.</p>
+      <div class="facts"><span class="fact-chip"><b>13</b> modules</span><span class="fact-chip"><b>13</b> problem pages (S5)</span><span class="fact-chip"><b>26</b> mock contests</span><span class="fact-chip c">C.9 mocks and upsolving</span></div>
+      <div class="lessbar"><div class="bar"><i style="width:56%"></i></div><span>~25 lessons</span></div>
+    </div></li>
+  </ol>
+  <p class="prose faint">Totals: 105 modules (95 in the stages plus 10 contest-skills modules), about 233 lessons including about 16 contest-skills lessons, 119 problem pages, and 26 mock contests. An optional C++ module in the research is dropped by default (<a href="#d-q10">Q-10</a>).</p>
+</section>
+
+<!-- 5 -->
+<section id="quality">
+  <div class="sec-head"><span class="num">05</span><h2>Quality checks</h2></div>
+  <p class="prose soft">About 30 automatic checks guard the app and the content. A quick set runs on every change; the full set runs before a batch of content is accepted and at the end of every phase. Each check comes with a test case proving it catches what it claims to. Every phase must end with zero warnings, zero failing or flaky tests, and zero open defects.</p>
+
+  <div class="stack">
+    <h3>How each piece of content moves</h3>
+    <div class="pipe">
+      <div><em>1</em><b>Author</b><span>An agent writes it, then runs the quick checks until they pass.</span></div>
+      <div><em>2</em><b>Checks</b><span>Code, links, style, no-score rule, Python 3.8.</span></div>
+      <div><em>3</em><b>Verifier</b><span>A second agent re-runs everything, writes stress tests, screenshots each page.</span></div>
+      <div><em>4</em><b>Critic</b><span>A third agent reads it as a beginner would and judges the teaching.</span></div>
+      <div class="done"><em>5</em><b>Accepted</b><span>Only accepted content ships.</span></div>
+    </div>
+  </div>
+
+  <div class="stack">
+    <h3>The Python 3.8 check, in three layers</h3>
+    <p class="prose soft">The browser runs a newer Python (3.14) than the contest grader (3.8). No working Python 3.8 exists for browsers, so three layers each catch what the others miss.</p>
+    <div class="layers">
+      <div class="layer"><span class="ln">1</span><div><h4>In the editor, as the learner types</h4><p>Three checkers look for features newer than 3.8 and underline them. They block Submit but never Run, and each message links to the lesson on the 3.8 limits.</p></div></div>
+      <div class="layer"><span class="ln">2</span><div><h4>Inside the browser's Python</h4><p>Library functions added after 3.8 are removed before the learner's code runs, so they fail the same way they would on the grader.</p></div></div>
+      <div class="layer"><span class="ln">3</span><div><h4>When content is written</h4><p>Every piece of Python in the course is checked by the same tools, then run under real PyPy 3.8 and in browser Python. At the end of each stage and at release it also runs on the grader's exact version, PyPy 7.3.9.</p></div></div>
+    </div>
+  </div>
+
+  <div class="grid2">
+    <div class="card gate">
+      <h3>App code</h3>
+      <ul>
+        <li>Code style and error check with zero warnings.</li>
+        <li>Type checks and unit tests for every core piece: links, grading, saving, review schedule, search.</li>
+        <li>Scripted walkthroughs of the real app in the Chrome, Firefox and Safari engines: running code, grading, timeouts, hints, backups, and “no request leaves the site”.</li>
+      </ul>
+    </div>
+    <div class="card gate">
+      <h3>Pixel-level UI</h3>
+      <ul>
+        <li>Screenshots of every page type and key state at 3 screen sizes, compared with approved ones. At most 50 pixels may differ.</li>
+        <li>Changing an approved screenshot needs a written visual review by an Opus agent.</li>
+        <li>Accessibility (WCAG 2.2 AA) with zero violations, and no sideways scrolling at phone width, on every page.</li>
+        <li>No dark styles anywhere. Page speed budgets.</li>
+      </ul>
+    </div>
+    <div class="card gate">
+      <h3>Content correctness</h3>
+      <ul>
+        <li>Every reference solution passes all its tests.</li>
+        <li>Deliberately wrong “decoy” solutions must fail the right tests, which proves the tests have teeth.</li>
+        <li>Slow approaches must actually time out, and correct ones must run in under a second.</li>
+        <li>Lessons only use ideas already taught, and course order has no loops.</li>
+      </ul>
+    </div>
+    <div class="card gate">
+      <h3>Writing style</h3>
+      <ul>
+        <li>The avoid-ai-writing detector scans all prose, buttons and error messages.</li>
+        <li>Its limits are set from your voice sample and the three approved pilot items.</li>
+        <li>Any rewrite is compared with the original so it cannot break code, tables, links or headings.</li>
+        <li>Reading level for Stages 0 to 2, and a spell check with a course dictionary.</li>
+      </ul>
+    </div>
+    <div class="card gate">
+      <h3>Links</h3>
+      <ul>
+        <li>Every judge link follows the year rule and comes from the master problem list.</li>
+        <li>WMOJ is checked automatically by reading each page, because WMOJ answers “OK” even for missing problems.</li>
+        <li>DMOJ blocks automated checks, so you tick a checklist of about 63 links (about 10 minutes).</li>
+        <li>Release is blocked unless every problem link is confirmed. Rechecked after 90 days.</li>
+      </ul>
+    </div>
+    <div class="card gate">
+      <h3>Rules and licence</h3>
+      <ul>
+        <li><b>No-score rule:</b> a scan of all text for banned phrasing (targets, cutoffs, “/75”, “Python can't”), tuned so “ceiling division” still passes. Critics also read for subtler cases.</li>
+        <li><b>Copyright:</b> any run of 12 or more words matching a CEMC statement fails, and credit must be on every problem page.</li>
+      </ul>
+    </div>
+    <div class="card gate">
+      <h3>Zero flakes</h3>
+      <ul>
+        <li>A “flaky” test passes sometimes and fails other times. New tests run 10 times in a row (20 for the runner and screenshots) and must pass every time.</li>
+        <li>Bugs are first reproduced as a failing test that shows what the learner would see, then fixed.</li>
+      </ul>
+    </div>
+    <div class="card gate">
+      <h3>Containment of tools</h3>
+      <ul>
+        <li>Everything installed lives in one hidden folder inside the workspace. Deleting the workspace removes it all.</li>
+        <li>Tools can only be called through wrapper scripts, and a hook blocks any command that bypasses them.</li>
+        <li>After every install, a before-and-after snapshot of your home folder proves nothing leaked. Any leftover named after a project tool is a hard failure.</li>
+        <li>A few macOS records can't be avoided; they are listed openly (<a href="#d-q13">Q-13</a>).</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- 6 -->
+<section id="roadmap">
+  <div class="sec-head"><span class="num">06</span><h2>The build roadmap</h2></div>
+  <p class="prose soft">Phases run one at a time. Each ends with a report like this one and a checkpoint for you. At two hard gates, nothing continues without your explicit approval.</p>
+  <div class="strip" aria-hidden="true">
+    <div class="g1">P3</div><div class="g1">P4</div><div class="g1">P5</div><div class="g1">P6</div><div class="g1">P7</div>
+    <div class="g2 gate">P8</div>
+    <div class="g3">P9</div><div class="g3">P10</div><div class="g3">P11</div><div class="g3">P12</div><div class="g3">P13</div><div class="g3">P14</div><div class="g3">P15</div><div class="g3">P16</div>
+    <div class="g4">P17</div><div class="g4 gate">P18</div>
+    <div class="g5">P19</div>
+  </div>
+  <div class="legend">
+    <span><i style="background:#DCE7F4"></i>Build the app</span>
+    <span><i style="background:#FDE9C8"></i>Voice and pilot</span>
+    <span><i style="background:#D8EFEC"></i>Write the course</span>
+    <span><i style="background:#E7E1F4"></i>Audit and release</span>
+    <span><i style="background:var(--sunk)"></i>Maintenance</span>
+    <span><i class="dot"></i>Hard gate</span>
+  </div>
+
+  <div>
+    <div class="group-label">Build the app</div>
+    <ol class="tl">
+      <li class="ph g1"><span class="mk">P3</span><div class="body">
+        <div class="top"><h3>Tooling and containment</h3><span class="agents">4 agents</span></div>
+        <p>Installs every tool inside the workspace (private Node, the contest's PyPy, the Python checkers, the design and writing skills) with proof that nothing leaked outside. Sets up git if you agree.</p>
+        <div class="tags"><span class="pill check">You restart Claude Code</span><span class="pill check">Containment proof</span></div>
+      </div></li>
+      <li class="ph g1"><span class="mk">P4</span><div class="body">
+        <div class="top"><h3>Foundation, runtime test and design</h3><span class="agents">6 agents</span></div>
+        <p>A short experiment confirms the browser Python works in all three browsers. Then the empty app shell with every page stubbed, and the design system built with Impeccable.</p>
+        <div class="tags"><span class="pill check">Approve the look and feel</span></div>
+      </div></li>
+      <li class="ph g1"><span class="mk">P5</span><div class="body">
+        <div class="top"><h3>Python runtime</h3><span class="agents">5 agents</span></div>
+        <p>The full runner: editor, Run and Submit, grading, timeouts, the 3.8 checks, and the error explainer.</p>
+        <div class="tags"><span class="pill check">Runtime demo video</span></div>
+      </div></li>
+      <li class="ph g1"><span class="mk">P6</span><div class="body">
+        <div class="top"><h3>Content pipeline and quality checks</h3><span class="agents">6 agents</span></div>
+        <p>The content format and every automatic check, each proven on test content. The first automatic WMOJ check of all 119 problems.</p>
+        <div class="tags"><span class="pill check">Checks proven</span><span class="pill swarm">Needs Q-1, Q-2</span></div>
+      </div></li>
+      <li class="ph g1"><span class="mk">P7</span><div class="body">
+        <div class="top"><h3>Learner experience</h3><span class="agents">5 agents</span></div>
+        <p>Every exercise type, hints, problem pages, checkpoints, saving and backups, review, drills, mock contests, home page, search and settings, all working on test content.</p>
+        <div class="tags"><span class="pill check">Demo video</span></div>
+      </div></li>
+    </ol>
+    <div class="group-label">Voice and pilot</div>
+    <ol class="tl">
+      <li class="ph g2 hardgate"><span class="mk">P8</span><div class="body">
+        <div class="top"><h3>Voice, foundations and pilot</h3><span class="agents">8 agents</span></div>
+        <p>The style guide built on your voice sample, all interface wording, the verified problem list (including your DMOJ checklist), the 16 drill templates, and three pilot items run through the full pipeline. Calibrates the style checker and the cost estimates.</p>
+        <div class="tags"><span class="pill hard">Hard gate: approve voice and format</span></div>
+      </div></li>
+    </ol>
+    <div class="group-label">Write the course, one stage per phase</div>
+    <ol class="tl">
+      <li class="ph g3"><span class="mk">P9</span><div class="body">
+        <div class="top"><h3>Stage 0 and contest rules</h3><span class="agents">~10 agents</span></div>
+        <p>8 modules.</p>
+        <div class="tags"><span class="pill swarm">Team size approval</span><span class="pill check">Sample review</span></div>
+      </div></li>
+      <li class="ph g3"><span class="mk">P10</span><div class="body">
+        <div class="top"><h3>Stage 1</h3><span class="agents">~23 agents</span></div>
+        <p>14 modules (the first was written in the pilot).</p>
+        <div class="tags"><span class="pill swarm">Team size approval</span><span class="pill check">Sample review</span></div>
+      </div></li>
+      <li class="ph g3"><span class="mk">P11</span><div class="body">
+        <div class="top"><h3>Stage 2</h3><span class="agents">~17 agents</span></div>
+        <p>11 modules, including Python docs and local judging.</p>
+        <div class="tags"><span class="pill swarm">Team size approval</span><span class="pill check">Sample review</span></div>
+      </div></li>
+      <li class="ph g3"><span class="mk">P12</span><div class="body">
+        <div class="top"><h3>Stage 3 and the J1–J3 problem pages</h3><span class="agents">~34 agents</span></div>
+        <p>12 modules and 39 problem pages.</p>
+        <div class="tags"><span class="pill swarm">Team size approval</span><span class="pill check">Sample review</span></div>
+      </div></li>
+      <li class="ph g3"><span class="mk">P13</span><div class="body">
+        <div class="top"><h3>Stage 4 and the J4, J5, S1, S2 pages</h3><span class="agents">~41 agents</span></div>
+        <p>16 modules and 41 problem pages. The largest phase.</p>
+        <div class="tags"><span class="pill swarm">Team size approval</span><span class="pill check">Sample review</span></div>
+      </div></li>
+      <li class="ph g3"><span class="mk">P14</span><div class="body">
+        <div class="top"><h3>Stage 5 and the S3 pages</h3><span class="agents">~29 agents</span></div>
+        <p>15 modules and 12 problem pages. Starts by re-checking the 2026 contest's official solutions and any grader change.</p>
+        <div class="tags"><span class="pill swarm">Team size approval</span><span class="pill check">Sample review</span></div>
+      </div></li>
+      <li class="ph g3"><span class="mk">P15</span><div class="body">
+        <div class="top"><h3>Stage 6 and the S4 pages</h3><span class="agents">~28 agents</span></div>
+        <p>13 modules and 13 problem pages.</p>
+        <div class="tags"><span class="pill swarm">Team size approval</span><span class="pill check">Sample review</span></div>
+      </div></li>
+      <li class="ph g3"><span class="mk">P16</span><div class="body">
+        <div class="top"><h3>Stage 7, the S5 pages and mock contests</h3><span class="agents">~30 agents</span></div>
+        <p>14 modules, 13 problem pages and 26 mock contests.</p>
+        <div class="tags"><span class="pill swarm">Team size approval</span><span class="pill check">Sample review</span></div>
+      </div></li>
+    </ol>
+    <div class="group-label">Audit and release</div>
+    <ol class="tl">
+      <li class="ph g4"><span class="mk">P17</span><div class="body">
+        <div class="top"><h3>Whole-course audit</h3><span class="agents">~26 agents</span></div>
+        <p>Agents work through every lesson and page as a beginner would and record anything confusing or broken. A consistency pass across the whole course, fixes, and a fresh link check.</p>
+        <div class="tags"><span class="pill swarm">Team size approval</span><span class="pill check">Approve any deferrals</span></div>
+      </div></li>
+      <li class="ph g4 hardgate"><span class="mk">P18</span><div class="body">
+        <div class="top"><h3>Release checks and handoff</h3><span class="agents">6 agents</span></div>
+        <p>Full test runs in three browsers, a keyboard and screen reader pass, a pixel review of every page type, the final containment audit, a README on running and backing up, and deployment as you choose.</p>
+        <div class="tags"><span class="pill hard">Hard gate: final acceptance and deploy decision</span></div>
+      </div></li>
+    </ol>
+    <div class="group-label">After release</div>
+    <ol class="tl">
+      <li class="ph g5"><span class="mk">P19</span><div class="body">
+        <div class="top"><h3>Maintenance, on demand</h3><span class="agents">1–3 workers per run</span></div>
+        <p>Link rechecks every 90 days, security updates, adding 2027 and later problems, and checking the grader's Python version before each contest season.</p>
+      </div></li>
+    </ol>
+  </div>
+  <div class="card">
+    <h4>Changing course</h4>
+    <p class="def">You can redo any phase, critique any output, or change direction at any point. Redos keep the previous version on file. The cheapest moments to change your mind are P4 (the look) and P8 (the voice), because everything after builds on them. Any change to the plan itself needs your approval and is logged in its changelog.</p>
+  </div>
+</section>
+
+<!-- 7 -->
+<section id="agents">
+  <div class="sec-head"><span class="num">07</span><h2>The agent team</h2></div>
+  <p class="prose soft">Three tiers, and never more. Work flows through files: agents write their results to the workspace and send back only a short summary, which keeps the top of the chain light.</p>
+  <div class="tree" aria-label="Agent hierarchy">
+    <div class="tier you"><div class="tl2"><b>You, the Manager</b></div><span class="d">Approve, critique, redirect.</span></div>
+    <div class="vline"></div>
+    <div class="tier main"><div class="tl2"><b>Main session</b><span class="pill info">talks to you</span></div><span class="d">Launches one phase at a time, relays results, records your rulings.</span></div>
+    <div class="vline"></div>
+    <div class="tier"><div class="tl2"><b>Phase orchestrator</b><span class="pill opus">Opus 5.5</span></div><span class="d">Plans the phase, hands out work, reviews and accepts it, keeps the progress files current.</span></div>
+    <div class="vline"></div>
+    <div class="workers" aria-label="Up to five workers">
+      <div class="o">Opus</div><div class="o">Opus</div><div class="s">Sonnet</div><div class="o">Opus</div><div class="s">Sonnet</div>
+    </div>
+    <p class="note">Workers: at most 5 at once. They do the reading, writing and testing, and they never start agents of their own.</p>
+  </div>
+
+  <div class="grid2">
+    <div class="card">
+      <h4><span class="pill opus">Opus 5.5</span> where judgment decides the outcome</h4>
+      <ul class="clean def">
+        <li>All orchestrators, the design lead and every visual reviewer.</li>
+        <li>The Python runtime and the learner-experience build.</li>
+        <li>All lesson authors and critics, and the style guide.</li>
+        <li>Pages and checks for the hardest problems (S3 to S5, Stages 5 to 7), where a wrong proof is easy to miss.</li>
+        <li>Walkthroughs of Stages 0 to 2 in the audit, where confusing a beginner matters most.</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h4><span class="pill sonnet">Sonnet 5</span> where the work is well defined and checked after</h4>
+      <ul class="clean def">
+        <li>Project setup, the content pipeline, and building the automatic checks from a clear spec.</li>
+        <li>Data entry for the problem list and fact-checking it against CEMC statements.</li>
+        <li>The 39 simplest problem pages (J1 to J3), with an Opus critic sampling them.</li>
+        <li>Verifiers for Stages 0 to 4, most audit walkers, release test runs, containment audits.</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="stack">
+    <h3>Agents per phase</h3>
+    <div class="chart-legend"><span><i style="background:var(--opus)"></i>Opus 5.5</span><span><i style="background:var(--sonnet)"></i>Sonnet 5</span><span class="faint">Numbers read: total · Opus / Sonnet. Includes the orchestrator. Estimates, reset after the pilot.</span></div>
+    <div class="chart" id="spawnChart"></div>
+    <p class="prose faint">Plus one report agent per phase (Sonnet, or Opus for P2, P8 and P18), and 1 to 3 workers per maintenance run. About three in four agents are Opus, because most of the volume is teaching prose and review.</p>
+  </div>
+
+  <div class="card">
+    <h4>How cost stays down without cutting quality</h4>
+    <ul class="clean def">
+      <li>Sonnet takes the mechanical work, but only where an automatic check or an Opus reviewer looks at the result afterwards.</li>
+      <li>Orchestrators stay lean: workers read the big files and return ten lines or fewer.</li>
+      <li>Fixes go back to the same agent that wrote the item, instead of starting a new one from scratch.</li>
+      <li>The first item of every content phase runs alone, so problems surface before a batch runs in parallel.</li>
+      <li>The simplest problem pages get a sampled review (one in three), with a full review if any sample fails.</li>
+      <li>The pilot measures real time and cost per item, and each content phase shows you its budget before it starts.</li>
+    </ul>
+  </div>
+</section>
+
+<!-- 8 -->
+<section id="decisions">
+  <div class="sec-head"><span class="num">08</span><h2>Decisions waiting on you</h2></div>
+  <p class="prose soft">Reply by ID. Each card has the recommended answer; if you accept all of them, just say so. The groups are ordered by when the answer is needed.</p>
+
+  <div class="dgroup">
+    <h3>Needed before building starts <small>before P3</small></h3>
+    <div class="dcards">
+      <article class="dcard wide" id="d-p2a">
+        <div class="dh"><span class="did">P2-A</span><span class="by">Needed before P3</span></div>
+        <p class="q">Do you approve the implementation plan as the single source of truth?</p>
+        <dl>
+          <dt>Recommendation</dt><dd class="rec">Approve v1.0. P3 also needs your go-ahead to install the listed tools inside the workspace.</dd>
+          <dt>Tradeoff</dt><dd>Once approved, every change goes through the plan's changelog with your sign-off. That keeps agents consistent but adds a small step for each change.</dd>
+        </dl>
+      </article>
+      <article class="dcard" id="d-q3">
+        <div class="dh"><span class="did">Q-3</span><span class="by">Needed before P3</span></div>
+        <p class="q">Should the workspace use git for version control?</p>
+        <dl>
+          <dt>Recommendation</dt><dd class="rec">Yes, set up in P3 with its settings kept inside the workspace. Standing instruction to commit a checkpoint at the end of each phase. You choose the author name; no AI co-author.</dd>
+          <dt>Tradeoff</dt><dd>Easy rollback and clear diffs for redos. Without it, the fallback is zipped snapshots per phase, which are heavier and coarser.</dd>
+        </dl>
+      </article>
+      <article class="dcard" id="d-q13">
+        <div class="dh"><span class="did">Q-13</span><span class="by">Needed before P3</span></div>
+        <p class="q">Can a few macOS and Claude Code records remain after the workspace is deleted?</p>
+        <dl>
+          <dt>Recommendation</dt><dd class="rec">Accept them as owned by the system or harness, listed openly: the Rosetta cache, app registration records, temporary files until macOS clears them, and Claude Code's own session files.</dd>
+          <dt>Tradeoff</dt><dd>Strict “zero traces” is not possible for these without system-level cleanup outside the workspace.</dd>
+        </dl>
+      </article>
+      <article class="dcard" id="d-q14">
+        <div class="dh"><span class="did">Q-14</span><span class="by">Needed before P3</span></div>
+        <p class="q">May the main session update the start-here file and operating rules to match the plan?</p>
+        <dl>
+          <dt>Recommendation</dt><dd class="rec">Yes: add the new <code>work/</code> folder and the tool-wrapper rule, and point the model rules at the plan's role list.</dd>
+          <dt>Tradeoff</dt><dd>Small edits to files only the main session maintains. Without them, the rules files and the plan disagree.</dd>
+        </dl>
+      </article>
+      <article class="dcard" id="d-q15">
+        <div class="dh"><span class="did">Q-15</span><span class="by">Needed before P3</span></div>
+        <p class="q">May the writing-style checker run on the workspace's private Node instead of the Mac's own Node?</p>
+        <dl>
+          <dt>Recommendation</dt><dd class="rec">Approve. It is contained, patched and reproducible.</dd>
+          <dt>Tradeoff</dt><dd>Differs from the “system node” wording in your earlier ruling. The Mac's Node (26.0.0) lacks security patches, and updating it would be a change outside the workspace.</dd>
+        </dl>
+      </article>
+    </div>
+  </div>
+
+  <div class="dgroup">
+    <h3>Needed before the app is built <small>before P6 and P7</small></h3>
+    <div class="dcards">
+      <article class="dcard" id="d-q1">
+        <div class="dh"><span class="did">Q-1</span><span class="by">Needed before P7</span></div>
+        <p class="q">WMOJ has no 2020 problems. Where should the 9 problems from 2020 link?</p>
+        <dl>
+          <dt>Recommendation</dt><dd class="rec">To DMOJ, as a recorded exception to the link rule (for example <code>dmoj.ca/problem/ccc20j1/</code>).</dd>
+          <dt>Tradeoff</dt><dd>Bends the “2020 to 2026 go to WMOJ” rule for 9 problems. The alternative is no judge link for them, and release stays blocked until you rule.</dd>
+        </dl>
+      </article>
+      <article class="dcard" id="d-q2">
+        <div class="dh"><span class="did">Q-2</span><span class="by">Needed before P7</span></div>
+        <p class="q">May the app show a problem's own subtask marks, and a grader-style result for mock contests?</p>
+        <dl>
+          <dt>Recommendation</dt><dd class="rec">Yes, per problem and per mock only. Never totals, averages, cutoffs or goals.</dd>
+          <dt>Tradeoff</dt><dd>Mirrors what the real grader shows, which helps with subtask strategy. A stricter reading of the no-score rule would hide all marks.</dd>
+        </dl>
+      </article>
+      <article class="dcard" id="d-q6">
+        <div class="dh"><span class="did">Q-6</span><span class="by">Needed before P7</span></div>
+        <p class="q">Will the learner use Safari?</p>
+        <dl>
+          <dt>Recommendation</dt><dd class="rec">If yes, the first-visit guide asks them to use “Add to Dock” and back up often. If no, it recommends Chrome, Edge or Firefox.</dd>
+          <dt>Tradeoff</dt><dd>Safari deletes a site's saved data after 7 days of use without a visit, which would wipe progress without a backup.</dd>
+        </dl>
+      </article>
+      <article class="dcard" id="d-q8">
+        <div class="dh"><span class="did">Q-8</span><span class="by">Needed before P6</span></div>
+        <p class="q">May official CEMC test data be used to check the course's solutions?</p>
+        <dl>
+          <dt>Recommendation</dt><dd class="rec">Yes, only in local checks on this Mac. It is never shipped in the app.</dd>
+          <dt>Tradeoff</dt><dd>Much stronger proof that solutions are right. Shipping the data would raise licence questions, so it stays out.</dd>
+        </dl>
+      </article>
+    </div>
+  </div>
+
+  <div class="dgroup">
+    <h3>Needed before content writing <small>before P8 and P9</small></h3>
+    <div class="dcards">
+      <article class="dcard" id="d-q4">
+        <div class="dh"><span class="did">Q-4</span><span class="by">Needed before P8</span></div>
+        <p class="q">Will you write the teaching-voice sample?</p>
+        <dl>
+          <dt>Recommendation</dt><dd class="rec">You write 400 to 600 words in the voice you want, or substantially rewrite a draft. The style guide says honestly which it was.</dd>
+          <dt>Tradeoff</dt><dd>Costs you some time, but it sets the voice for about 490,000 words and tunes the style checker. P8 cannot start without it.</dd>
+        </dl>
+      </article>
+      <article class="dcard" id="d-q10">
+        <div class="dh"><span class="did">Q-10</span><span class="by">Needed before P8</span></div>
+        <p class="q">Drop the optional “C++ bridge” module found in the research?</p>
+        <dl>
+          <dt>Recommendation</dt><dd class="rec">Drop it. The course stays at 105 modules.</dd>
+          <dt>Tradeoff</dt><dd>Keeps the course Python-only and free of the score framing that module was built on. Loses a short optional C++ intro.</dd>
+        </dl>
+      </article>
+      <article class="dcard" id="d-q11">
+        <div class="dh"><span class="did">Q-11</span><span class="by">Needed before P8</span></div>
+        <p class="q">Move the “install Python on your computer” lessons to the start of Stage 2?</p>
+        <dl>
+          <dt>Recommendation</dt><dd class="rec">Yes. The browser runner covers Stages 0 and 1, so a beginner can start without any setup.</dd>
+          <dt>Tradeoff</dt><dd>A gentler start. The learner meets the terminal and local PyPy a little later, right when testing lessons need them.</dd>
+        </dl>
+      </article>
+      <article class="dcard" id="d-q12">
+        <div class="dh"><span class="did">Q-12</span><span class="by">Needed before P9</span></div>
+        <p class="q">How do you want to approve the large agent teams for P9 to P17?</p>
+        <dl>
+          <dt>Recommendation</dt><dd class="rec">Your choice: approve each phase with its budget when it comes up, or give one blanket approval for P9 to P16 now based on the table in section 7.</dd>
+          <dt>Tradeoff</dt><dd>Per phase gives you a cost checkpoint at every stage. A blanket approval means fewer interruptions.</dd>
+        </dl>
+      </article>
+    </div>
+  </div>
+
+  <div class="dgroup">
+    <h3>Can wait <small>release or later</small></h3>
+    <div class="dcards">
+      <article class="dcard" id="d-q5">
+        <div class="dh"><span class="did">Q-5</span><span class="by">Needed before P18</span></div>
+        <p class="q">Where will the app be hosted?</p>
+        <dl>
+          <dt>Recommendation</dt><dd class="rec">Build it to run anywhere and serve it locally for v1. If the learner is remote, use a static host such as Cloudflare Pages or Vercel, with access control.</dd>
+          <dt>Tradeoff</dt><dd>Local costs nothing and exposes nothing, but the learner must use this machine or your network. Hosting needs its tool contained, or you run it yourself.</dd>
+        </dl>
+      </article>
+      <article class="dcard" id="d-q7">
+        <div class="dh"><span class="did">Q-7</span><span class="by">Only if needed</span></div>
+        <p class="q">If non-CCC practice problems are ever added, how should they link?</p>
+        <dl>
+          <dt>Recommendation</dt><dd class="rec">A separate list with verified links, labelled “extra practice (not CCC)”.</dd>
+          <dt>Tradeoff</dt><dd>None are planned. This only sets the rule in advance.</dd>
+        </dl>
+      </article>
+      <article class="dcard" id="d-q9">
+        <div class="dh"><span class="did">Q-9</span><span class="by">Needed before P19</span></div>
+        <p class="q">Link rule for CCC 2027 and later?</p>
+        <dl>
+          <dt>Recommendation</dt><dd class="rec">Decide once 2027 problems appear on the judges. Until then the build refuses years outside 2014 to 2026.</dd>
+          <dt>Tradeoff</dt><dd>New problems can't be added until you rule, but no wrong links can slip in either.</dd>
+        </dl>
+      </article>
+      <article class="dcard fyi" id="d-q16">
+        <div class="dh"><span class="did">Q-16</span><span class="by">For information</span></div>
+        <p class="q">Problems in both the Junior and Senior contests link to the Senior version.</p>
+        <dl>
+          <dt>What was decided</dt><dd class="rec">Both judges host them once under the Senior name, so 2022 J4 links to <code>ccc22s2</code> and is labelled “same problem as 2022 S2”.</dd>
+          <dt>Tradeoff</dt><dd>None; this matches how the judges work. No reply needed.</dd>
+        </dl>
+      </article>
+    </div>
+  </div>
+
+  <div class="reply">
+    <div class="rh"><h3>Reply template</h3><button class="copy" id="copyBtn" type="button">Copy</button></div>
+    <p class="faint">Edit any line you disagree with and send it back.</p>
+<pre id="replyText">P2-A: approve the plan, and authorise P3 installs
+Q-1:  yes, 2020 problems link to DMOJ
+Q-2:  yes, per problem and per mock only
+Q-3:  yes, git (author name: ______)
+Q-4:  I will write the voice sample
+Q-5:  local for v1, decide by P18
+Q-6:  Safari: yes / no
+Q-7:  agree
+Q-8:  yes, local checks only
+Q-9:  decide later
+Q-10: drop the C++ module
+Q-11: yes, defer to Stage 2
+Q-12: per phase / blanket for P9-P16
+Q-13: acknowledged
+Q-14: yes
+Q-15: approve</pre>
+  </div>
+</section>
+
+<!-- 9 -->
+<section id="risks">
+  <div class="sec-head"><span class="num">09</span><h2>Risks and known gaps</h2></div>
+  <div class="tablewrap">
+    <table class="tbl-min">
+      <thead><tr><th>Risk</th><th>What the plan does about it</th></tr></thead>
+      <tbody>
+        <tr><td>Browser Python is newer (3.14) than the grader's (3.8)</td><td>The three-layer check, plus runs on the grader's exact PyPy version at each stage end.</td></tr>
+        <tr><td>Browser Python is often 10 to 100 times slower than the grader, and learners may trust browser timings</td><td>Tests check only whether the approach is fast enough in principle. Honest wording, limits that adapt to the device, and judge links for real timing.</td></tr>
+        <tr><td>DMOJ can't be checked automatically</td><td>Release depends on you ticking about 63 links, about 10 minutes, when P8 and P17 ask.</td></tr>
+        <tr><td>AI-sounding or drifting prose over about 490,000 words</td><td>Your voice sample, the style checker tuned on the pilot, Opus critics, stage briefs, and the P17 audit.</td></tr>
+        <tr><td>Wrong solutions or explanations for the hardest problems (2026 has no official solutions yet)</td><td>Opus authors and verifiers, official test data, stress tests against brute force, and a re-check of 2026 material at P14.</td></tr>
+        <tr><td>Safari can erase saved progress</td><td>Onboarding advice, backup reminders, one-click export and import.</td></tr>
+        <tr><td>Apple ends Rosetta after macOS 27, which removes the exact grader-version check on this Mac</td><td>Daily checks use the native PyPy 3.8. Long term, a Linux runner through a plan change.</td></tr>
+        <tr><td>Token cost of the content phases</td><td>Sonnet where work is mechanical, recalibration after the pilot, and your approval of each budget.</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="card">
+    <h4>Still unconfirmed</h4>
+    <ul class="clean def">
+      <li><b>Two short experiments</b> will confirm technical facts before anything depends on them. P3 checks that the grader's exact PyPy runs on this Mac and whether WMOJ offers PyPy3. P4 checks the browser Python's start-up time, input handling, recursion depth and recovery speed in all three browsers.</li>
+      <li><b>Agent and content counts</b> are estimates until the pilot measures them in P8.</li>
+      <li><b>Two research workers found different Playwright versions</b> (1.63.0 and 1.62.1). The plan uses 1.63.0 and re-checks at install.</li>
+      <li><b>P3 must also confirm</b> that Claude Code applies the workspace settings and hooks as expected, which is why you restart the session after P3.</li>
+    </ul>
+  </div>
+</section>
+
+<footer>
+  <span>Phase 2 report · Written 23 September 2026 · Source: <code>context/implementation-plan.md</code> v1.0 and <code>context/phase-logs/phase-02-plan.md</code></span>
+  <span>This file is local only. It has not been published or uploaded anywhere.</span>
+</footer>
+
+</main>
+</div>
+
+<script>
+(function () {
+  // Agents per phase chart (plan section 11.6, orchestrator included)
+  var data = [
+    ["P3", "Tooling", 3, 1], ["P4", "Foundation", 4, 2], ["P5", "Runtime", 4, 1],
+    ["P6", "Pipeline", 2, 4], ["P7", "Learner UX", 5, 0], ["P8", "Pilot", 5, 3],
+    ["P9", "Stage 0", 8, 2], ["P10", "Stage 1", 19, 4], ["P11", "Stage 2", 14, 3],
+    ["P12", "Stage 3", 18, 16], ["P13", "Stage 4", 34, 7], ["P14", "Stage 5", 29, 0],
+    ["P15", "Stage 6", 28, 0], ["P16", "Stage 7", 29, 1], ["P17", "Audit", 8, 18],
+    ["P18", "Release", 2, 4]
+  ];
+  var max = 41, el = document.getElementById("spawnChart");
+  var to = 0, ts = 0;
+  function row(id, name, o, s, isTotal) {
+    var r = document.createElement("div");
+    r.className = "crow" + (isTotal ? " total" : "");
+    var scale = isTotal ? (o + s) : max;
+    var bars = "";
+    if (o) bars += '<i class="o" style="width:' + (o / scale * 100) + '%" title="' + id + ': ' + o + ' Opus"></i>';
+    if (s) bars += '<i class="s" style="width:' + (s / scale * 100) + '%" title="' + id + ': ' + s + ' Sonnet"></i>';
+    r.innerHTML = '<span class="nm"><b>' + id + '</b><span>' + name + '</span></span>' +
+      '<span class="track">' + bars + '</span>' +
+      '<span class="val"><b>' + (isTotal ? "~" : "") + (o + s) + '</b> · ' + o + ' / ' + s + '</span>';
+    el.appendChild(r);
+  }
+  data.forEach(function (d) { to += d[2]; ts += d[3]; row(d[0], d[1], d[2], d[3], false); });
+  row("All", "P3 to P18", to, ts, true);
+
+  // Copy reply template
+  var btn = document.getElementById("copyBtn"), pre = document.getElementById("replyText");
+  btn.addEventListener("click", function () {
+    var done = function () { btn.textContent = "Copied"; setTimeout(function () { btn.textContent = "Copy"; }, 1600); };
+    var fallback = function () {
+      var range = document.createRange(); range.selectNodeContents(pre);
+      var sel = window.getSelection(); sel.removeAllRanges(); sel.addRange(range);
+      btn.textContent = "Selected, press Cmd+C";
+    };
+    try {
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(pre.textContent).then(done, fallback);
+      } else { fallback(); }
+    } catch (e) { fallback(); }
+  });
+
+  // Table of contents highlight
+  var links = Array.prototype.slice.call(document.querySelectorAll("nav.toc a"));
+  var nav = document.querySelector("nav.toc");
+  var byId = {};
+  links.forEach(function (a) { byId[a.getAttribute("href").slice(1)] = a; });
+  var sections = links.map(function (a) { return document.getElementById(a.getAttribute("href").slice(1)); });
+  function update() {
+    var y = window.scrollY + 120, current = sections[0];
+    sections.forEach(function (s) { if (s && s.offsetTop <= y) current = s; });
+    if ((window.innerHeight + window.scrollY) >= document.body.scrollHeight - 4) current = sections[sections.length - 1];
+    links.forEach(function (a) { a.classList.remove("active"); });
+    var a = current && byId[current.id];
+    if (a) {
+      a.classList.add("active");
+      if (nav.scrollWidth > nav.clientWidth) {
+        var left = a.offsetLeft - 16, right = a.offsetLeft + a.offsetWidth + 16;
+        if (left < nav.scrollLeft) nav.scrollLeft = left;
+        else if (right > nav.scrollLeft + nav.clientWidth) nav.scrollLeft = right - nav.clientWidth;
+      }
+    }
+  }
+  var ticking = false;
+  window.addEventListener("scroll", function () {
+    if (!ticking) { ticking = true; requestAnimationFrame(function () { update(); ticking = false; }); }
+  }, { passive: true });
+  window.addEventListener("resize", update);
+  update();
+})();
+</script>
+</body>
+</html>

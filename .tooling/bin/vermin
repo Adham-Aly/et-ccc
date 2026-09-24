@@ -1,0 +1,4 @@
+#!/bin/bash
+# vermin from the tools venv. vermin's shebang points at the venv's PyPy.
+. "$(dirname "$0")/_wrap.sh"
+wrap_exec "$ET_T/venvs/tools" "$ET_T/venvs/tools/bin/vermin" "$@"

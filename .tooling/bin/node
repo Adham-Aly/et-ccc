@@ -1,0 +1,4 @@
+#!/bin/bash
+# workspace Node (plan §4.2, SPIKE S-1). Never Homebrew node.
+. "$(dirname "$0")/_wrap.sh"
+wrap_exec "$ET_T/node" "$ET_T/node/bin/node" "$@"

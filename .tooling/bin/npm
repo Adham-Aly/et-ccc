@@ -1,0 +1,14 @@
+#!/bin/bash
+# workspace npm (bundled with the workspace Node). Blocks global installs and remote npx-style exec.
+. "$(dirname "$0")/_wrap.sh"
+for a in "$@"; do
+  case "$a" in
+    -g|--global|--location=global|--global=true) wrap_die "global npm operations are forbidden (operating-rules §7)";;
+  esac
+done
+case "${1:-}" in
+  exec|x)
+    has_no=0; for a in "$@"; do case "$a" in --no|--yes=false|--no-install) has_no=1;; --yes|-y) wrap_die "npm exec --yes may fetch remote packages; use: npm exec --no -- <bin> (plan §9.5)";; esac; done
+    [ "$has_no" = 1 ] || wrap_die "use: npm exec --no -- <bin> (local pinned devDependencies only, plan §9.5)";;
+esac
+wrap_exec "$ET_T/node" "$ET_T/node/bin/npm" "$@"

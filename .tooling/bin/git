@@ -1,0 +1,19 @@
+#!/bin/bash
+# System git (/usr/bin/git) using the Manager's global identity read-only (plan §10).
+# Blocks global/system config writes, --no-verify and force pushes (plan §9.2, §10.4).
+. "$(dirname "$0")/_wrap.sh"
+sub=""; skip=0
+for a in "$@"; do
+  if [ "$skip" = 1 ]; then skip=0; continue; fi
+  case "$a" in -C|-c|--git-dir|--work-tree|--namespace|--exec-path|--config-env) skip=1;; -*) ;; *) sub="$a"; break;; esac
+done
+for a in "$@"; do
+  case "$a" in
+    --no-verify) wrap_die "--no-verify is forbidden (plan §10.4)";;
+    --global|--system) [ "$sub" = config ] && wrap_die "git config --global/--system is forbidden (plan §10.2)";;
+  esac
+done
+if [ "$sub" = push ]; then
+  for a in "$@"; do case "$a" in -f|--force|--force-with-lease*|--force-if-includes|+*|--mirror|--delete|-d) wrap_die "force/destructive push is forbidden (plan §10.4)";; esac; done
+fi
+wrap_exec "/usr" "/usr/bin/git" "$@"

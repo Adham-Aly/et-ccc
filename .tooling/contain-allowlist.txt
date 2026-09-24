@@ -1,0 +1,206 @@
+# contain-allowlist.txt — backstop allow-list for .tooling/bin/contain-snapshot (plan §9.4 b)
+#
+# Lines: "allow <glob> # reason"  or  "collision <glob> # reason"
+# Globs are shell `case` patterns relative to $HOME ("*" also matches "/"). No spaces inside a glob;
+# use "?" for a space. Only paths written by the OS, by the Manager's own apps, or by the Claude Code
+# harness belong here. Nothing our tools write may ever be listed.
+#
+# "collision" = a macOS/third-party path whose NAME contains a project-tool token (e.g. Apple's
+# "Biome" framework vs the Biome linter). It exempts that path from the tool-name hard fail and
+# must name the unrelated owner.
+
+# --- Claude Code harness (acknowledged, D-030 Q-13) --------------------------------------------
+allow .claude                                 # harness dir mtime
+allow .claude/projects*                       # harness session transcripts
+allow .claude/sessions*                       # harness
+allow .claude/session-env*                    # harness
+allow .claude/shell-snapshots*                # harness
+allow .claude/file-history*                   # harness
+allow .claude/todos*                          # harness
+allow .claude/tasks*                          # harness
+allow .claude/plans*                          # harness
+allow .claude/jobs*                           # harness
+allow .claude/teams*                          # harness
+allow .claude/state*                          # harness
+allow .claude/cache*                          # harness
+allow .claude/debug*                          # harness
+allow .claude/statsig*                        # harness
+allow .claude/telemetry*                      # harness
+allow .claude/paste-cache*                    # harness
+allow .claude/history.jsonl                   # harness
+allow .claude/stats-cache.json                # harness
+allow .claude/mcp-needs-auth-cache.json       # harness
+allow .claude/daemon*                         # harness
+allow .claude/downloads*                      # harness
+allow .claude/backups*                        # harness
+allow .claude.json                            # harness state (MCP registrations checked separately)
+allow .claude.json.*                          # harness temp/backup files
+allow .cache/claude*                          # harness
+allow .local/state/claude*                    # harness
+
+# --- macOS system churn (daemons; unrelated to project tools) -------------------------------------
+allow Library                                 # dir mtime
+allow Library/Metadata/*                      # Spotlight / CoreSpotlight
+allow Library/Caches                          # dir mtime
+allow Library/Caches/com.apple.duetexpertd*   # Siri suggestions
+allow Library/Caches/com.apple.AppleMediaServices*   # App Store / media services
+allow Library/Caches/com.apple.amsaccountsd*  # Apple accounts
+allow Library/Caches/com.apple.amsengagementd*  # Apple accounts
+allow Library/Caches/com.apple.ap.adprivacyd*  # Apple
+allow Library/Caches/com.apple.akd*           # Apple AuthKit
+allow Library/Caches/com.apple.nsurlsessiond*  # Apple networking daemon
+allow Library/Caches/com.apple.parsecd*       # Spotlight suggestions
+allow Library/Caches/com.apple.Safari*        # Manager's Safari
+allow Library/Caches/com.apple.helpd*         # Apple Help
+allow Library/Caches/com.apple.iCloudHelper*  # iCloud
+allow Library/Caches/com.apple.cache_delete*  # macOS storage management
+allow Library/Caches/CloudKit*                # iCloud
+allow Library/Caches/FamilyCircle*            # iCloud family
+allow Library/Caches/GeoServices*             # Location services
+allow Library/Caches/com.apple.HomeKit*       # Apple Home
+allow Library/Caches/com.apple.bird*          # iCloud Drive
+allow Library/Caches/com.apple.spotlight*     # Spotlight
+allow Library/Caches/com.apple.Spotlight*     # Spotlight
+allow Library/Caches/com.apple.textunderstandingd*  # Apple Intelligence
+allow Library/Caches/com.apple.proactive*     # Siri
+allow Library/Caches/com.apple.siri*          # Siri
+allow Library/Caches/com.apple.remindd*       # Reminders
+allow Library/Caches/com.apple.findmy*        # Find My
+allow Library/Caches/com.apple.icloud*        # iCloud
+allow Library/Caches/com.apple.feedbacklogger*  # macOS
+allow Library/Caches/com.apple.appstore*      # App Store
+allow Library/Caches/com.apple.commerce*      # App Store
+allow Library/Caches/com.apple.news*          # News
+allow Library/Caches/com.apple.weather*       # Weather
+allow Library/Caches/com.apple.stocks*        # Stocks
+allow Library/Caches/com.apple.mediaanalysisd*  # Photos analysis
+allow Library/Caches/com.apple.photoanalysisd*  # Photos analysis
+allow Library/Caches/com.apple.e5rt*          # Apple ML runtime
+allow Library/Caches/com.apple.intelligenceplatform*  # Apple Intelligence
+allow Library/Caches/com.apple.chrono*        # Widgets
+allow Library/Caches/com.apple.controlcenter*  # Control Center
+allow Library/Caches/com.apple.dock*          # Dock
+allow Library/Caches/com.apple.finder*        # Finder
+allow Library/Caches/com.apple.ScreenTimeAgent*  # Screen Time
+allow Library/Caches/com.apple.iTunesCloud*   # Music
+allow Library/Caches/com.apple.Music*         # Music
+allow Library/Caches/com.apple.tipsd*         # Tips
+allow Library/Caches/com.apple.gamed*         # Game Center
+allow Library/Caches/com.apple.passd*         # Wallet
+allow Library/Caches/com.apple.touristd*      # macOS onboarding
+allow Library/Caches/com.apple.accountsd*     # Accounts
+allow Library/Caches/com.apple.Maps*          # Maps
+allow Library/Caches/com.apple.appleaccountd*  # Apple account
+allow Library/Caches/com.apple.biomesyncd*    # Apple Biome sync (not the Biome linter)
+allow Library/Caches/com.apple.shortcuts*     # Shortcuts
+allow Library/Caches/com.apple.studentd*      # macOS
+allow Library/Caches/com.apple.xpc*           # XPC
+allow Library/Caches/com.apple.ctcategories*  # Screen Time categories
+allow Library/Caches/com.apple.Messages*      # Messages
+allow Library/Caches/com.apple.imfoundation*  # Messages
+allow Library/Caches/com.apple.QuickLook*     # Quick Look
+allow Library/Caches/com.apple.iconservices*  # Icon cache
+allow Library/Caches/com.apple.WebKit.WebContent*  # re-checked by explicit WebKit snapshot; system-owned
+allow Library/Preferences                     # dir mtime
+allow Library/Preferences/com.apple.*         # macOS preference plists
+allow Library/Preferences/ContextStoreAgent.plist  # macOS
+allow Library/Preferences/TokenBucketRateLimiter.plist  # macOS
+allow Library/Preferences/com.apphousekitchen.*  # AlDente battery app (Manager's)
+allow Library/Preferences/ByHost*             # macOS per-host prefs
+allow Library/Preferences/.GlobalPreferences*  # macOS
+allow Library/Preferences/pbs.plist           # macOS services
+allow Library/Preferences/MobileMeAccounts.plist  # iCloud
+allow Library/Application?Support             # dir mtime
+allow Library/Application?Support/com.apple.*  # macOS
+allow Library/Application?Support/Knowledge*  # macOS knowledge store
+allow Library/Application?Support/CallHistory*  # macOS
+allow Library/Application?Support/AddressBook*  # Contacts
+allow Library/Application?Support/FileProvider*  # iCloud / Drive
+allow Library/Application?Support/CloudDocs*  # iCloud Drive
+allow Library/Application?Support/iCloud*     # iCloud
+allow Library/Application?Support/DifferentialPrivacy*  # macOS
+allow Library/Application?Support/AppleMediaServices*  # App Store
+allow Library/Application?Support/Dock*       # Dock
+allow Library/Application?Support/BraveSoftware*  # Manager's Brave browser
+allow Library/Application?Support/Google/Chrome/*  # Manager's Chrome (Crashpad watched separately)
+allow Library/Application?Support/Google/Chrome   # Manager's Chrome
+allow Library/Application?Support/Google/DriveFS*  # Google Drive app
+allow Library/Application?Support/Google      # dir mtime
+allow Library/Caches/BraveSoftware*           # Manager's Brave browser
+allow Library/Caches/Google*                  # Manager's Chrome / Drive
+allow Library/Biome*                          # Apple Biome
+allow Library/IdentityServices*               # iMessage/FaceTime identity
+allow Library/IntelligencePlatform*           # Apple Intelligence
+allow Library/DuetExpertCenter*               # Siri suggestions
+allow Library/Daemon?Containers*              # sandboxed Apple daemons
+allow Library/Group?Containers*               # app group containers (sandboxed apps)
+allow Library/Containers*                     # sandboxed app containers
+allow Library/com.apple.AppleMediaServices*   # App Store
+allow Library/AppleMediaServices*             # App Store
+allow Library/StatusKit*                      # Focus status
+allow Library/HTTPStorages                    # dir mtime (contents watched explicitly)
+allow Library/HTTPStorages/com.apple.*        # Apple daemons' HTTP cookie stores
+allow Library/HTTPStorages/com.brave.*        # Manager's Brave browser
+allow Library/HTTPStorages/com.google.*       # Manager's Chrome / Drive
+allow Library/Cookies*                        # macOS cookie store for Apple apps
+allow Library/Logs                            # dir mtime
+allow Library/Logs/com.apple.*                # macOS logs
+allow Library/Logs/Google*                    # Google Drive logs
+allow Library/Logs/DiagnosticReports*         # also watched explicitly (crashes get investigated there)
+allow Library/Accounts*                       # macOS accounts DB
+allow Library/Assistant*                      # Siri
+allow Library/Suggestions*                    # Siri suggestions
+allow Library/Trial*                          # Apple experiments framework
+allow Library/PersonalizationPortrait*        # Siri
+allow Library/Keychains*                      # macOS keychain (gh token is READ from it only, §9.7)
+allow Library/Calendars*                      # Calendar sync
+allow Library/Mail*                           # Mail
+allow Library/Messages*                       # Messages
+allow Library/Safari*                         # Safari
+allow Library/Sharing*                        # AirDrop / sharing
+allow Library/Shortcuts*                      # Shortcuts
+allow Library/Reminders*                      # Reminders
+allow Library/Photos*                         # Photos
+allow Library/Finance*                        # Wallet
+allow Library/Passes*                         # Wallet
+allow Library/Weather*                        # Weather
+allow Library/Autosave?Information*           # macOS
+allow Library/Saved?Application?State*        # also watched explicitly; normal app churn
+allow Library/Staging*                        # macOS
+allow Library/ContainerManager*               # macOS
+allow Library/CoreFollowUp*                   # macOS
+allow Library/FrontBoard*                     # macOS
+allow Library/Frameworks                      # dir mtime
+allow Library/Developer*                      # Xcode (Manager's)
+allow Library/Caches/com.microsoft*           # Manager's Microsoft apps
+allow Library/Caches/com.spotify*             # Manager's apps
+allow Library/Application?Support/Spotify*    # Manager's apps
+allow Library/Preferences/com.google.*        # Manager's Chrome / Drive prefs
+allow Library/Preferences/com.brave.*         # Manager's Brave prefs
+allow Library/Preferences/com.mitchellh.*     # Manager's terminal
+allow Library/Preferences/com.googlecode.iterm2*  # Manager's terminal
+allow .zsh_history                            # Manager's own shell
+allow .zsh_sessions*                          # Manager's own shell
+allow .zcompdump*                             # Manager's own shell
+allow .DS_Store                               # Finder
+allow Desktop/.DS_Store                       # Finder
+allow Developer                               # dir mtime of the workspace's parent
+allow Developer/.DS_Store                     # Finder
+allow .weekloom*                              # Manager's app
+allow .local/state/herdr*                     # Manager's app
+allow .local/share/opencode*                  # Manager's app
+allow .cache/opencode*                        # Manager's app
+allow .ollama*                                # Manager's app
+
+# --- System-name collisions (exempt from the tool-name hard fail) ---------------------------------
+collision Library/Biome*                      # Apple's Biome (on-device activity store), not the Biome linter
+collision Library/Caches/com.apple.biomesyncd*  # Apple's Biome sync daemon, not the Biome linter
+collision Library/Caches/com.apple.WebKit.WebContent*  # Safari/system WebKit processes, not Playwright WebKit
+collision Library/Caches/com.apple.Safari*    # Safari (system WebKit), not Playwright WebKit
+
+# --- added after the idle calibration run (2026-09-23) ---------------------------------------------
+allow Library/Caches/com.apple.*              # any Apple daemon cache (tool-named ones, e.g. com.apple.python, still hard-fail first)
+allow Library/Application?Support/networkserviceproxy*  # macOS network service proxy
+allow .agents/skills/synced*                  # Claude harness: claude.ai-synced skills manifest, rewritten every few minutes
+allow .agents/skills                          # dir mtime (sync above)
+allow .agents                                 # dir mtime (sync above)

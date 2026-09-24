@@ -1,0 +1,189 @@
+#!/bin/bash
+# contain-snapshot — G-CONTAIN proof tool (implementation-plan.md §9.4).
+#
+#   contain-snapshot before <label>   touch a marker, stat-snapshot every watched global location
+#   contain-snapshot after  <label>   stat-snapshot the same locations again
+#   contain-snapshot diff   <label>   diff before/after + backstop sweep of $HOME; exit 1 on any failure
+#
+# State: .tooling/snapshots/<label>/{marker,before/,after/,backstop.txt,report.txt}
+# Read-only outside the workspace: it only runs stat/find/ls/plutil over global paths.
+# Uses absolute system binaries (/usr/bin/find, /usr/bin/stat) so shell aliases (e.g. bfs) never interfere.
+set -u
+export LC_ALL=C
+
+ROOT="$(cd "$(dirname "$0")/../.." && pwd -P)"
+T="$ROOT/.tooling"
+H="$HOME"
+FIND=/usr/bin/find
+STAT=/usr/bin/stat
+ALLOW="$T/contain-allowlist.txt"
+
+usage() { echo "usage: contain-snapshot before|after|diff <label>" >&2; exit 2; }
+[ $# -eq 2 ] || usage
+MODE="$1"; LABEL="$2"
+case "$LABEL" in *[!A-Za-z0-9._-]*|'') echo "bad label" >&2; exit 2;; esac
+D="$T/snapshots/$LABEL"
+
+# Watched locations: "<depth>|<path>". Depth 0 = the path itself only.
+# w3-containment.md §9 list + plan §9.4 additions.
+targets() {
+cat <<EOF
+4|$H/.npm
+0|$H/.npmrc
+3|$H/.node-gyp
+0|$H/.node_repl_history
+3|$H/Library/Caches/ms-playwright
+3|$H/Library/Caches/next-swc
+3|$H/Library/Preferences/nextjs-nodejs
+3|$H/.cache
+4|$H/.local
+3|$H/.config
+4|$H/.impeccable
+4|$H/.agents
+4|$H/.claude/skills
+4|$H/.claude/plugins
+3|$H/.claude/agents
+3|$H/.claude/commands
+3|$H/.claude/hooks
+0|$H/.claude/settings.json
+0|$H/.claude/settings.local.json
+0|$H/.claude/CLAUDE.md
+0|$H/.claude/keybindings.json
+0|$H/.gitconfig
+0|$H/.git-credentials
+0|$H/.ssh/known_hosts
+0|$H/.zshrc
+0|$H/.zprofile
+0|$H/.zshenv
+0|$H/.bashrc
+0|$H/.bash_profile
+0|$H/.profile
+0|$H/.python_history
+3|$H/.pip
+3|$H/Library/Application Support/pip
+3|$H/Library/Caches/pip
+3|$H/Library/Caches/com.apple.python
+3|$H/.pypy
+3|$H/Library/WebKit
+1|$H/Library/HTTPStorages
+2|$H/Library/Saved Application State
+3|$H/Library/Application Support/Firefox
+3|$H/Library/Caches/Firefox
+3|$H/Library/Application Support/Chromium
+3|$H/Library/Caches/Chromium
+3|$H/Library/Application Support/Google/Chrome Crashpad
+2|$H/Library/Logs/DiagnosticReports
+2|$H/Library/Application Support/CrashReporter
+3|$H/.config/gh
+3|$H/.cache/gh
+3|$H/.local/state/gh
+0|/etc/paths
+1|/etc/paths.d
+1|/opt/homebrew/bin
+2|/opt/homebrew/Cellar
+2|/opt/homebrew/lib/node_modules
+1|/opt/homebrew/etc
+EOF
+# every ~/Library/Caches/com.apple.WebKit* entry (plan §9.4)
+for p in "$H"/Library/Caches/com.apple.WebKit*; do [ -e "$p" ] && echo "2|$p"; done
+}
+
+
+# tool-name tokens (plan §9.4 a); matched against the path relative to $HOME, lower-cased
+TOK='(^|[^a-z0-9])(node|npm|npx|playwright|chromium|webkit|firefox|pypy|python|next|nextjs|impeccable|biome|lighthouse|cspell|vitest|vercel|ruff|vermin|avoid-ai-writing)([^a-z0-9]|$)'
+classify() { # $1 = absolute path -> prints allowed-collision | HARD-FAIL | allowed | UNLISTED
+  local p="$1" rel low g
+  case "$p" in "$H"/*) rel="${p#$H/}";; *) rel="$p";; esac
+  low="$(printf '%s' "$rel" | tr 'A-Z' 'a-z')"
+  while IFS= read -r g; do case "$rel" in $g) echo allowed-collision; return;; esac; done \
+    < <(sed -n 's/^collision[[:space:]]\{1,\}\([^[:space:]]*\).*/\1/p' "$ALLOW")
+  if printf '%s' "$low" | grep -Eq "$TOK"; then echo HARD-FAIL; return; fi
+  while IFS= read -r g; do case "$rel" in $g) echo allowed; return;; esac; done \
+    < <(sed -n 's/^allow[[:space:]]\{1,\}\([^[:space:]]*\).*/\1/p' "$ALLOW")
+  echo UNLISTED
+}
+
+key() { printf '%s' "$1" | sed -e "s|^$H|HOME|" -e 's|[^A-Za-z0-9._-]|_|g'; }
+
+snap() { # $1 = out dir
+  local out="$1" line depth p k
+  mkdir -p "$out"
+  targets | while IFS= read -r line; do
+    depth="${line%%|*}"; p="${line#*|}"; k="$(key "$p")"
+    if [ -e "$p" ] || [ -L "$p" ]; then
+      "$FIND" "$p" -maxdepth "$depth" -exec "$STAT" -f '%N|%z|%m|%p' {} + 2>/dev/null | sort > "$out/$k.txt"
+    else
+      echo "ABSENT $p" > "$out/$k.txt"
+    fi
+  done
+  # ~/.claude.json is rewritten by the harness constantly; watch only the MCP registrations in it.
+  {
+    echo "global mcpServers:"; plutil -extract mcpServers json -o - "$H/.claude.json" 2>/dev/null || echo "(none)"
+    echo; echo "project mcpServers:"; plutil -extract "projects.$ROOT.mcpServers" json -o - "$H/.claude.json" 2>/dev/null || echo "(none)"
+  } > "$out/HOME_.claude.json.mcp.txt"
+}
+
+case "$MODE" in
+before)
+  rm -rf "$D"; mkdir -p "$D"
+  date '+%Y-%m-%dT%H:%M:%S%z' > "$D/started"
+  touch "$D/marker"; sleep 1
+  snap "$D/before"
+  echo "before snapshot: $D ($(ls "$D/before" | wc -l | tr -d ' ') locations)"
+  ;;
+after)
+  [ -f "$D/marker" ] || { echo "no before snapshot for $LABEL" >&2; exit 2; }
+  snap "$D/after"
+  echo "after snapshot: $D"
+  ;;
+diff)
+  [ -d "$D/before" ] && [ -d "$D/after" ] || { echo "need before and after for $LABEL" >&2; exit 2; }
+  FAIL=0
+  {
+    echo "# contain-snapshot report: $LABEL"
+    echo "before taken: $(cat "$D/started")   diff run: $(date '+%Y-%m-%dT%H:%M:%S%z')"
+    echo
+    echo "## 1. Watched locations (before vs after)"
+    : > "$D/watched-classified.txt"
+    for f in "$D"/before/*.txt; do
+      b="$(basename "$f")"
+      if diff -q "$f" "$D/after/$b" >/dev/null 2>&1; then
+        echo "OK       $b"
+      else
+        # classify each changed/added/removed path with the same rules as the backstop
+        wbad=0
+        while IFS= read -r ln; do
+          p="${ln#[<>] }"; p="${p%%|*}"
+          v="$(classify "$p")"
+          echo "$v  ${ln%%|*}" >> "$D/watched-classified.txt"
+          case "$v" in HARD-FAIL|UNLISTED) wbad=1;; esac
+        done < <(diff "$f" "$D/after/$b" | grep -E '^[<>] ')
+        if [ "$wbad" -eq 0 ]; then echo "CHURN    $b (all changes allow-listed: OS/harness)"
+        else echo "CHANGED  $b"; diff "$f" "$D/after/$b" | sed 's/^/           /' | head -40; FAIL=1; fi
+      fi
+    done
+    echo
+    echo "## 2. Backstop: find \$HOME -newer marker, outside the workspace"
+    "$FIND" "$H" -xdev \( -ipath "$H/Library/CloudStorage" -o -ipath "$ROOT" -o -ipath "$H/.Trash" \) -prune \
+      -o -newer "$D/marker" -print 2> "$D/backstop-errors.txt" | sort > "$D/backstop.txt"
+    echo "paths newer than marker: $(wc -l < "$D/backstop.txt" | tr -d ' ')   (find errors, e.g. TCC, logged: $(wc -l < "$D/backstop-errors.txt" | tr -d ' '))"
+    HARD=0; UNLISTED=0; ALLOWED=0
+    : > "$D/backstop-classified.txt"
+    while IFS= read -r p; do
+      verdict="$(classify "$p")"
+      echo "$verdict  $p" >> "$D/backstop-classified.txt"
+      case "$verdict" in HARD-FAIL) HARD=$((HARD+1));; UNLISTED) UNLISTED=$((UNLISTED+1));; *) ALLOWED=$((ALLOWED+1));; esac
+    done < "$D/backstop.txt"
+    echo "allowed (allow-list): $ALLOWED   HARD-FAIL (tool-named): $HARD   UNLISTED: $UNLISTED"
+    grep -E '^(HARD-FAIL|UNLISTED)' "$D/backstop-classified.txt" | sed 's/^/  /'
+    [ "$HARD" -gt 0 ] && FAIL=1
+    [ "$UNLISTED" -gt 0 ] && FAIL=1
+    echo
+    if [ "$FAIL" -eq 0 ]; then echo "RESULT: PASS (nothing outside the workspace changed except allow-listed OS/harness churn)"
+    else echo "RESULT: FAIL (investigate every CHANGED / HARD-FAIL / UNLISTED line above)"; fi
+  } > "$D/report.txt"
+  cat "$D/report.txt"
+  grep -q '^RESULT: PASS' "$D/report.txt"
+  ;;
+*) usage;;
+esac

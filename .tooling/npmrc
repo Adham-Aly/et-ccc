@@ -1,0 +1,7 @@
+; .tooling/npmrc — npm user config for this workspace (npm_config_userconfig points here, not ~/.npmrc)
+cache=/Users/adham/Developer/et-ccc/.tooling/npm-cache
+prefix=/Users/adham/Developer/et-ccc/.tooling/npm-global
+update-notifier=false
+fund=false
+save-exact=true
+engine-strict=true
