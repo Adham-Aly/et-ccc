@@ -114,8 +114,8 @@ Agents: orchestrator (Opus) does §9.3, architecture, git and the architecture/c
 
 Checklist:
 - [x] 1. §9.3 verification → `work/04-app/p3-verification.md` (all PASS)
-- [ ] 2. Scaffold with §4.2 pins, tooling, verify scripts, Playwright (Chromium + WebKit) + Lighthouse with containment proofs; commit + push `phase-04-app`
-- [ ] 3. Manager: link Vercel (§10.5) → SPIKE S-2 → first deployed build
+- [x] 2. Scaffold with §4.2 pins (`work/04-app/versions.md`), verify scripts, G-UI-LIGHT, Playwright Chromium + WebKit, Lighthouse installed; containment proofs in `work/04-app/containment/` (node-gyp leak found and remediated; npm wrapper now forces ignore-scripts on installs; **WebKit per-bundle storage writes to ~/Library — open, W1 batch 2 tries a redirect**). Committed 1e0d772, pushed `phase-04-app`. Design record (PRODUCT.md, DESIGN.md "The Drafting Set", fonts) by W2 in the same commit.
+- [ ] 3. Manager: link Vercel (§10.5) → SPIKE S-2 → first deployed build. **PAUSED FOR MANAGER (2026-09-23 23:45): instructions in `work/04-app/manager-action-vercel.md`.** Workers continue meanwhile; the main session resumes the orchestrator with SendMessage once the Manager says "Vercel linked".
 - [ ] 4. Impeccable init → PRODUCT.md / DESIGN.md; tokens, fonts, layout, base components, every §4.10 route
 - [ ] 5. Content pipeline (loader, schemas, MDX map, course.yaml, drafts, content:check/status)
 - [ ] 6. Registry code, 119-slug stub, verify-judges, DMOJ checklist; first WMOJ automated run recorded
@@ -126,4 +126,4 @@ Checklist:
 - [ ] 11. verify:full green locally; suites green on the Vercel preview; G-CONTAIN clean
 - [ ] 12. Report assets, phase log, decisions, commit + push
 
-Spawns used: 2 of 3 — W1 app & QA engineer (Sonnet, general-purpose; batch 1 scaffold, 23:05); W2 design lead (Opus, general-purpose; batch 1 design record, 23:05).
+Spawns used: 3 of 3 — W1 app & QA engineer (Sonnet, general-purpose; batch 1 scaffold, 23:05); W2 design lead (Opus, general-purpose; batch 1 design record, 23:05); W3 visualization engineer (Opus, general-purpose; viz system, 23:45). Batch 2 sent to W1 (WebKit containment, pipeline, registry + first WMOJ run, gates, fixture text, route wiring) and W2 (globals, layout, components, page components, screenshot review).

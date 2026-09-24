@@ -86,3 +86,13 @@ At least: one Stage-0/1-shaped module with a lesson using every text/code compon
 - Defects: `work/04-app/defects.md` (`ID | item | severity | found by | status | note`).
 - Containment proofs: `work/04-app/containment/<label>.*`.
 - Screenshots for review: `work/04-app/_scratch/shots/<role>/…` (not committed); final report screenshots are taken by the orchestrator.
+
+## 7. Seam refinements (orchestrator, after batch 1)
+
+- **Route files are thin and belong to W1:** each `app/**/page.tsx` only loads data (loader, `generateStaticParams`, `dynamicParams = false`, `generateMetadata`) and renders one presentational component with typed props, e.g. `<LessonPage lesson={…} module={…} nav={…} />`. **W2 owns those presentational components** in `components/layout/` (`HomePage`, `StartPage`, `CourseMapPage`, `ModulePage`, `LessonPage`, `ProblemsPage`, `SearchPage`, `GlossaryPage`, `AboutPage`) plus `app/layout.tsx`, `app/not-found.tsx`, `app/globals.css`. The prop types live in `lib/content/types.ts` (W1) — W2 imports them; if W2 needs a new field, request it.
+- **Viz public API:** W3 first publishes `components/viz/index.ts` exporting `Figure`, `Diagram`, `StepThrough`, `CodeTrace`, `Scene` with the §4 contract props (working stubs are fine at first), and `lib/viz/validate.ts` exporting `validateVisualFile(path)` for `content:check`. W1 wires them into the MDX component map and `prebuild` as soon as they exist.
+- **Client features (§4.8):** logic in `lib/read-state`, `lib/search` (W1); their UI components (mark-as-read cell, continue block, search dialog, mobile nav, copy button) are W2's in `components/ui` / `components/content`, calling W1's hooks.
+- **Package installs:** W1 only. Requests in `requests.md`.
+- **Build lock:** only one `next build` at a time (the lock enforces it). Prefer `next dev` on a leased port for screenshots.
+- **Working title:** "CCC Python Course" until P5/Manager decides; the name comes only from `content/ui/strings.yaml`.
+- **npm installs:** the `.tooling/bin/npm` wrapper now forces `ignore-scripts` for install-type commands (node-gyp containment finding); do not pass `--ignore-scripts` yourself and never set it in `.npmrc` (it would stop `prebuild` on Vercel).
