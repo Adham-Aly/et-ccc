@@ -4,7 +4,7 @@ Status values: `NOT STARTED` · `IN PROGRESS` · `DONE` · `BLOCKED` · `REDO RE
 
 ## Overall
 
-- Current phase: **P3 Setup DONE (2026-09-23 23:05); awaiting Manager session restart, then P4**
+- Current phase: **P4 App launched (2026-09-23) after session restart; env block, guard hook and both skills verified live by the main session. Plan v2.2 (max 3 worker spawns).**
 - `main-app/`: empty, not initialized (intentional; P4)
 - GitHub repo: https://github.com/Adham-Aly/et-ccc (PRIVATE, `main`), created in P3
 - Vercel project: NOT YET LINKED (plan §10.5, P4); personal Hobby account, previews and production both public, no bypass secret (D-030 Q-18)
@@ -103,5 +103,27 @@ Checklist:
 | 2 | `~/Desktop/et-ccc-phase-02-plan-report.html` (copy: `manager-reports/phase-02-plan-report.html`) | created (v1) |
 | 2 (v2) | `~/Desktop/et-ccc-phase-02-plan-v2-report.html` (copy: `manager-reports/phase-02-plan-v2-report.html`) | created |
 | 2 (v2.1) | not generated (process-file/plan amendment only; no new Manager report requested) | — |
+| 3 | `~/Desktop/et-ccc-phase-03-setup-report.html` (copy: `manager-reports/phase-03-setup-report.html`) | created |
 
 <!-- Phase 1 note: all 5 workers (W1-W5) dispatched in parallel 2026-09-21. Synthesis will be done by continuing an existing worker via SendMessage (no 6th spawn). -->
+
+## Phase 4 — App: foundation, design, reader, pipeline and deploy (`app-orchestrator`)
+
+Status: `IN PROGRESS` (started 2026-09-23 22:59 EDT). Branch `phase-04-app` (from `main` @ 9edd973) · Work dir `work/04-app/` · Brief `work/04-app/brief.md` · Phase log `context/phase-logs/phase-04-app.md` (at phase end)
+Agents: orchestrator (Opus) does §9.3, architecture, git and the architecture/code/pixel/motion review. Workers (cap 3, D-032-A1): W1 app & QA engineer (Sonnet), W2 design lead (Opus, Impeccable), W3 visualization engineer (Opus). Order: W1 scaffold ∥ W2 design record → W3 once tokens exist → W1 pipeline/registry/gates ∥ W2 UI ∥ W3 viz → W1 suites → review + fixes via SendMessage.
+
+Checklist:
+- [x] 1. §9.3 verification → `work/04-app/p3-verification.md` (all PASS)
+- [ ] 2. Scaffold with §4.2 pins, tooling, verify scripts, Playwright (Chromium + WebKit) + Lighthouse with containment proofs; commit + push `phase-04-app`
+- [ ] 3. Manager: link Vercel (§10.5) → SPIKE S-2 → first deployed build
+- [ ] 4. Impeccable init → PRODUCT.md / DESIGN.md; tokens, fonts, layout, base components, every §4.10 route
+- [ ] 5. Content pipeline (loader, schemas, MDX map, course.yaml, drafts, content:check/status)
+- [ ] 6. Registry code, 119-slug stub, verify-judges, DMOJ checklist; first WMOJ automated run recorded
+- [ ] 7. pycheck, style, lint (R14), every §7 gate with a failing fixture; fixture course
+- [ ] 8. Visualization system + `/dev/viz` gallery + visual language in DESIGN.md
+- [ ] 9. Client features; E2E, visual, a11y, perf suites; deployed-url
+- [ ] 10. Orchestrator review (architecture, code, pixel, motion) → `work/04-app/design-review.md`; fixes
+- [ ] 11. verify:full green locally; suites green on the Vercel preview; G-CONTAIN clean
+- [ ] 12. Report assets, phase log, decisions, commit + push
+
+Spawns used: 2 of 3 — W1 app & QA engineer (Sonnet, general-purpose; batch 1 scaffold, 23:05); W2 design lead (Opus, general-purpose; batch 1 design record, 23:05).

@@ -1,0 +1,264 @@
+<title>Setup Report</title>
+<style>
+  :root {
+    --bg: #faf7f2;
+    --paper: #ffffff;
+    --ink: #262319;
+    --ink-soft: #6b6355;
+    --line: #e6dfd2;
+    --accent: #2c6e5e;
+    --accent-soft: #e7f0ec;
+    --amber: #a9701f;
+    --amber-soft: #f6ead6;
+    color-scheme: light;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: "Source Sans 3", "Segoe UI", Helvetica, Arial, sans-serif;
+    font-size: 16px;
+    line-height: 1.6;
+    padding-inline: 20px;
+    padding-block: 40px;
+  }
+
+  main {
+    max-width: 680px;
+    margin: 0 auto;
+  }
+
+  h1, h2 {
+    font-family: "Source Serif 4", Georgia, "Times New Roman", serif;
+    font-weight: 600;
+    color: var(--ink);
+    text-wrap: balance;
+  }
+
+  header.masthead {
+    margin-bottom: 36px;
+  }
+
+  .eyebrow {
+    text-transform: uppercase;
+    letter-spacing: 0.09em;
+    font-size: 12.5px;
+    font-weight: 600;
+    color: var(--accent);
+  }
+
+  h1 {
+    font-size: clamp(28px, 5vw, 36px);
+    margin: 8px 0 6px;
+  }
+
+  .dateline {
+    color: var(--ink-soft);
+    font-size: 14px;
+  }
+
+  .status-card {
+    background: var(--accent-soft);
+    border: 1px solid #cfe3da;
+    border-radius: 10px;
+    padding: 16px 18px;
+    margin-top: 20px;
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+  }
+
+  .status-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: var(--accent);
+    margin-top: 6px;
+    flex: none;
+  }
+
+  .status-card p {
+    margin: 0;
+    font-size: 15px;
+  }
+
+  section {
+    margin-top: 40px;
+  }
+
+  section h2 {
+    font-size: 21px;
+    margin: 0 0 4px;
+  }
+
+  .section-sub {
+    color: var(--ink-soft);
+    font-size: 14.5px;
+    margin: 0 0 16px;
+  }
+
+  .card {
+    background: var(--paper);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 18px 20px;
+  }
+
+  .card + .card { margin-top: 12px; }
+
+  ul.plain {
+    margin: 0;
+    padding-left: 20px;
+  }
+
+  ul.plain li { margin-bottom: 10px; }
+  ul.plain li:last-child { margin-bottom: 0; }
+
+  a {
+    color: var(--accent);
+    text-decoration-thickness: 1px;
+    text-underline-offset: 2px;
+  }
+
+  .link-block {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--paper);
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    padding: 10px 14px;
+    font-family: "IBM Plex Mono", ui-monospace, monospace;
+    font-size: 13.5px;
+    margin-top: 6px;
+    word-break: break-all;
+  }
+
+  .note {
+    background: var(--amber-soft);
+    border: 1px solid #e8cfa0;
+    border-radius: 10px;
+    padding: 16px 18px;
+    margin-top: 14px;
+  }
+
+  .note p { margin: 0 0 8px; }
+  .note p:last-child { margin-bottom: 0; }
+
+  .action-card {
+    border: 1.5px solid var(--accent);
+    background: var(--paper);
+    border-radius: 10px;
+    padding: 20px;
+    display: flex;
+    gap: 14px;
+    align-items: flex-start;
+  }
+
+  .action-num {
+    font-family: "Source Serif 4", Georgia, serif;
+    font-size: 26px;
+    font-weight: 600;
+    color: var(--accent);
+    line-height: 1;
+    flex: none;
+  }
+
+  .action-card h3 {
+    margin: 0 0 6px;
+    font-size: 17px;
+  }
+
+  .action-card p {
+    margin: 0;
+    color: var(--ink-soft);
+    font-size: 14.5px;
+  }
+
+  footer {
+    margin-top: 48px;
+    padding-top: 20px;
+    border-top: 1px solid var(--line);
+    color: var(--ink-soft);
+    font-size: 13px;
+  }
+
+  @media (max-width: 480px) {
+    .status-card { flex-direction: row; }
+  }
+</style>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:wght@600;700&family=Source+Sans+3:wght@400;600&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+
+<main>
+  <header class="masthead">
+    <div class="eyebrow">et&#8209;ccc &middot; Manager Report</div>
+    <h1>Phase 3: Getting set up</h1>
+    <div class="dateline">September 23, 2026</div>
+    <div class="status-card">
+      <div class="status-dot"></div>
+      <p><strong>Setup is finished.</strong> Nothing in the app itself has been built yet &mdash; this phase was only about getting the workshop ready. Building starts in Phase 4.</p>
+    </div>
+  </header>
+
+  <section>
+    <h2>What happened</h2>
+    <p class="section-sub">Two things were done this phase.</p>
+    <div class="card">
+      <ul class="plain">
+        <li><strong>The tools were installed, all inside the project folder.</strong> Nothing was installed anywhere else on your computer. If the project folder is ever deleted, these tools go with it.</li>
+        <li><strong>A private GitHub repository was created</strong> to keep a saved, backed-up copy of the project. It uses your existing GitHub account. Every phase from now on will save its work there too.
+          <div class="link-block">
+            <a href="https://github.com/Adham-Aly/et-ccc" target="_blank" rel="noopener">github.com/Adham-Aly/et-ccc</a>
+          </div>
+        </li>
+      </ul>
+    </div>
+  </section>
+
+  <section>
+    <h2>Did anything leak outside the project?</h2>
+    <p class="section-sub">This was checked carefully, before and after every install.</p>
+    <div class="card">
+      <p style="margin:0 0 12px;">No. Everything stayed inside the project folder, with two things worth flagging honestly:</p>
+      <ul class="plain">
+        <li><strong>One small slip, caught and cleaned up.</strong> Early in the setup, one install step briefly wrote a file to a shared folder on your computer instead of staying inside the project. It was noticed right away, removed, and the cause was fixed so it can't happen again. The only lasting trace is one old, no-longer-needed file that's now gone from that shared folder &mdash; nothing you use was touched.</li>
+        <li><strong>A resume.pdf appeared on your Desktop during the check &mdash; that was you, not the setup.</strong> The safety check looks at everything that changes on your computer during setup, and it happened to catch a file you yourself downloaded to your Desktop around the same time. It's unrelated to this project and was left alone.</li>
+      </ul>
+    </div>
+  </section>
+
+  <section>
+    <h2>A change to how this project is run</h2>
+    <p class="section-sub">You asked for tighter limits on how many helpers get used &mdash; this is now in place.</p>
+    <div class="card">
+      <p style="margin:0;">From now on, each phase can use <strong>at most 3 helper agents</strong> to do the work, on top of the one agent leading that phase. The plan has been updated to reflect this (now version 2.2), and this cuts the total amount of helper work planned for the rest of the project by about a quarter.</p>
+    </div>
+  </section>
+
+  <section>
+    <h2>What you need to do</h2>
+    <div class="action-card">
+      <div class="action-num">1</div>
+      <div>
+        <h3>Restart your Claude Code session</h3>
+        <p>This is needed once, before Phase 4 begins, so the new safety settings and tools fully switch on. Nothing else is needed from you right now.</p>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>What comes next</h2>
+    <div class="card">
+      <p style="margin:0;"><strong>Phase 4 starts building the app itself:</strong> the look and feel, the first lesson pages, the animations, and the first version deployed to the web, where you'll be able to open a live link and see it for yourself.</p>
+    </div>
+  </section>
+
+  <footer>
+    et&#8209;ccc &middot; Phase 3 of 9 &middot; saved to your Desktop and to the project's manager-reports folder
+  </footer>
+</main>

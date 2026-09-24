@@ -1,0 +1,7 @@
+@import "tailwindcss";
+
+/* Light mode only (plan §4.9, brief §1.6, G-UI-LIGHT). The design lead replaces this file's
+   tokens and rules from DESIGN.md; this is a minimal placeholder so `next build` passes. */
+:root {
+  color-scheme: light;
+}

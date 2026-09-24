@@ -1,0 +1,19 @@
+# Domain dictionary for cspell (G-SPELL, plan §7). One word per line, alphabetised.
+# Add real content vocabulary here as it is written (P5+); this is a starter set for the scaffold.
+biomejs
+cemc
+ccc
+dmoj
+devs
+Fenwick
+minisearch
+mdx
+pypy
+rehype
+remark
+shiki
+tailwindcss
+vermin
+vitest
+vizrec
+wmoj

@@ -1,0 +1,24 @@
+{
+  "$schema": "https://raw.githubusercontent.com/streetsidesoftware/cspell/main/cspell.schema.json",
+  "version": "0.2",
+  "language": "en",
+  "dictionaries": ["et-ccc-domain"],
+  "dictionaryDefinitions": [
+    {
+      "name": "et-ccc-domain",
+      "path": "./dictionaries/et-ccc-domain.txt",
+      "addWords": true
+    }
+  ],
+  "ignorePaths": [
+    "node_modules/**",
+    ".next/**",
+    "playwright-report/**",
+    "test-results/**",
+    "AGENTS.md",
+    "package-lock.json",
+    "**/*.trace.json",
+    "**/*.frames.json",
+    "app/fonts/**"
+  ]
+}

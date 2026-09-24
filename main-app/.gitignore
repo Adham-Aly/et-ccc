@@ -1,0 +1,16 @@
+# main-app/.gitignore — mirrors the relevant entries from the root .gitignore (plan §10.3) so
+# Biome's VCS-aware ignore lookup (biome.json vcs.useIgnoreFile) finds a file in this directory.
+# The root .gitignore is still authoritative for the whole repo; this file must not diverge from
+# it for any shared pattern.
+
+node_modules/
+.next/
+out/
+test-results/
+playwright-report/
+*.tsbuildinfo
+
+.env*
+.vercel/
+
+.DS_Store

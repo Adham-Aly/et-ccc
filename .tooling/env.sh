@@ -16,6 +16,9 @@ export npm_config_globalconfig="$ET_T/npm-global/etc/npmrc" # instead of <prefix
 export npm_config_prefix="$ET_T/npm-global"                # npm -g would land here (the wrapper blocks -g)
 export npm_config_cache="$ET_T/npm-cache"                  # instead of ~/.npm (also npx's _npx)
 export npm_config_update_notifier=false
+# npm 11 warns on unknown npm_config_* keys; a reverted P4 settings.json edit hot-loaded
+# npm_config_devdir into the running session, so drop it (harmless no-op otherwise).
+unset npm_config_devdir
 export npm_config_fund=false
 export COREPACK_HOME="$ET_T/corepack-home"
 export COREPACK_ENABLE_DOWNLOAD_PROMPT=0

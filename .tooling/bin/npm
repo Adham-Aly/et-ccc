@@ -15,4 +15,12 @@ case "${1:-}" in
     has_no=0; for a in "$@"; do case "$a" in --no|--yes=false|--no-install) has_no=1;; --yes|-y) wrap_die "npm exec --yes may fetch remote packages; use: npm exec --no -- <bin> (plan §9.5)";; esac; done
     [ "$has_no" = 1 ] || wrap_die "use: npm exec --no -- <bin> (local pinned devDependencies only, plan §9.5)";;
 esac
+# Install-type commands never run lifecycle scripts: npm otherwise runs an implicit
+# `node-gyp rebuild` for packages with a binding.gyp (sharp), which downloads headers to
+# ~/Library/Caches/node-gyp outside the workspace (P4 finding, work/04-app/containment/npm-install.md).
+# Nothing in main-app needs an install script. Only install-type commands: `npm run` must keep
+# its pre/post scripts (prebuild).
+case "${1:-}" in
+  install|i|ci|add|update|up|rebuild|clean-install|install-clean|isntall) export npm_config_ignore_scripts=true;;
+esac
 wrap_exec "$ET_T/node" "$ET_T/node/bin/npm" "$@"
