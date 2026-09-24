@@ -54,6 +54,9 @@ function valueFor(line: string, as: ReadAs | undefined): string {
   return pyStr(line);
 }
 
+/** Caption code span (lib/viz/caption.ts). */
+const c = (t: string) => `\`${t}\``;
+
 const ORD = ["first", "second", "third", "fourth", "fifth", "sixth"];
 
 export function buildStdinFlow(props: z.infer<typeof stdinFlowProps>): SceneBuild {
@@ -72,13 +75,13 @@ export function buildStdinFlow(props: z.infer<typeof stdinFlowProps>): SceneBuil
     if (existing >= 0) vars[existing] = [r.name, value];
     else vars.push([r.name, value]);
     const next = i + 1 < props.reads.length ? i + 1 : -1;
-    let caption = `Line ${i + 1} runs: input() reads the ${ORD[i]} line, ${pyStr(line)}, and drops its newline.`;
+    let caption = `Line ${i + 1} runs: ${c("input()")} reads the ${ORD[i]} line, ${c(pyStr(line))}, and drops its newline.`;
     if (r.as === "int") {
-      caption += ` int() turns the text into the number ${value}, and ${r.name} refers to it.`;
+      caption += ` ${c("int()")} turns the text into the number ${c(value)}, and ${c(r.name)} refers to it.`;
     } else if (r.as === "split") {
-      caption += ` split() cuts it at the spaces, so ${r.name} is a list of strings: ${value}.`;
+      caption += ` ${c("split()")} cuts it at the spaces, so ${c(r.name)} is a list of strings: ${c(value)}.`;
     } else {
-      caption += ` ${r.name} refers to that text: it is a string, even if it looks like a number.`;
+      caption += ` ${c(r.name)} refers to that text: it is a string, even if it looks like a number.`;
     }
     if (next === -1 && props.lines.length > props.reads.length) {
       caption += " The lines left over are never read.";

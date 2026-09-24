@@ -5,12 +5,12 @@
 
 node_modules/
 .next/
+.next-*/
 out/
 test-results/
 playwright-report/
 *.tsbuildinfo
 .pycheck-scratch/
-.next-prod-check/
 
 .env*
 .vercel/

@@ -65,6 +65,7 @@
   --color-viz-compare-line: var(--color-plum);
   --color-viz-invalid: var(--color-redline-soft);
   --color-viz-invalid-line: var(--color-redline);
+  --color-viz-changed: var(--color-check-soft);
 
   --font-sans:
     var(--font-atkinson-next), ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Arial,

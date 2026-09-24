@@ -96,3 +96,9 @@ At least: one Stage-0/1-shaped module with a lesson using every text/code compon
 - **Build lock:** only one `next build` at a time (the lock enforces it). Prefer `next dev` on a leased port for screenshots.
 - **Working title:** "CCC Python Course" until P5/Manager decides; the name comes only from `content/ui/strings.yaml`.
 - **npm installs:** the `.tooling/bin/npm` wrapper now forces `ignore-scripts` for install-type commands (node-gyp containment finding); do not pass `--ignore-scripts` yourself and never set it in `.npmrc` (it would stop `prebuild` on Vercel).
+
+## 8. Ownership changes (orchestrator, 2026-09-24, W1 overloaded)
+
+- **W3** owns `tests/e2e/viz/**` and `tests/visual/viz/**`: player E2E, long-task check, lazy-chunk budget test, viz visual baselines.
+- **W2** owns `tests/a11y/**` and `tests/visual/pages/**`: G-PAGE (axe + 390 px overflow) and the route + `/dev/design` visual baselines.
+- **W1** keeps the Playwright configs, `tests/support/**`, all other `tests/e2e/**`, `verify.mjs`, deployed-url, G-LINKS-INT, G-PERF (Lighthouse + first-load JS), G-LINK-EXT. W2/W3 import W1's helpers and request changes through `requests.md`.

@@ -39,6 +39,7 @@ const CASES: [rule: string, expected: RegExp][] = [
   ["library", /\[library\].*raw <svg>/],
   ["orphan", /\[orphan\].*lost\.frames\.json/],
   ["tree-ids", /\[tree-ids\].*node "c\d+" is under/],
+  ["collision", /\[collision\].*label "left_end" \(p:left_end\) overlaps label "right_end"/],
 ];
 
 describe("G-VIZ gate fixtures", () => {

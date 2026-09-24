@@ -105,6 +105,30 @@ function primitivesScene(): VizScene {
   return { width: PAD * 2 + STATES.length * (w + gap) - gap, height: y3 + 14, items };
 }
 
+/** ∞ next to the digits it could be mistaken for, in cells, nodes and distance badges. */
+function glyphScene(): VizScene {
+  const items: VizItem[] = [];
+  const values = ["8", "∞", "0", "10", "-1", "∞"];
+  values.forEach((v, i) => {
+    items.push({
+      key: `c${i}`,
+      t: "cell",
+      x: PAD + i * 44,
+      y: PAD,
+      w: 44,
+      h: 40,
+      state: "none",
+      text: v,
+    });
+  });
+  ["8", "∞", "3"].forEach((v, i) => {
+    const cx = PAD + 24 + i * 70;
+    items.push({ key: `n${i}`, t: "node", cx, cy: PAD + 76, r: 18, state: "none", text: v });
+    items.push({ key: `b${i}`, t: "badge", x: cx, y: PAD + 112, text: v });
+  });
+  return { width: PAD * 2 + values.length * 44, height: PAD + 130, items };
+}
+
 function toolsScene(): VizScene {
   const items: VizItem[] = [];
   for (let i = 0; i < 5; i += 1) {
@@ -254,6 +278,9 @@ export async function VizGallery() {
           label="Pointer, dimension line, compare, badge, slots, arrows, text"
         >
           <RawFigure scene={toolsScene()} title="Drawing tools" />
+        </Entry>
+        <Entry id="glyphs" label="Value glyphs: ∞ from the text face beside Mono digits">
+          <RawFigure scene={glyphScene()} title="Value glyphs" />
         </Entry>
         <Entry id="legend" label="Legend (every state)">
           <div className="vz-frame vz-static">

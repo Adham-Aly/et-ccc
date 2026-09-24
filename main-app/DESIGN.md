@@ -524,7 +524,7 @@ Plan §4.11.3. Tokens and the state grammar below are the design lead's [W2]. Th
 
 ### Principles [W2]
 - A visual is a drawing on the same sheet: same inks, same lettering, same line weights. It is not a separate "widget" style.
-- The stage sits on a **fade-out grid**: paper with a 16 px grid of construction-blue lines at 35% opacity (1 px), exactly like pre-printed drafting vellum. The grid is decorative (`aria-hidden`) and never used to encode data.
+- The stage sits on a **fade-out grid**: paper with a 16 px grid of construction-blue lines at 35% opacity (1 px), exactly like pre-printed drafting vellum. The grid is decorative (`aria-hidden`) and never used to encode data. Chart gridlines that do carry values (plot ticks) are drawn in `rule` 1 px, never in construction blue.
 - One colour meaning everywhere, always paired with a non-colour cue (next table). A greyscale screenshot must still separate every state.
 - **The One Active Edge Rule.** At most one element (or one group that forms one thing, such as the current path's head) carries the heavy "current" edge at any moment.
 
@@ -537,7 +537,7 @@ Plan §4.11.3. Tokens and the state grammar below are the design lead's [W2]. Th
 | Current | `check` | `ink` **3 px** solid | heaviest outline plus a pointer label or caret above it | "Current" |
 | Visited / done | `done` | `ink-2` 1.5 px solid | solid "inked" fill; values stay ink | "Done" |
 | On the answer path | `green-soft` | `green` 2 px **double** line (two 1 px strokes 2 px apart, or a 2 px stroke plus an inner 1 px ring) | double outline; path connectors drawn 3 px | "Answer path" |
-| Compared | `plum-soft` | `plum` 2 px solid | a dimension bracket between the compared items with the comparison written on it (e.g. `5 < 8`) | "Compared" |
+| Compared | `plum-soft` | `plum` 2 px solid | cells and array items: a dimension bracket between the compared items with the comparison written on it (e.g. `5 < 8`); graph edges and tree links: the plum 2 px line with the comparison written in the caption | "Compared" |
 | Invalid | `redline-soft` | `redline` 1.5 px solid | a single diagonal strike line (redline 1.5 px) across the item, plus a word in the caption | "Invalid" |
 
 - Text inside any fill is `ink` (lowest ratio: 10.4:1 on `done`; 12.6:1 on `check`). Values never change colour to show state.
@@ -545,12 +545,13 @@ Plan §4.11.3. Tokens and the state grammar below are the design lead's [W2]. Th
 - Pointers and index markers (i, j, lo, hi, mid): `ink` 1.5 px arrow with a label in micro/UI Mono ink; a range between two pointers is drawn as a **dimension line** (thin ink-2 line with arrowheads and short extension lines, the length or name written in the gap).
 
 ### Token names (CSS custom properties) [W2]
-`--color-viz-stage` (paper), `--color-viz-grid` (guide, used at 35% opacity), `--color-viz-ink`, `--color-viz-line` (ink-2), `--color-viz-cell-line` (rule-strong), `--color-viz-unvisited`, `--color-viz-frontier`, `--color-viz-frontier-line`, `--color-viz-current`, `--color-viz-current-line`, `--color-viz-done`, `--color-viz-done-line`, `--color-viz-path`, `--color-viz-path-line`, `--color-viz-compare`, `--color-viz-compare-line`, `--color-viz-invalid`, `--color-viz-invalid-line`. Values: see the token block below. Stroke widths and dash: `--viz-stroke-hair: 1px`, `--viz-stroke: 1.5px`, `--viz-stroke-strong: 2px`, `--viz-stroke-current: 3px`, `--viz-dash: 4 3`.
+`--color-viz-stage` (paper), `--color-viz-grid` (guide, used at 35% opacity), `--color-viz-ink`, `--color-viz-line` (ink-2), `--color-viz-cell-line` (rule-strong), `--color-viz-unvisited`, `--color-viz-frontier`, `--color-viz-frontier-line`, `--color-viz-current`, `--color-viz-current-line`, `--color-viz-done`, `--color-viz-done-line`, `--color-viz-path`, `--color-viz-path-line`, `--color-viz-compare`, `--color-viz-compare-line`, `--color-viz-invalid`, `--color-viz-invalid-line`, `--color-viz-changed` (check-soft, the code trace's "Just changed" fill). Values: see the token block below. Stroke widths and dash: `--viz-stroke-hair: 1px`, `--viz-stroke: 1.5px`, `--viz-stroke-strong: 2px`, `--viz-stroke-current: 3px`, `--viz-dash: 4 3`.
 
 ### Typography in visuals [W2]
 - Lettering: Atkinson Hyperlegible Next for labels and captions, Mono for values, indices and code. Both tabular.
 - **Minimum rendered size at a 390 px viewport: 12 px** for indices, axis labels and pointer names; **14 px** for values inside cells and nodes; captions 15 px (small) on phones, 16 px at 640 px and up. Visuals scale with the column, so authors size presets so that these minimums hold at the 390 px column width (about 350 px of stage); the G-VIZ/visual checks enforce it. [W3] Two checks do it: `check:viz` lays out every step of every preset and fails any panel wider than 361 units (a 316 px phone stage ÷ 0.875, the ratio of 14 px values to their 16 px natural size); `viz:shots` then measures every SVG text in a real browser at each width it shoots (390, 768 and 1440 px by default) and fails anything below 14 px (values) or 12 px (labels and titles).
 - Values in Mono 500; labels in Next 500; the current pointer label in 700.
+- Natural SVG sizes (before the stage scales): values 16 units, labels and panel titles 14 units. These are SVG user units, not CSS text sizes, so they sit outside the page type ramp on purpose; the rendered minimums above are what the checks enforce.
 
 ### Motion [W2 rules, W3 implementation]
 - **One easing curve:** `--ease-draft: cubic-bezier(0.2, 0, 0, 1)` (a decisive deceleration; no bounce, no elastic).
@@ -595,18 +596,19 @@ Below 640 px: the stage stays above; state panels (variables, stack, output in a
 - Frames are data, drawn by one renderer. A layout function (`lib/viz/layout*.ts`, pure TypeScript) turns every step of every preset of one panel into positioned items (cells, nodes, edges, arrows, pointers, dimension lines, text, slots, lines, badges, bands); `components/viz/SceneSvg.tsx` draws them with the primitives in `components/viz/primitives`. The same code runs on the server (first frame), in the lazy client player, and in the `check:viz` gate.
 - Every panel keeps one box for all steps and presets (the union of their sizes), so nothing shifts while stepping. A smaller preset sits centred in that box.
 - Styling is by state, not by colour: each item carries `data-s="<state>"` and `viz.css` maps states to custom properties (`--vz-fill`, `--vz-edge`, `--vz-sw`, `--vz-dash`), which read only the tokens below. No component hard-codes a colour.
-- Two library states beyond the table above: **Wall** (`#` in grids: `rule-strong` fill hatching, legend "Wall") and **Just changed** (code trace values and objects: `--color-viz-changed`, currently falling back to `check-soft`, legend "Just changed"). Free-standing labels paint above every shape and sit on a stage-coloured knockout, so no line, sweep or edge ever crosses a label.
+- Two library states beyond the table above: **Wall** (`#` in grids: `rule-strong` fill hatching, legend "Wall") and **Just changed** (code trace values and objects: `--color-viz-changed` = `check-soft`, legend "Just changed"). Free-standing labels paint above every shape and sit on a stage-coloured knockout, so no line, sweep or edge ever crosses a label.
 
 ### Per-visualizer specifics [W3]
 All sizes are in natural units (1 unit = 1 px at scale 1; the stage scales a panel down to fit, never below the minimum text sizes, and up to at most 1.25×). Scene padding is 8.
+- **Clearances (G-VIZ rule `collision`, `lib/viz/collide.ts`)**: `check:viz` lays out every step of every preset and fails when a label overlaps another label, a label crosses the edge of a cell, slot, badge or node (it must sit fully inside or fully clear), or a value inside its own cell, pill or node has less than 6 units to the edge (measured at the text's cap height, so rounded ends count). Lines (edges, arrows, axes, sweeps) are exempt: labels paint above them on a knockout. The failing fixture is `tests/fixtures/gates/G-VIZ/collision`; a unit test holds every gallery sample and scene at zero.
 - **ArrayViz**: cells 40 tall and at least 40 wide (value width + 14), indices 20 below in label style. Pointers get a 38-unit row above or below: a 1.5 px ink arrow and the name (the strong one in 700); several pointers on one index share one label ("lo, mid"). Ranges are dimension lines in 28-unit rows. A compare is a plum bracket on its own row above, with the comparison written in its gap; with a pointer at either end, the bracket's legs stop on top of the pointer label. `circular` draws a return arrow under the row.
 - **GridViz**: square cells from 28 to 40 units (as large as fits 361 units), row and column indices in label style unless `indices: false`; walls hatched; values in Mono inside cells; no pointers (the caption names the cell).
 - **GraphViz**: author coordinates in grid units of 60; nodes are circles of radius 18 with the id in Mono; value badges sit under each node, and `valueLabel` explains them once under the graph ("Boxed under each node: distance"). Edge weights sit at the midpoint, offset from the line, on a knockout. Directed edges end in an arrowhead at the node rim.
-- **TreeViz**: a tidy tree (d3-hierarchy) laid out over the union of every step and preset, so a node never moves when others appear. Boxes are the label width + 14 (at least 36), 30 tall; levels 58 apart (70 with notes); 12 between siblings, 1.15 × that between cousins. Notes ("= 3") sit under the box; edges start below the parent's note. Node ids name positions: an id must have the same parent in every step and preset (G-VIZ rule `tree-ids`); ids by call path (`r`, `rL`, `rLR`) do this.
+- **TreeViz**: a tidy tree (d3-hierarchy) laid out over the union of every step and preset, so a node never moves when others appear. Boxes are the label width + 16 (at least 36), 30 tall; levels 58 apart (70 with notes); 12 between siblings, 1.15 × that between cousins. Notes ("= 3") sit under the box; edges start below the parent's note. Node ids name positions: an id must have the same parent in every step and preset (G-VIZ rule `tree-ids`); ids by call path (`r`, `rL`, `rLR`) do this.
 - **TableViz**: 32-unit rows, columns as wide as their widest value; row and column heads in label style with an optional corner title. Dependency arrows between neighbours are short and cross the shared border beside the values (a vertical one sits at 84% of the cell width, clear of the current caret); arrows between farther cells run edge to edge with a slight bow.
-- **StructViz**: stack is a slot open at the top with a "top" marker; queue and deque are open-ended rails with "front"/"back" markers; heap is drawn twice, as a tree and as the array under it, linked by the same index labels (nodes grow with their text, never touching the ring); map is key → value rows; set is chips in a rounded container. An empty heap or map says "empty".
+- **StructViz**: stack is a slot open at the top with a "top" marker; queue and deque are open-ended rails with "front"/"back" markers; heap is drawn twice as one composed unit, the tree directly above the array (at least 20 units apart), centred over it. Tree nodes are pills sized for the widest entry (text at least 8 units from each end); the indices appear only under the array cells, because index labels beside tree nodes crowded them. The tree and the array link by value and state, and the caption names positions; map is key → value rows; set is chips in a rounded container. An empty heap or map says "empty".
 - **LineViz**: a number line with ticks every `tick` (16–44 units apart), intervals on rows 0–3 above it (30 units per row), points with labels, and a dashed sweep line with its label on top. `kind: wheel` draws a clock face for modular arithmetic.
-- **PlotViz**: a fixed 190-unit-tall plot as wide as the phone allows, nice ticks on both axes, up to three series in three line styles (solid, dashed, dotted), series labels spread so they never overlap, a shaded `band` with its label top-left inside it, a dashed `vline` with its label above the plot, and markers with values.
+- **PlotViz**: a fixed 190-unit-tall plot as wide as the phone allows, nice ticks on both axes, up to three series in three line styles (solid, dashed, dotted), series labels spread so they never overlap, a shaded `band` with its label top-left inside it, a dashed `vline` with its label above the plot, and markers with values. A marker's value takes the first free spot of left, right, above, below (then further up) inside the plot, clear of other marker values, the markers and the series labels; a `vline` label moves right of the y-axis title when they would share the top row.
 - **CodeTraceViz**: code pane left (at most 58% of the width), frames-and-objects panel right, output under the code; stacked in that order below 44rem of player width, so the state panel always gets at least the phone stage's width. Frames are ruled boxes, newest on top, the active one with the 3 px edge; objects start 36 units right of the frames, level with the first name that refers to them; lists wrap to the panel width. Function objects are a "function" type row and a pill with the name.
 
 ### Scenes [W3]
@@ -616,7 +618,9 @@ Named concept animations built from a few plain props at build time (no recorded
 - `growth-rates` (`curves`: 2–5 of `logn`, `n`, `nlogn`, `n2`, `2n`; `points`: the n values to step through; `yMax`): a PlotViz with one curve per growth rate, stepping through the n values with markers; curves that leave the chart are clipped at the top.
 
 ### Combined layouts [W3]
-- `layout: single` is one panel. `layout: row` is two panels side by side (3 : 2) once the player is at least 36rem wide, each with a small title; below that they stack, main panel first.
+- `layout: single` is one panel. `layout: row` is two panels with a small title each, stacked (main panel first) or side by side (3 : 2, 16 px gap).
+- One scale for the whole figure: both panels draw at the same units-to-pixels ratio, so a node, a value and a label are the same size in each (for example the heap's pills and the graph's nodes). Stacked, the wider panel fills the stage; side by side, the tighter column sets the scale; never above 1.25.
+- The switch to side by side is per figure (`data-row-at`, 36 to 56rem in 4rem steps, or never): the narrowest player width at which both columns still keep values at 14 px and labels at 12 px at that one scale.
 - Phone (below 36rem of player width): the controls take two rows (buttons with the speed control, then the scrubber with the counter), the caption reserves 4 lines, and the legend wraps.
 
 ### Motion choreography [W3]
@@ -629,7 +633,7 @@ Named concept animations built from a few plain props at build time (no recorded
 A dev-only page (404 in production) on the standard sheet, in five sections: Primitives (every state on cells, nodes and edges; pointers, dimension lines, slots, arrows; the full legend), Visualizers (every visualizer in every state it draws, from inline sample frames), Players (a live StepThrough with presets, a reduced-motion one, and frozen pictures of the middle, last and playing states), Code trace (live, and frozen at the deepest recursion), and Scenes (all three). Every entry has a `data-gallery` id, which `viz:shots` uses to name its screenshots.
 
 ### Tokens added [W3]
-- `--color-viz-changed`: the "Just changed" fill in code traces. Requested from the design lead for `app/globals.css`; until it lands, `viz.css` falls back to `--color-check-soft`, which is the intended value.
+- `--color-viz-changed` (= `check-soft`): the "Just changed" fill in code traces. Added to the token block by the design lead.
 
 ## Do's and Don'ts
 
@@ -726,6 +730,7 @@ The design lead moves this into `app/globals.css` when the scaffold hands the fi
   --color-viz-compare-line: var(--color-plum);
   --color-viz-invalid: var(--color-redline-soft);
   --color-viz-invalid-line: var(--color-redline);
+  --color-viz-changed: var(--color-check-soft);
 
   /* type (families come from next/font variables set on <html>) */
   --font-sans: var(--font-atkinson-next), ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;

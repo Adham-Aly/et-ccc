@@ -19,6 +19,7 @@ import builtins
 import io
 import json
 import sys
+import traceback
 import types
 
 FILENAME = "<shown-example>"
@@ -110,6 +111,7 @@ class Tracer:
         self.steps = []
         self.prev_snapshot = {}
         self.prev_state = None
+        self.internal_error = None
         self.out = None
         self.out_pos = 0
         self.raw_events = 0
@@ -122,28 +124,39 @@ class Tracer:
 
     # ---- sys.settrace hooks -------------------------------------------------------------
 
+    def safe_record(self, frame, event, arg):
+        """record(), but a bug in the tracer itself fails the run instead of being reported as an
+        error raised by the traced program."""
+        try:
+            self.record(frame, event, arg)
+        except TraceError:
+            raise
+        except Exception as err:
+            self.internal_error = traceback.format_exc()
+            raise TraceError(f"internal tracer error: {err!r}") from err
+
     def global_trace(self, frame, event, arg):
         if frame.f_code.co_filename != FILENAME or frame.f_code.co_name in HIDDEN_FRAMES:
             return None
         if self.module_frame is None:
             self.module_frame = frame
         elif event == "call":
-            self.record(frame, "call", None)
+            self.safe_record(frame, "call", None)
         return self.local_trace
 
     def local_trace(self, frame, event, arg):
         if frame.f_code.co_filename != FILENAME:
             return None
         if event == "line":
-            self.record(frame, "line", None)
+            self.safe_record(frame, "line", None)
         elif event == "return" and frame is not self.module_frame:
-            self.record(frame, "return", arg)
+            self.safe_record(frame, "return", arg)
         elif event == "exception":
             exc = arg[1]
             if id(exc) not in self.seen_exc:
                 self.seen_exc.add(id(exc))
                 self.heap.keep.append(exc)
-                self.record(frame, "exception", arg)
+                self.safe_record(frame, "exception", arg)
         return self.local_trace
 
     # ---- recording ----------------------------------------------------------------------
@@ -296,45 +309,51 @@ class Tracer:
             args = self.args(cur, len(cur["stack"]) - 1, heap)
             return "Line {} calls {}{}. A new frame for {} goes on top of the call stack.".format(
                 call_line,
-                top["f"],
+                as_code(top["f"]),
                 (" with " + args) if args else "",
-                top["f"],
+                as_code(top["f"]),
             )
         if step["e"] == "return":
             args = self.args(cur, len(cur["stack"]) - 1, heap)
-            who = "The call of {} with {}".format(top["f"], args) if args else "The call of {}".format(top["f"])
-            text = "{} returns {}. Its frame leaves the call stack next.".format(who, self.show(step["r"], heap))
+            fn = as_code(top["f"])
+            who = f"The call of {fn} with {args}" if args else f"The call of {fn}"
+            text = "{} returns {}. Its frame leaves the call stack next.".format(who, self.val(step["r"], heap))
             if prev["event"] == "return" and len(prev["stack"]) == len(cur["stack"]) + 1:
                 inner_args = self.args(prev, len(prev["stack"]) - 1, prev["heap"])
                 text = "The call with {} handed back {}. {}".format(
                     inner_args or "no arguments",
-                    self.show(prev_return(self, prev), prev["heap"]),
+                    self.val(prev_return(self, prev), prev["heap"]),
                     text,
                 )
             return self.with_output(text, step, ran)
         if step["e"] == "exception":
-            return "Line {} raises an error: {}.".format(line, step["x"])
+            return "Line {} raises an error: {}.".format(line, as_code(step["x"]))
         if step["e"] == "end":
             ran = prev["stack"][0]["l"]
             if "x" in step:
-                return self.with_output("The program stops because of the error {}.".format(step["x"]), step, ran)
+                return self.with_output("The program stops because of the error {}.".format(as_code(step["x"])), step, ran)
             return self.with_output("The program has finished: no lines are left to run.", step, ran)
         if len(cur["stack"]) < len(prev["stack"]):
-            where = "the main program" if top["f"] == "<module>" else top["f"] + "()"
+            where = "the main program" if top["f"] == "<module>" else as_code(top["f"] + "()")
             text = f"Back in {where}, line {top_line(prev)} finishes with the returned value."
             pieces = self.return_changes(prev, cur)
             if "o" in step:
                 pieces.append("It prints {}.".format(self.printed(step["o"])))
             return " ".join([text] + pieces[:2])
         if prev["event"] == "call":
-            return "{}() starts running its body at line {}.".format(top["f"], line)
+            return "{} starts running its body at line {}.".format(as_code(top["f"] + "()"), line)
         return self.add_note(self.describe_line(ran, line, prev, cur, step), ran)
+
+    def val(self, value, heap):
+        """A shown value as caption code, unless it is a phrase ("the function f", "a Foo object")."""
+        text = self.show(value, heap)
+        return text if text.startswith(("the function ", "a ")) else as_code(text)
 
     def args(self, state, index, heap):
         """The call's arguments: parameter names and their values in frame `index` of a state."""
         frame = state["stack"][index]
         names = state["params"][index]
-        return ", ".join(f"{n} = {self.show(v, heap)}" for n, v in frame["v"] if n in names)
+        return ", ".join(as_code(f"{n} = {self.show(v, heap)}") for n, v in frame["v"] if n in names)
 
     def with_output(self, text, step, ran):
         if "o" in step:
@@ -374,15 +393,15 @@ class Tracer:
         out = []
         for name, value in top["v"]:
             if name not in before:
-                out.append("{} is created with the value {}.".format(name, self.show(value, cur["heap"])))
+                out.append("{} is created with the value {}.".format(as_code(name), self.val(value, cur["heap"])))
             elif before[name] != value:
-                out.append("{} changes to {}.".format(name, self.show(value, cur["heap"])))
+                out.append("{} changes to {}.".format(as_code(name), self.val(value, cur["heap"])))
         return out
 
     def printed(self, text):
         lines = text.rstrip("\n").split("\n")
         if len(lines) == 1:
-            return short(lines[0], 40) if lines[0] else "an empty line"
+            return as_code(short(lines[0], 40)) if lines[0] else "an empty line"
         return f"{len(lines)} lines"
 
     def kind_of(self, value, heap):
@@ -400,26 +419,28 @@ class Tracer:
         for ch in self.changes(prev, cur)[:2]:
             if ch[0] == "new":
                 if is_for:
-                    pieces.append(f"the loop gives {ch[1]} its first value, {self.show(ch[2], heap)}.")
+                    pieces.append(f"the loop gives {as_code(ch[1])} its first value, {self.val(ch[2], heap)}.")
                 elif isinstance(ch[2], list) and heap.get(ch[2][0], {}).get("t") == "function":
-                    pieces.append(f"the name {ch[1]} now refers to a function.")
+                    pieces.append(f"the name {as_code(ch[1])} now refers to a function.")
                 else:
-                    pieces.append(f"{ch[1]} is created with the value {self.show(ch[2], heap)}.")
+                    pieces.append(f"{as_code(ch[1])} is created with the value {self.val(ch[2], heap)}.")
             elif ch[0] == "set":
                 if is_for:
-                    pieces.append(f"the loop gives {ch[1]} its next value, {self.show(ch[2], heap)}.")
+                    pieces.append(f"the loop gives {as_code(ch[1])} its next value, {self.val(ch[2], heap)}.")
                 else:
                     pieces.append(
-                        "{} changes from {} to {}.".format(ch[1], self.show(ch[3], prev["heap"]), self.show(ch[2], heap))
+                        "{} changes from {} to {}.".format(
+                            as_code(ch[1]), self.val(ch[3], prev["heap"]), self.val(ch[2], heap)
+                        )
                     )
             else:
                 names = ch[1]
                 kind = self.kind_of(ch[2], heap)
                 if len(names) == 1:
-                    who = f"the {kind} that {names[0]} refers to"
+                    who = f"the {kind} that {as_code(names[0])} refers to"
                 else:
-                    who = "the one {} that {} both refer to".format(kind, " and ".join(names[:2]))
-                pieces.append(f"{who} changes; it is now {self.show(ch[2], heap)}.")
+                    who = "the one {} that {} both refer to".format(kind, " and ".join(as_code(n) for n in names[:2]))
+                pieces.append(f"{who} changes; it is now {self.val(ch[2], heap)}.")
         if "o" in step:
             pieces.append("it prints {}.".format(self.printed(step["o"])))
         if pieces:
@@ -447,6 +468,13 @@ class Tracer:
         if code.startswith("def "):
             return f"Line {ran} defines a function; its body runs only when it is called."
         return f"Line {ran} runs; line {nxt} is next."
+
+
+def as_code(text):
+    """Mark text as code in a caption (backticks; players render it in Mono). The caption markup
+    has no escapes, so text that itself holds a backtick stays plain."""
+    text = str(text)
+    return text if "`" in text or not text else f"`{text}`"
 
 
 def prev_return(tracer, state):
@@ -486,6 +514,9 @@ def trace_preset(source, stdin_text, job):
         error = f"{type(exc).__name__}: {exc}" if str(exc) else type(exc).__name__
     finally:
         sys.stdin, sys.stdout = old_in, old_out
+    if tracer.internal_error:
+        # Even if the traced program caught the exception, a tracer bug fails the whole run.
+        raise TraceError("internal tracer error:\n" + tracer.internal_error)
     final = {"x": short(error, 200)} if error else None
     tracer.module_frame_globals = globs
     tracer.emit_end(final)

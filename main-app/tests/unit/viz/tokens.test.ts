@@ -11,16 +11,9 @@ const appRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..",
 const globals = fs.readFileSync(path.join(appRoot, "app", "globals.css"), "utf8");
 const vizCss = fs.readFileSync(path.join(appRoot, "components", "viz", "viz.css"), "utf8");
 
-/** Requested from W2 (work/04-app/requests.md); until then viz.css falls back to another token. */
-const PENDING = new Set(["--color-viz-changed"]);
-
 describe("viz tokens", () => {
   it("every custom property the library reads is defined in globals.css", () => {
     for (const name of VIZ_CSS_VARS) {
-      if (PENDING.has(name) && !globals.includes(`${name}:`)) {
-        expect(vizCss).toMatch(new RegExp(`var\\(${name}, var\\(--[a-z-]+\\)\\)`));
-        continue;
-      }
       expect(globals, name).toContain(`${name}:`);
     }
   });

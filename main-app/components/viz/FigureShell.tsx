@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
 import { Details } from "@/components/content/Details";
+import { CaptionText } from "./CaptionText";
 import type { FigureInfo } from "./figure-context";
 
 export interface StepsText {
@@ -44,7 +45,9 @@ export function FigureShell({
                 <ol>
                   {s.captions.map((c, i) => (
                     // biome-ignore lint/suspicious/noArrayIndexKey: captions are an ordered, static list
-                    <li key={i}>{c}</li>
+                    <li key={i}>
+                      <CaptionText text={c} />
+                    </li>
                   ))}
                 </ol>
               </div>

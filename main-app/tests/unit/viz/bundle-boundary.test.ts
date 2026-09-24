@@ -10,6 +10,7 @@ const appRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..",
 
 /** Every module the client player reaches (Player.tsx and what it imports, transitively). */
 const CLIENT = [
+  "lib/viz/caption.ts",
   "lib/viz/geometry.ts",
   "lib/viz/layout.ts",
   "lib/viz/layout-scenes.ts",
@@ -17,6 +18,7 @@ const CLIENT = [
   "lib/viz/player-state.ts",
   "lib/viz/states.ts",
   "lib/viz/trace.ts",
+  "components/viz/CaptionText.tsx",
   "components/viz/SceneSvg.tsx",
   "components/viz/primitives/index.tsx",
   "components/viz/syntax.ts",

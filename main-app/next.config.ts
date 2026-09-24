@@ -27,10 +27,15 @@ const securityHeaders = [
 
 const nextConfig: NextConfig = {
   reactStrictMode: true,
-  // Lets scripts/check-production-mode.mjs (batch 3, G-E2E production-mode proof) build a
-  // production-env build into its own directory, so it never clobbers the preview `.next` the
-  // e2e/visual/a11y suites' `next start` needs. Unset (the default) keeps the normal `.next`.
-  distDir: process.env.NEXT_DIST_DIR || ".next",
+  // ETCCC_DIST_DIR (orchestrator relay, W3's finding): a plain `next build` writes to `.next`,
+  // which is also where `next dev` writes — running one while the other is up kills the dev
+  // server (BUILD_ID changes under it). Unset (the default) still resolves to `.next`, so Vercel's
+  // own deployment build — which never sets this — is unaffected; every *local* script that
+  // might run alongside someone's `next dev` (verify:full's G-BUILD, the test:e2e/visual/a11y
+  // Playwright webServers, scripts/check-production-mode.mjs's own production-env build) sets it
+  // explicitly to a directory nothing else writes to. `npm run dev`/`npm run start` never set it,
+  // so they keep using `.next` as always.
+  distDir: process.env.ETCCC_DIST_DIR || ".next",
   // No `output: 'export'` (plan §4.1): a regular Vercel build keeps next.config headers working.
   async headers() {
     return [

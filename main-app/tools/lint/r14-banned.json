@@ -72,6 +72,18 @@
       "pattern": "python\\b[^.]{0,40}too slow|too slow\\b[^.]{0,40}python",
       "flags": "gi",
       "message": "Python \"too slow\" framing — never claimed"
+    },
+    {
+      "id": "python-download-link",
+      "pattern": "python\\.org/downloads",
+      "flags": "gi",
+      "message": "a Python download-page link — C21: no install or setup content"
+    },
+    {
+      "id": "pypy-download-link",
+      "pattern": "pypy\\.org/download",
+      "flags": "gi",
+      "message": "a PyPy download-page link — C21: no install or setup content"
     }
   ],
   "allowlist": [

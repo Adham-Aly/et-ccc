@@ -16,21 +16,24 @@ links:
   - id: cemc-past-contests
     label: Past CCC contests (CEMC)
     url: https://cemc.uwaterloo.ca/resources/past-contests
-  - id: pypy-downloads
-    label: PyPy downloads
-    url: https://www.pypy.org/download.html
-  - id: python-downloads
-    label: Python downloads
-    url: https://www.python.org/downloads/
+  # pypy-downloads / python-downloads removed (design-review.md A1-3, C21): the app has no
+  # install or setup content, so it never links a download page. Added to the G-R14 banned-URL
+  # list instead, so a future lesson can't reintroduce one.
   - id: wmoj-home
     label: WMOJ
     url: https://wmoj.ca/
+  # /user/register 404s live (design-review.md A1-1); /auth/register also 404s; /auth/signup is
+  # the one that returns 200 (checked directly, work/04-app/external-links-run-1.md).
   - id: wmoj-signup
     label: WMOJ sign-up
-    url: https://wmoj.ca/user/register
+    url: https://wmoj.ca/auth/signup
   - id: dmoj-home
     label: DMOJ
     url: https://dmoj.ca/
+  # DMOJ sits behind Cloudflare, so this isn't live-checkable from a script (design-review.md
+  # A1-1); /accounts/register/ is DMOJ's Django URL convention (its own source uses
+  # django.contrib.auth-style routes) and replaces the guessed /register/. Added to the Manager's
+  # manual DMOJ checklist (work/04-app/dmoj-checklist.html) pending confirmation.
   - id: dmoj-signup
     label: DMOJ sign-up
-    url: https://dmoj.ca/register/
+    url: https://dmoj.ca/accounts/register/

@@ -17,7 +17,7 @@ import type {
   TextItem,
   VizItem,
 } from "@/lib/viz/geometry";
-import { FONT, textAdvance, textWidth } from "@/lib/viz/geometry";
+import { FONT, SANS_IN_MONO, textAdvance, textWidth } from "@/lib/viz/geometry";
 
 export interface ItemFlags {
   /** Newly present in this step (fades in, second phase). */
@@ -34,6 +34,31 @@ function cls(base: string, flags: ItemFlags): string {
 }
 
 /** Filled arrowhead with its tip at (x, y), pointing away from (fx, fy). */
+/**
+ * Mono text with the characters in SANS_IN_MONO drawn from the text face (`.vz-glyph-sans`), so
+ * ∞ never reads as an 8. Plain text comes back unchanged.
+ */
+export function glyphRuns(text: string): ReactNode {
+  const chars = [...text];
+  if (!chars.some((ch) => SANS_IN_MONO.has(ch))) return text;
+  const runs: ReactNode[] = [];
+  let buf = "";
+  chars.forEach((ch, i) => {
+    if (SANS_IN_MONO.has(ch)) {
+      if (buf) runs.push(buf);
+      buf = "";
+      runs.push(
+        // biome-ignore lint/suspicious/noArrayIndexKey: runs of one fixed string, never reordered
+        <tspan key={i} className="vz-glyph-sans">
+          {ch}
+        </tspan>,
+      );
+    } else buf += ch;
+  });
+  if (buf) runs.push(buf);
+  return runs;
+}
+
 export function headPoints(x: number, y: number, fx: number, fy: number, size = 7): string {
   const dx = x - fx;
   const dy = y - fy;
@@ -106,7 +131,7 @@ export function Cell({ item, flags = {} }: { item: CellItem; flags?: ItemFlags }
           dy="0.35em"
           textAnchor={start ? "start" : "middle"}
         >
-          {text}
+          {glyphRuns(text)}
         </text>
       ) : null}
       {state === "current" && item.shape !== "pill" && !item.noCaret ? (
@@ -135,7 +160,7 @@ export function Node({ item, flags = {} }: { item: NodeItem; flags?: ItemFlags }
       ) : null}
       {text ? (
         <text className="vz-t vz-t-value" dy="0.35em" textAnchor="middle">
-          {text}
+          {glyphRuns(text)}
         </text>
       ) : null}
       {state === "current" && r >= 12 ? <Caret x={0} y={-r - 1} /> : null}
@@ -304,20 +329,21 @@ export function Label({ item, flags = {} }: { item: TextItem; flags?: ItemFlags 
         textAnchor={item.anchor ?? "start"}
         style={{ fontWeight: weight }}
       >
-        {item.text}
+        {mono ? glyphRuns(item.text) : item.text}
       </text>
     </g>
   );
 }
 
 export function Badge({ item, flags = {} }: { item: BadgeItem; flags?: ItemFlags }) {
-  const w = Math.max(22, textWidth(item.text, "label", true) + 12);
+  // At least a little wider than tall, so a one-character value reads as a box, not a tile.
+  const w = Math.max(28, textWidth(item.text, "label", true) + 14);
   const h = FONT.label + 8;
   return (
     <g className={cls("vz-badge", flags)} data-k={item.key} style={at(item.x, item.y)}>
       <rect className="vz-shape" x={-w / 2} y={-h / 2} width={w} height={h} rx={2} />
       <text className="vz-t vz-t-label vz-mono" dy="0.35em" textAnchor="middle">
-        {item.text}
+        {glyphRuns(item.text)}
       </text>
     </g>
   );

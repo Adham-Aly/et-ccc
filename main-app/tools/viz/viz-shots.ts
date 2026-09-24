@@ -1,10 +1,11 @@
 // npm run viz:shots [-- --scope <id>] [-- --url=http://localhost:4100] [-- --page=/path]
-//                   [-- --widths=390,768,1440] [-- --out=<dir>] [-- --no-crawl]
+//                   [-- --widths=390,768,1440] [-- --out=<dir>] [-- --no-crawl] [-- --all-steps]
 //
 // Screenshots every visual (each <figure class="vz-figure">) on /dev/viz and on every lesson page
 // reachable from /learn, at its first, middle and last step, at a phone, a tablet and a desktop width.
 // While doing so it checks, in a real browser, what the static G-VIZ width check predicts:
-// every SVG text renders at no less than 14 px (values) or 12 px (labels and titles), the page
+// every SVG text renders at no less than 14 px (values) or 12 px (labels and titles) and only
+// from the app's two font families (no fallback glyphs), the page
 // never scrolls sideways, and the console stays free of errors and warnings.
 //
 // Without --url it leases a port (scripts/port-lease.mjs), starts `next dev`, writes
@@ -33,6 +34,8 @@ const widths = (option(flags, "widths")[0] ?? "390,768,1440").split(",").map(Num
 const outDir = path.resolve(APP_ROOT, option(flags, "out")[0] ?? "test-results/viz-shots");
 const extraPages = option(flags, "page");
 const crawl = !flags.has("no-crawl");
+/** `--all-steps`: shoot every step of every preset instead of first, middle and last. */
+const allSteps = flags.has("all-steps");
 const RUN_DIR = path.resolve(APP_ROOT, "..", "work", "04-app", "_run");
 
 async function waitForServer(url: string, child: ChildProcess | null): Promise<void> {
@@ -165,6 +168,54 @@ async function settle(page: Page): Promise<void> {
 }
 
 /** Every SVG text inside the figure that renders below its role's minimum. */
+/** The app's two families (DESIGN.md → Typography); anything else in a visual is a fallback. */
+const APP_FONTS = /^Atkinson Hyperlegible (Next|Mono)\b/;
+
+/**
+ * Every SVG text in the figure whose glyphs came (even partly) from a font outside the app's two
+ * families, as Chromium reports it (CSS.getPlatformFontsForNode): a missing glyph in our fonts.
+ */
+async function fallbackGlyphs(page: Page, fig: number): Promise<string[]> {
+  // CDP node ids go stale if React replaces nodes mid-query; take one fresh snapshot and retry.
+  try {
+    return await fallbackGlyphsOnce(page, fig);
+  } catch {
+    await settle(page);
+    return fallbackGlyphsOnce(page, fig);
+  }
+}
+
+async function fallbackGlyphsOnce(page: Page, fig: number): Promise<string[]> {
+  const cdp = await page.context().newCDPSession(page);
+  try {
+    await cdp.send("DOM.enable");
+    await cdp.send("CSS.enable");
+    const { root } = await cdp.send("DOM.getDocument", { depth: -1 });
+    const { nodeIds: figs } = await cdp.send("DOM.querySelectorAll", {
+      nodeId: root.nodeId,
+      selector: "figure.vz-figure",
+    });
+    const figId = figs[fig];
+    if (figId === undefined) return [];
+    const { nodeIds } = await cdp.send("DOM.querySelectorAll", {
+      nodeId: figId,
+      selector: "svg text, svg tspan",
+    });
+    const bad: string[] = [];
+    for (const nodeId of nodeIds) {
+      const { fonts } = await cdp.send("CSS.getPlatformFontsForNode", { nodeId });
+      const foreign = fonts.filter((f) => !APP_FONTS.test(f.familyName));
+      if (foreign.length === 0) continue;
+      const { outerHTML } = await cdp.send("DOM.getOuterHTML", { nodeId });
+      const text = outerHTML.replace(/<[^>]+>/g, "");
+      bad.push(`"${text}" uses ${foreign.map((f) => f.familyName).join(", ")}`);
+    }
+    return bad;
+  } finally {
+    await cdp.detach();
+  }
+}
+
 async function smallText(page: Page, fig: number): Promise<string[]> {
   return page.evaluate(
     ({ fig, min }) => {
@@ -267,11 +318,44 @@ async function shootPage(browser: Browser, base: string, url: string, problems: 
           ]);
         }
       }
+      if (allSteps && isPlayer && !frozen) {
+        // Every step of every preset: p<preset>-s<step>.
+        stepsToShoot.length = 0;
+        const presets = Math.max(1, await fig.locator('input[data-ctl^="preset-"]').count());
+        for (let k = 0; k < presets; k += 1) {
+          if (presets > 1) await fig.locator(`input[data-ctl="preset-${k}"]`).check();
+          const n = Number((await fig.locator('input[data-ctl="scrub"]').getAttribute("max")) ?? 1);
+          for (let st = 0; st < n; st += 1) {
+            const pk = k;
+            const target = st;
+            stepsToShoot.push([
+              `p${k + 1}-s${String(st + 1).padStart(2, "0")}`,
+              async () => {
+                if (presets > 1) await fig.locator(`input[data-ctl="preset-${pk}"]`).check();
+                await group.focus();
+                await page.keyboard.press("Home");
+                for (let m = 0; m < target; m += 1) await page.keyboard.press("ArrowRight");
+              },
+            ]);
+          }
+        }
+      }
       for (const [label, go] of stepsToShoot) {
         if (go) await go();
+        // The keys above leave keyboard focus on the player, whose :focus-visible ring sits 2 px
+        // outside the frame; an element shot would clip it to a stray line. Blur before shooting.
+        await page.evaluate(() => (document.activeElement as HTMLElement | null)?.blur());
         await settle(page);
         for (const s of await smallText(page, i)) {
           problems.push({ where: `${where} ${label}`, message: `text too small: ${s}` });
+        }
+        if (width === widths[0]) {
+          for (const s of await fallbackGlyphs(page, i)) {
+            problems.push({
+              where: `${where} ${label}`,
+              message: `glyph from a fallback font: ${s}`,
+            });
+          }
         }
         const file = path.join(outDir, `${slug}-${width}-${name}-${label}.png`);
         await fig.screenshot({ path: file, animations: "disabled" });

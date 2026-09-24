@@ -24,6 +24,12 @@ function run(label, cmd, args) {
   }
 }
 
+run("print-build-env (design-review.md A1-5)", process.execPath, [
+  "--import",
+  "./tools/viz/register.mjs",
+  "scripts/gates/print-build-env.ts",
+]);
+
 run("content:check --only=G-SCHEMA,G-LINK-FMT", process.execPath, [
   "--import",
   "./tools/viz/register.mjs",

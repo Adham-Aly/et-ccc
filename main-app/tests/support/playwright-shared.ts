@@ -96,13 +96,28 @@ export function chromiumOnlyProjects() {
   return fullDeviceProjects().filter((p) => p.name.startsWith("chromium-"));
 }
 
+// A dedicated dist dir for every local Playwright suite (ETCCC_DIST_DIR, next.config.ts):
+// `next start` needs an already-built `.next`-equivalent directory, but the plain `.next` is
+// also where a developer's `next dev` writes — starting a build there while a dev server is up
+// kills it (orchestrator relay, W3's finding). `reuseExistingServer` means the build-then-start
+// command below only actually runs once per still-running server: once `baseURL` answers,
+// Playwright skips re-invoking the command on a second `npm run test:e2e` etc.
+const LOCAL_DIST_DIR = ".next-local";
+
 /** `webServer` block for local-server mode; omitted entirely in deployed mode (batch 3 item 1). */
 export function webServerFor(info: BaseUrlInfo) {
   if (info.deployed) return undefined;
   return {
-    command: `node scripts/assert-contained.mjs && next start -p ${info.port}`,
+    command: [
+      "node scripts/assert-contained.mjs",
+      "node scripts/build-lock.mjs -- next build",
+      `next start -p ${info.port}`,
+    ].join(" && "),
+    env: { ETCCC_DIST_DIR: LOCAL_DIST_DIR },
     url: info.baseURL,
     reuseExistingServer: !process.env.CI,
-    timeout: 120_000,
+    // A cold run now builds first (build-lock also waits out any concurrent build), so this
+    // needs real headroom beyond a bare `next start`'s near-instant readiness.
+    timeout: 300_000,
   };
 }

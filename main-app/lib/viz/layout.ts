@@ -415,7 +415,8 @@ export function layoutTree(frames: TreeFrame[]): VizScene[] {
   let hasNotes = false;
   const visit = (n: TreeNodeData, parent: UnionNode | null) => {
     let u = byId.get(n.id);
-    const w = Math.max(36, textWidth(n.label, "value") + 14);
+    // Pill ends are round: text + 16 keeps at least 6 units clear (G-VIZ collision).
+    const w = Math.max(36, textWidth(n.label, "value") + 16);
     if (!u) {
       u = { id: n.id, w, children: [] };
       byId.set(n.id, u);
@@ -788,62 +789,73 @@ export function layoutStruct(frames: StructFrame[]): VizScene[] {
   }
 
   if (kind === "heap") {
-    const cw = Math.max(34, textW + 12);
+    // One composed unit per step: the tree directly above the array, the tree centred over the
+    // array, the pair anchored under the panel title. Tree nodes are pills sized for the widest
+    // entry (text at least 8 units from each end, so tuples such as "4, B" never touch the edge);
+    // the indices live under the array cells only (DESIGN.md → StructViz).
+    const cw = Math.max(34, textW + 16);
     const ch = 32;
-    const arrayW = cap * cw;
-    const levels = Math.floor(Math.log2(cap)) + 1;
-    // The circle grows with its text so a value never touches the ring.
-    const r = Math.max(17, Math.ceil(textW / 2 + 7));
-    const levelH = Math.max(50, 2 * r + 14);
-    const width = PAD * 2 + arrayW;
-    const treeTop = top + r + 16;
-    const yArray = treeTop + (levels - 1) * levelH + r + 22;
-    const height = yArray + ch + 20 + PAD;
-    const nodePos = (i: number) => {
-      const d = Math.floor(Math.log2(i + 1));
-      const p = i + 1 - 2 ** d;
-      return { x: PAD + ((p + 0.5) * arrayW) / 2 ** d, y: treeTop + d * levelH };
-    };
+    const nw = Math.max(40, textW + 16);
+    const nh = 30;
+    const gapX = 12;
+    const levelH = nh + 26;
+    const slot = nw + gapX;
+    const levelsOf = (n: number) => (n > 0 ? Math.floor(Math.log2(n)) + 1 : 0);
+    const treeWOf = (n: number) => (n > 0 ? 2 ** (levelsOf(n) - 1) * slot - gapX : 0);
+    const treeTop = top + nh / 2 + 4;
+    // At least 20 units between the lowest tree node and the array.
+    const yArrayOf = (n: number) =>
+      n > 0 ? treeTop + (levelsOf(n) - 1) * levelH + nh / 2 + 20 : top + 4;
+    let maxW = 0;
+    for (const f of frames) maxW = Math.max(maxW, treeWOf(f.items.length), f.items.length * cw);
+    const width = PAD * 2 + Math.max(maxW, 60);
+    const height = yArrayOf(cap) + ch + 20 + PAD;
     return frames.map((f) => {
-      const items: VizItem[] = [
-        ...title(f),
-        ...emptyNote(f, PAD + arrayW / 2, yArray + ch / 2, "middle"),
-      ];
+      const n = f.items.length;
+      const treeW = treeWOf(n);
+      const arrayW = n * cw;
+      const groupW = Math.max(treeW, arrayW);
+      const tx = PAD + (groupW - treeW) / 2;
+      const ax = PAD + (groupW - arrayW) / 2;
+      const yArray = yArrayOf(n);
+      const nodePos = (i: number) => {
+        const d = Math.floor(Math.log2(i + 1));
+        const p = i + 1 - 2 ** d;
+        return { x: tx + ((p + 0.5) * (treeW + gapX)) / 2 ** d, y: treeTop + d * levelH };
+      };
+      const items: VizItem[] = [...title(f), ...emptyNote(f, PAD, yArray + ch / 2)];
       f.items.forEach((_, i) => {
         if (i === 0) return;
         const a = nodePos(Math.floor((i - 1) / 2));
         const b = nodePos(i);
-        const dx = b.x - a.x;
-        const dy = b.y - a.y;
-        const len = Math.hypot(dx, dy);
         items.push({
           key: `he${i}`,
           t: "edge",
-          x1: a.x + (dx / len) * r,
-          y1: a.y + (dy / len) * r,
-          x2: b.x - (dx / len) * r,
-          y2: b.y - (dy / len) * r,
+          x1: a.x,
+          y1: a.y + nh / 2,
+          x2: b.x,
+          y2: b.y - nh / 2,
           state: "none",
         });
       });
       f.items.forEach((it, i) => {
         const p = nodePos(i);
         const state = stateOf(it.s);
-        items.push({ key: `hn${i}`, t: "node", cx: p.x, cy: p.y, r, state, text: fmt(it.v) });
         items.push({
-          key: `hi${i}`,
-          t: "text",
-          x: p.x - r - 3,
-          y: p.y - r + 2,
-          text: String(i),
-          role: "label",
-          anchor: "end",
-          muted: true,
+          key: `hn${i}`,
+          t: "cell",
+          x: p.x - nw / 2,
+          y: p.y - nh / 2,
+          w: nw,
+          h: nh,
+          state,
+          text: fmt(it.v),
+          shape: "pill",
         });
         items.push({
           key: `hc${i}`,
           t: "cell",
-          x: PAD + i * cw,
+          x: ax + i * cw,
           y: yArray,
           w: cw,
           h: ch,
@@ -853,7 +865,7 @@ export function layoutStruct(frames: StructFrame[]): VizScene[] {
         items.push({
           key: `hx${i}`,
           t: "text",
-          x: PAD + i * cw + cw / 2,
+          x: ax + i * cw + cw / 2,
           y: yArray + ch + 10,
           text: String(i),
           role: "label",
@@ -1374,18 +1386,71 @@ export function layoutPlot(frames: PlotFrame[]): VizScene[] {
         style: "sweep",
         state: "current",
       });
-      if (f.vline.label)
+      if (f.vline.label) {
+        // Centred on its line, but never over the y-axis title in the same top row.
+        const half = textWidth(f.vline.label, "label") / 2;
+        const clearOfTitle =
+          f.y.label && topY - 14 - (PAD + 8) < FONT.label
+            ? left - 8 + textWidth(f.y.label, "label") + 8 + half
+            : 0;
+        const vx = Math.min(Math.max(X(f.vline.x), clearOfTitle, half + 2), width - half - 2);
         items.push({
           key: "vlinel",
           t: "text",
-          x: X(f.vline.x),
+          x: vx,
           y: topY - 14,
           text: f.vline.label,
           role: "label",
           anchor: "middle",
           weight: 700,
         });
+      }
     }
+    // Marker labels: the first free spot of left, right, above, below (then further up), inside
+    // the plot area and clear of the other marker labels, the markers and the series labels.
+    type Spot = { x: number; y: number; anchor: "start" | "middle" | "end" };
+    const lh = FONT.label + 3;
+    const taken: { x1: number; x2: number; y1: number; y2: number }[] = [];
+    for (const l of labels) {
+      const w = textWidth(l.text, "label");
+      taken.push({ x1: l.x + 6, x2: l.x + 6 + w, y1: l.y - lh / 2, y2: l.y + lh / 2 });
+    }
+    for (const m of f.markers ?? [])
+      taken.push({ x1: X(m.x) - 7, x2: X(m.x) + 7, y1: Y(m.y) - 7, y2: Y(m.y) + 7 });
+    const spotOf = new Map<number, Spot>();
+    (f.markers ?? [])
+      .map((m, i) => ({ m, i }))
+      .filter(({ m }) => m.label)
+      .sort((a, b) => Y(a.m.y) - Y(b.m.y))
+      .forEach(({ m, i }) => {
+        const mx = X(m.x);
+        const my = Y(m.y);
+        const w = textWidth(m.label as string, "label", true);
+        const box = (s: Spot) => {
+          const x1 = s.anchor === "end" ? s.x - w : s.anchor === "middle" ? s.x - w / 2 : s.x;
+          return { x1, x2: x1 + w, y1: s.y - lh / 2, y2: s.y + lh / 2 };
+        };
+        const spots: Spot[] = [
+          { x: mx - 8, y: my, anchor: "end" },
+          { x: mx + 8, y: my, anchor: "start" },
+          { x: mx, y: my - 14, anchor: "middle" },
+          { x: mx, y: my + 14, anchor: "middle" },
+        ];
+        for (let k = 1; k <= 6; k += 1)
+          spots.push(
+            { x: mx - 8, y: my - k * lh, anchor: "end" },
+            { x: mx + 8, y: my - k * lh, anchor: "start" },
+          );
+        const free = (s: Spot) => {
+          const b = box(s);
+          if (b.x1 < left + 2 || b.x2 > width - PAD || b.y1 < topY - 6 || b.y2 > bottom - 2)
+            return false;
+          return taken.every((t) => b.x2 <= t.x1 || t.x2 <= b.x1 || b.y2 <= t.y1 || t.y2 <= b.y1);
+        };
+        const spot = spots.find(free) ?? (spots[0] as Spot);
+        taken.push(box(spot));
+        spotOf.set(i, spot);
+      });
     (f.markers ?? []).forEach((m, i) => {
       items.push({
         key: `m${i}`,
@@ -1399,11 +1464,11 @@ export function layoutPlot(frames: PlotFrame[]): VizScene[] {
         items.push({
           key: `ml${i}`,
           t: "text",
-          x: X(m.x) - 8,
-          y: Y(m.y),
+          x: spotOf.get(i)?.x ?? X(m.x) - 8,
+          y: spotOf.get(i)?.y ?? Y(m.y),
           text: m.label,
           role: "label",
-          anchor: "end",
+          anchor: spotOf.get(i)?.anchor ?? "end",
           mono: true,
           weight: 600,
         });

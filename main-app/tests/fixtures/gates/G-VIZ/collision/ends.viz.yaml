@@ -1,0 +1,12 @@
+layout: single
+panels:
+  - { id: a, viz: ArrayViz }
+alt: >-
+  Two numbers with a pointer on each end, whose long names are drawn on top of each other.
+captions: vizrec
+presets:
+  - { id: main, label: Two numbers, stdin: "3 4\n" }
+consistency:
+  description: The sum of the two ends equals the output of pair_ends.py.
+  example: pair_ends.py
+  compare: output

@@ -8,6 +8,33 @@ import { useCallback, useSyncExternalStore } from "react";
 const KEY = "etccc:read:v1";
 type ReadMap = Record<string, string>;
 
+/**
+ * Shape-checks whatever `JSON.parse` produced from the stored value: a plain object (not an
+ * array, not null) whose every own-enumerable value is a string that parses as a real date.
+ * Anything else — an array, a number, `null`, non-string values — is treated as empty rather
+ * than trusted, so a corrupted or hand-edited localStorage entry can't desync the read state or
+ * (via `id in map`, fixed below to `Object.hasOwn`) leak prototype properties as "read" lessons.
+ * Pure and DOM-free so it's directly unit-testable (design-review.md A1-8).
+ */
+export function parseReadMap(raw: string | null): ReadMap {
+  if (!raw) return {};
+  let parsed: unknown;
+  try {
+    parsed = JSON.parse(raw);
+  } catch {
+    return {};
+  }
+  if (parsed === null || typeof parsed !== "object" || Array.isArray(parsed)) return {};
+  const out: ReadMap = {};
+  for (const key of Object.keys(parsed as Record<string, unknown>)) {
+    const value = (parsed as Record<string, unknown>)[key];
+    if (typeof value === "string" && !Number.isNaN(Date.parse(value))) {
+      out[key] = value;
+    }
+  }
+  return out;
+}
+
 const listeners = new Set<() => void>();
 let cache: ReadMap | null = null;
 let memory: ReadMap = {};
@@ -15,9 +42,7 @@ let memory: ReadMap = {};
 function read(): ReadMap {
   if (cache) return cache;
   try {
-    const raw = window.localStorage.getItem(KEY);
-    const parsed: unknown = raw ? JSON.parse(raw) : {};
-    cache = parsed && typeof parsed === "object" ? (parsed as ReadMap) : {};
+    cache = parseReadMap(window.localStorage.getItem(KEY));
   } catch {
     cache = { ...memory };
   }
@@ -74,8 +99,8 @@ export function useReadState(): ReadState {
   }, []);
   return {
     ready,
-    isRead: (id) => id in map,
-    readAt: (id) => map[id] ?? null,
+    isRead: (id) => Object.hasOwn(map, id),
+    readAt: (id) => (Object.hasOwn(map, id) ? map[id] : null) ?? null,
     markRead,
     markUnread,
     all: () => map,

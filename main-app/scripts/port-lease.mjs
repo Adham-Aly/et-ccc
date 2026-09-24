@@ -42,15 +42,34 @@ function isPidAlive(pid) {
   }
 }
 
-function checkPortFree(port) {
+// A server bound to "127.0.0.1" alone doesn't conflict with one already bound to "::" (IPv6 any)
+// at the socket-API level, even though — unless the other process set IPV6_V6ONLY — that other
+// server IS already answering on this exact port over IPv4 too, on macOS and Linux both. Binding
+// only 127.0.0.1 therefore used to report a port "free" that a `::`-bound server already
+// occupied (regression test: tests/unit/scripts/port-lease.test.ts). Trying every host a real
+// server here is realistically started on — including a plain bind with no host, which Node
+// defaults to "::" — and requiring all of them to succeed closes that gap.
+const PROBE_HOSTS = ["127.0.0.1", "::1", "0.0.0.0", "::"];
+
+function tryListen(port, host) {
   return new Promise((resolve) => {
     const server = net.createServer();
     server.once("error", () => resolve(false));
     server.once("listening", () => {
       server.close(() => resolve(true));
     });
-    server.listen(port, "127.0.0.1");
+    if (host) server.listen(port, host);
+    else server.listen(port);
   });
+}
+
+export async function checkPortFree(port) {
+  for (const host of PROBE_HOSTS) {
+    // eslint-disable-next-line no-await-in-loop
+    const free = await tryListen(port, host);
+    if (!free) return false;
+  }
+  return true;
 }
 
 /**

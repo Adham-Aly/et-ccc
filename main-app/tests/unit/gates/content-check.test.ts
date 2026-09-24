@@ -46,6 +46,14 @@ describe("content:check gate fixtures", () => {
     expect(output).toContain("does not come earlier in the course");
   });
 
+  it("G-SCHEMA fails on a lesson MDX file that uses an unknown component (design-review.md A1-4: not just at render time)", () => {
+    const { status, output } = runFixture("G-SCHEMA");
+    expect(status).toBe(1);
+    expect(output).toContain("G-SCHEMA");
+    expect(output).toContain("<WalkthroughBox>");
+    expect(output).toContain("not in the fixed MDX component map");
+  });
+
   it("G-LINK-FMT fails on a raw judge URL outside the registry code", () => {
     const { status, output } = runFixture("G-LINK-FMT");
     expect(status).toBe(1);

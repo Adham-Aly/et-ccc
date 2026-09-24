@@ -34,7 +34,9 @@ test("mark as read, then undo, round-trips correctly with no console issues", as
 
 test("marking a lesson read updates its sidebar check mark on the same page, live", async ({
   page,
+  viewport,
 }) => {
+  test.skip((viewport?.width ?? 0) < 1024, "sidebar is lg:block only");
   await page.goto("/learn/fx/M90.1/components-one");
   const sidebarLink = page
     .locator("aside nav[aria-labelledby]")

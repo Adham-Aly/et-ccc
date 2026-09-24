@@ -5,7 +5,9 @@
 import fs from "node:fs";
 import path from "node:path";
 import { SCENE_NAMES } from "../../components/viz/scenes";
-import { MAX_NATURAL_WIDTH, unionSize } from "../../lib/viz/geometry";
+import { plainCaption } from "../../lib/viz/caption";
+import { collisions } from "../../lib/viz/collide";
+import { MAX_NATURAL_WIDTH, unionSize, type VizScene } from "../../lib/viz/geometry";
 import { layoutPanel } from "../../lib/viz/layout";
 import { layoutTrace } from "../../lib/viz/layout-trace";
 import {
@@ -46,6 +48,7 @@ export const RULES = [
   "orphan",
   "python",
   "tree-ids",
+  "collision",
 ] as const;
 export type Rule = (typeof RULES)[number];
 
@@ -66,7 +69,7 @@ const LAZY_CAPTION = /^(step|frame)\s*\d+\.?$/i;
 
 function checkCaptions(captions: string[], file: string, out: Finding[]): void {
   captions.forEach((c, i) => {
-    const t = c.trim();
+    const t = plainCaption(c).trim();
     if (t.length < 12 || LAZY_CAPTION.test(t)) {
       out.push({
         rule: "caption",
@@ -101,6 +104,7 @@ function checkWidths(file: FramesFile, where: string, out: Finding[]): void {
   for (const panel of file.panels) {
     const frames = file.presets.flatMap((p) => p.steps.map((s) => s.panels[panel.id]));
     const scenes = layoutPanel(panel.viz, frames as FrameByViz[typeof panel.viz][]);
+    checkCollisions(scenes, `panel "${panel.id}"`, file.presets, where, out);
     const { width } = unionSize(scenes);
     if (width > MAX_NATURAL_WIDTH) {
       out.push({
@@ -108,6 +112,37 @@ function checkWidths(file: FramesFile, where: string, out: Finding[]): void {
         file: where,
         message: `panel "${panel.id}" is ${Math.ceil(width)} units wide; at most ${MAX_NATURAL_WIDTH} keeps values at 14 px and labels at 12 px on a 390 px phone (shrink the preset)`,
       });
+    }
+  }
+}
+
+/**
+ * No label may overlap another label or cross a shape's edge, and a value keeps CLEAR units from
+ * the edge of its own cell or node (lib/viz/collide.ts). Scenes are in preset-then-step order.
+ */
+function checkCollisions(
+  scenes: VizScene[],
+  what: string,
+  presets: { id: string; steps: unknown[] }[],
+  where: string,
+  out: Finding[],
+): void {
+  const seen = new Set<string>();
+  let k = 0;
+  for (const p of presets) {
+    for (let i = 0; i < p.steps.length; i += 1) {
+      const scene = scenes[k];
+      k += 1;
+      if (!scene) continue;
+      for (const msg of collisions(scene)) {
+        if (seen.has(msg)) continue;
+        seen.add(msg);
+        out.push({
+          rule: "collision",
+          file: where,
+          message: `${what}, preset ${p.id} step ${i + 1}: ${msg}`,
+        });
+      }
     }
   }
 }
@@ -150,6 +185,7 @@ function checkTreeIds(file: FramesFile, where: string, out: Finding[]): void {
 
 function checkTraceWidth(file: TraceFile, where: string, out: Finding[]): void {
   const scenes = file.presets.flatMap((p) => layoutTrace(expandTrace(p.steps)));
+  checkCollisions(scenes, "the frames-and-objects panel", file.presets, where, out);
   const { width } = unionSize(scenes);
   if (width > MAX_NATURAL_WIDTH) {
     out.push({

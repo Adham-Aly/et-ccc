@@ -28,7 +28,7 @@ def frame(lo, hi, found=False, compare=None):
 
 lo, hi = 0, n - 1
 rec.step(
-    f"The list is sorted. lo starts at the smallest value and hi at the largest; "
+    f"The list is sorted. `lo` starts at the smallest value and `hi` at the largest; "
     f"the goal is a pair that adds up to {target}.",
     a=frame(lo, hi),
 )
@@ -47,7 +47,7 @@ while lo < hi:
     if total < target:
         rec.step(
             f"{values[lo]} + {values[hi]} = {total} is too small. Every partner of {values[lo]} is at "
-            f"most {values[hi]}, so {values[lo]} can never reach {target}: lo moves right.",
+            f"most {values[hi]}, so {values[lo]} can never reach {target}: `lo` moves right.",
             a=frame(lo, hi, compare=cmp_),
         )
         out.add(lo)
@@ -55,14 +55,14 @@ while lo < hi:
     else:
         rec.step(
             f"{values[lo]} + {values[hi]} = {total} is too big. Every partner of {values[hi]} is at "
-            f"least {values[lo]}, so {values[hi]} is always too big: hi moves left.",
+            f"least {values[lo]}, so {values[hi]} is always too big: `hi` moves left.",
             a=frame(lo, hi, compare=cmp_),
         )
         out.add(hi)
         hi -= 1
 if answer == "none":
     rec.step(
-        f"lo and hi have met, so every pair has been ruled out: no two values add up to {target}.",
+        f"`lo` and `hi` have met, so every pair has been ruled out: no two values add up to {target}.",
         a=frame(lo, hi),
     )
 rec.output(f"{answer}\n")

@@ -23,6 +23,7 @@ import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { parse } from "yaml";
+import { MDX_COMPONENT_NAMES } from "@/lib/content/mdx-component-names";
 import {
   conceptsSchema,
   courseSchema,
@@ -397,6 +398,45 @@ function grepForInternal(dir: string) {
 }
 grepForInternal(path.join(APP_ROOT, "app"));
 grepForInternal(path.join(APP_ROOT, "components"));
+
+// -- G-SCHEMA: every JSX tag a lesson MDX file uses is in the fixed MDX component map -----------
+// design-review.md A1-4: an unresolved MDX component (a typo, or a name an author invented) only
+// throws when the page is actually rendered — during `next build`'s SSG, or a one-off render in a
+// test — never at `content:check` time, because @mdx-js/mdx's `evaluate()` just builds the
+// element tree lazily (see tests/unit/content/mdx-fenced-code.test.ts's own comment: "creating an
+// element does not invoke the component"). Catching it here, statically, means a broken lesson
+// never reaches the slow `next build` step at all. MDX_COMPONENT_NAMES is the single source of
+// truth for the fixed map's keys (lib/content/mdx-component-names.ts, kept in sync with the real
+// component map — lib/content/mdx-components.tsx — by tests/unit/content/mdx-component-names.test.ts).
+const KNOWN_MDX_COMPONENTS = new Set<string>(MDX_COMPONENT_NAMES);
+const JSX_OPEN_TAG_RE = /<([A-Z][A-Za-z0-9]*)\b/g;
+
+function checkMdxComponentsKnown(dir: string) {
+  if (!fs.existsSync(dir)) return;
+  for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
+    const full = path.join(dir, entry.name);
+    if (entry.isDirectory()) {
+      checkMdxComponentsKnown(full);
+      continue;
+    }
+    if (!entry.name.endsWith(".mdx")) continue;
+    // Fenced code (the only place a lesson shows Python, which never contains JSX-shaped tags
+    // anyway) is stripped first, matching every other regex-based MDX scan in this file.
+    const withoutCode = fs.readFileSync(full, "utf8").replace(/```[\s\S]*?```/g, "");
+    const seen = new Set<string>();
+    for (const m of withoutCode.matchAll(JSX_OPEN_TAG_RE)) {
+      const name = m[1];
+      if (!name || seen.has(name) || KNOWN_MDX_COMPONENTS.has(name)) continue;
+      seen.add(name);
+      err(
+        "G-SCHEMA",
+        `${rel(full)}: uses <${name}>, which is not in the fixed MDX component map (lib/content/mdx-components.tsx) — authors cannot invent components`,
+      );
+    }
+  }
+}
+checkMdxComponentsKnown(REAL_ROOT);
+checkMdxComponentsKnown(FIXTURE_ROOT);
 
 // -- G-LINK-FMT: year-band URL format, no raw judge domains outside allowed files --------------
 

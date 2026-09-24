@@ -30,7 +30,11 @@ export function SceneSvg({ scene, box, title, desc, entering, exiting }: SceneSv
       className="vz-svg"
       viewBox={`0 0 ${box.width} ${box.height}`}
       role="img"
-      style={{ maxWidth: `${Math.round(box.width * MAX_SCALE)}px` }}
+      style={{
+        maxWidth: `${Math.round(box.width * MAX_SCALE)}px`,
+        // Natural width, for the shared scale of combined figures (viz.css → .vz-panels).
+        ["--vz-nat" as string]: box.width,
+      }}
     >
       <title>{title}</title>
       {desc ? <desc>{desc}</desc> : null}

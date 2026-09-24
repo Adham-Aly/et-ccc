@@ -1,10 +1,10 @@
 import { describe, expect, it } from "vitest";
+import { getExternalLink } from "../../../lib/content/registry";
 import {
   CCC_MAX_YEAR,
   CCC_MIN_YEAR,
   deriveSlug,
   judgeForYear,
-  judgeLinkUrl,
   judgeUrl,
 } from "../../../lib/registry/judge-url";
 
@@ -60,12 +60,20 @@ describe("judgeUrl", () => {
   });
 });
 
-describe("judgeLinkUrl", () => {
-  it("returns judge home and sign-up links", () => {
-    expect(judgeLinkUrl("wmoj", "home")).toBe("https://wmoj.ca/");
-    expect(judgeLinkUrl("dmoj", "home")).toBe("https://dmoj.ca/");
-    expect(judgeLinkUrl("wmoj", "signup")).toContain("wmoj.ca");
-    expect(judgeLinkUrl("dmoj", "signup")).toContain("dmoj.ca");
+// Judge home/sign-up links live only in content/registry/external-links.yaml (design-review.md
+// A1-2, plan §4.7) — lib/registry/judge-url.ts builds problem URLs only, so there's no second
+// copy of these to drift out of sync (design-review.md A1-1's broken WMOJ sign-up URL was found
+// exactly because it had one).
+describe("getExternalLink (judge home/sign-up, the only source for these)", () => {
+  it("returns judge home and sign-up links, each on its own domain", () => {
+    expect(getExternalLink("wmoj-home").url).toBe("https://wmoj.ca/");
+    expect(getExternalLink("dmoj-home").url).toBe("https://dmoj.ca/");
+    expect(getExternalLink("wmoj-signup").url).toContain("wmoj.ca");
+    expect(getExternalLink("dmoj-signup").url).toContain("dmoj.ca");
+  });
+
+  it("the WMOJ sign-up URL is the live-confirmed path, not the 404ing guess (design-review.md A1-1)", () => {
+    expect(getExternalLink("wmoj-signup").url).toBe("https://wmoj.ca/auth/signup");
   });
 });
 

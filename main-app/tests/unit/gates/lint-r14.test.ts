@@ -38,6 +38,11 @@ describe("lint:r14 gate fixture", () => {
     expect(output).toContain("solution-exists-elsewhere");
   });
 
+  it("fails on a Python download-page link (design-review.md A1-3, C21: no setup content)", () => {
+    const { output } = run(["--root=tests/fixtures/gates/G-R14"]);
+    expect(output).toContain("python-download-link");
+  });
+
   it('does not flag the allow-listed "average of the array" in the same fixture', () => {
     const { output } = run(["--root=tests/fixtures/gates/G-R14"]);
     expect(output).not.toContain("average of the array");

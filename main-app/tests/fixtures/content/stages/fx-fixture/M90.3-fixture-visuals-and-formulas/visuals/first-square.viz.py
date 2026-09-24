@@ -19,7 +19,7 @@ def frame(lo, hi, mid=None, state=None):
 
 lo, hi = 0, 10
 rec.step(
-    f"x * x only grows as x grows, so the smallest whole x with x * x ≥ {target} lies in [0, 10]. "
+    f"`x * x` only grows as `x` grows, so the smallest whole `x` with `x * x >= {target}` lies in [0, 10]. "
     "Each question halves that range.",
     p=frame(lo, hi),
 )
@@ -27,20 +27,20 @@ while lo < hi:
     mid = (lo + hi) // 2
     if mid * mid >= target:
         rec.step(
-            f"mid = {mid}: {mid} * {mid} = {mid * mid} is at least {target}. The answer is {mid} or "
+            f"`mid = {mid}`: `{mid} * {mid} = {mid * mid}` is at least {target}. The answer is {mid} or "
             f"smaller, so the range becomes [{lo}, {mid}].",
             p=frame(lo, hi, mid, "done"),
         )
         hi = mid
     else:
         rec.step(
-            f"mid = {mid}: {mid} * {mid} = {mid * mid} is below {target}. The answer is bigger than "
+            f"`mid = {mid}`: `{mid} * {mid} = {mid * mid}` is below {target}. The answer is bigger than "
             f"{mid}, so the range becomes [{mid + 1}, {hi}].",
             p=frame(lo, hi, mid, "invalid"),
         )
         lo = mid + 1
 rec.step(
-    f"The range is a single value: {lo} is the smallest whole x with x * x ≥ {target}.",
+    f"The range is a single value: `{lo}` is the smallest whole `x` with `x * x >= {target}`.",
     p=frame(lo, hi, lo, "path"),
 )
 rec.output(f"{lo}\n")

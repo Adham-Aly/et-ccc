@@ -17,6 +17,24 @@ export interface CodeBlockData {
   error?: { type: string; traceback: string };
 }
 
+/**
+ * Resolves `file` (an MDX author's `<Code file="…">`/`<Output file="…">` prop) against
+ * `moduleDir` and rejects anything that escapes it — `../../../etc/passwd` or an absolute path
+ * would otherwise let a lesson read any file the server process can (design-review.md A1-4:
+ * "OutputTag must reject any file that resolves outside the module dir"; the same risk exists
+ * for `<Code file>`, fixed here once for both call sites).
+ */
+export function resolveModulePath(moduleDir: string, file: string): string {
+  const root = path.resolve(moduleDir);
+  const resolved = path.resolve(root, file);
+  if (resolved !== root && !resolved.startsWith(root + path.sep)) {
+    throw new Error(
+      `"${file}" resolves outside its module directory (${moduleDir}) — path traversal is not allowed`,
+    );
+  }
+  return resolved;
+}
+
 function parseLineRange(lines: string | undefined, sourceLineCount: number): [number, number] {
   if (!lines) return [1, sourceLineCount];
   const m = lines.match(/^(\d+)(?:-(\d+))?$/);
@@ -53,7 +71,7 @@ export function resolveFileCodeBlock(
     expectError?: string;
   },
 ): CodeBlockData {
-  const filePath = path.join(moduleDir, props.file);
+  const filePath = resolveModulePath(moduleDir, props.file);
   const fullSource = fs.readFileSync(filePath, "utf8").replace(/\n$/, "");
   const sourceLines = fullSource.split("\n");
   const [start, end] = parseLineRange(props.lines, sourceLines.length);

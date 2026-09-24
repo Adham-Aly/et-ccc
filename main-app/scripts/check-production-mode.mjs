@@ -1,9 +1,9 @@
 #!/usr/bin/env node
 // scripts/check-production-mode.mjs — the production-mode build-and-check proof (batch 3 item 4;
 // plan §7 G-E2E "against the local production build"). Builds the app with
-// ETCCC_ENV=production into its own dist directory (next.config.ts's NEXT_DIST_DIR, so it never
-// touches the preview `.next` that `npm run test:e2e`'s own Playwright webServer starts right
-// after this script exits), starts it on a leased port, and checks:
+// ETCCC_ENV=production into its own dist directory (scripts/support/local-server.mjs, next.config
+// .ts's ETCCC_DIST_DIR — never the plain `.next` a developer's `next dev` might be using), starts
+// it on a leased port, and checks:
 //
 //   - /dev/viz, /dev/design, and every /learn/fx/* route 404 (draft-only surfaces, lib/content/
 //     env.ts getBuildEnv() === "production" never mounts the fixture course or the dev galleries)
@@ -15,44 +15,10 @@
 // Chained into `npm run test:e2e` ahead of the real Playwright run (package.json) rather than
 // its own top-level script, since plan §4.10/brief A13's script list is the fixed one — this
 // keeps to it while still running as its own build+server+teardown cycle every time G-E2E does.
-import { spawnSync } from "node:child_process";
-import fs from "node:fs";
-import path from "node:path";
-import { fileURLToPath } from "node:url";
-import { leasePort } from "./port-lease.mjs";
-
-const scriptDir = path.dirname(fileURLToPath(import.meta.url));
-const appRoot = path.resolve(scriptDir, "..");
-const distDir = ".next-prod-check";
-const distPath = path.join(appRoot, distDir);
+import { buildAndServe } from "./support/local-server.mjs";
 
 function log(msg) {
   console.log(`check-production-mode: ${msg}`);
-}
-
-function rmDist() {
-  fs.rmSync(distPath, { recursive: true, force: true });
-}
-
-async function waitForServer(url, timeoutMs, child) {
-  const deadline = Date.now() + timeoutMs;
-  let exited = false;
-  let exitInfo = "";
-  child.once("exit", (code, signal) => {
-    exited = true;
-    exitInfo = `exited early (code=${code}, signal=${signal}) — see its output above`;
-  });
-  for (;;) {
-    if (exited) throw new Error(`production server ${exitInfo}`);
-    try {
-      const res = await fetch(url);
-      if (res.ok || res.status === 404) return; // server is up, even if this path 404s
-    } catch {
-      // not up yet
-    }
-    if (Date.now() > deadline) throw new Error(`server did not come up at ${url} in time`);
-    await new Promise((r) => setTimeout(r, 300));
-  }
 }
 
 async function get(base, urlPath) {
@@ -125,71 +91,22 @@ async function runChecks(base) {
 }
 
 async function main() {
-  rmDist();
-  log(`building (ETCCC_ENV=production, NEXT_DIST_DIR=${distDir}) ...`);
-  const build = spawnSync(
-    process.execPath,
-    [path.join(appRoot, "scripts", "build-lock.mjs"), "--", "next", "build"],
-    {
-      cwd: appRoot,
-      stdio: "inherit",
-      env: { ...process.env, ETCCC_ENV: "production", NEXT_DIST_DIR: distDir },
-      shell: false,
-    },
-  );
-  if (build.status !== 0) {
-    console.error("check-production-mode: production build failed");
-    process.exit(1);
-  }
-
-  const leased = await leasePort("prod-check", { releaseOnExit: true });
-  const base = `http://127.0.0.1:${leased.port}`;
-  log(`starting production server on ${base} ...`);
-  const { spawn } = await import("node:child_process");
-  // `next start` forks its own server process, so a plain `child.kill()` only kills the
-  // launcher and leaves an orphan bound to the port (seen exactly this way in testing: a stale
-  // `next start` server outlived a run and squatted on the next run's leased port, so its
-  // checks silently hit the wrong build). `detached: true` makes `child.pid` a process group
-  // leader; killing `-child.pid` signals the whole group.
-  const child = spawn(
-    process.execPath,
-    [
-      path.join(appRoot, "node_modules", "next", "dist", "bin", "next"),
-      "start",
-      "-p",
-      String(leased.port),
-    ],
-    {
-      cwd: appRoot,
-      stdio: "inherit",
-      env: { ...process.env, ETCCC_ENV: "production", NEXT_DIST_DIR: distDir },
-      detached: true,
-    },
-  );
-
-  function killServer() {
-    try {
-      process.kill(-child.pid, "SIGTERM");
-    } catch {
-      // already gone
-    }
-  }
+  const server = await buildAndServe({
+    distDir: ".next-prod-check",
+    leaseName: "prod-check",
+    extraEnv: { ETCCC_ENV: "production" },
+    log,
+  });
 
   let failures = [];
   let threw;
   try {
-    await waitForServer(base, 60_000, child);
     log("server up, running checks ...");
-    failures = await runChecks(base);
+    failures = await runChecks(server.base);
   } catch (err) {
     threw = err;
   } finally {
-    killServer();
-    // Give the group a moment to actually release the port before the next run leases it;
-    // SIGTERM is asynchronous and next.js's own shutdown isn't always instant.
-    await new Promise((r) => setTimeout(r, 500));
-    leased.release();
-    rmDist();
+    await server.stop();
   }
 
   if (threw) {

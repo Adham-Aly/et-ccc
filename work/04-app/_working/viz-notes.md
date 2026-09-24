@@ -49,6 +49,14 @@ The design record is `main-app/DESIGN.md` → Visual Language ([W3] parts); this
 8. **Relative imports inside the viz modules** that Node tools and Vitest load (scenes, tokens):
    neither resolves `@/` without extra config.
 
+## Decision for the Manager: Motion vs CSS transitions (plan §4.2 marks Motion [DECIDED])
+
+1. The player runs on CSS transitions and keyframes (`components/viz/viz.css`, about 60 lines), not Motion. `motion` stays in package.json until you rule; W1 owns it.
+2. Measured cost avoided: the lazy player chunk is **18.3 kB gzip** today. Motion's smallest React set for enter/exit (`LazyMotion` + `domAnimation` + `m` + `AnimatePresence` + `MotionConfig`, React external, minified with the repo's rolldown) adds **27.7 kB gzip**, so the chunk would be about 46 kB. With layout animations (`domMax`) it adds **40.8 kB**, about 59 kB, against the 60 kB budget.
+3. Nothing in the §4.11 motion rules needs Motion. Two-phase cause-then-effect sequencing is `transition-delay`. Enter and exit are keyframes plus one render that keeps exiting items. Interruption is the `.vz-snap` class. Reduced motion is `--vz-dur: 0ms`. "Layout" movement is a CSS `transform` transition on positioned SVG groups; SVG has no DOM layout to measure.
+4. What Motion would add that we don't use: spring physics, gestures and drag, FLIP layout measurement of HTML boxes, and animating between unrelated elements. None of these is in the brief, and spring or bouncy motion is ruled out by DESIGN.md's single easing curve.
+5. Recommendation: accept CSS-only for the visualization library, and keep Motion available for W2's UI surfaces only if they need it. If the ruling is to use Motion anyway, the player swap is contained to `Player.tsx`, `SceneSvg.tsx` and `viz.css`.
+
 ## Measurements (2026-09-24)
 
 - **Lazy player chunk**: 18.3 kB gzip (53.5 kB raw), one shared file. Target was ≤ 60 kB.
@@ -82,6 +90,12 @@ The design record is `main-app/DESIGN.md` → Visual Language ([W3] parts); this
 - Compare bracket legs ran through pointer labels; heap values touched their circles; an empty
   heap drew nothing; the table's vertical dependency arrow sat on the current caret.
 - G-VIZ scanned `{/* … */}` MDX comments as live components.
+- Review round 2: heap text touched node edges and index labels crowded nodes; heap is now pills
+  with indices only under the array. New G-VIZ rule `collision` (`lib/viz/collide.ts`, fixture
+  `G-VIZ/collision`, unit test over every gallery sample and scene) then caught: tree pills and
+  judge boxes too tight, plot marker values overlapping each other and the y ticks, and the
+  vline label over the y-axis title. All fixed. Row figures now share one scale (`--vz-n*`,
+  `data-row-at`).
 
 ## Open
 

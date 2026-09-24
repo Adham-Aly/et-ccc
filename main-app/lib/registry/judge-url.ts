@@ -31,19 +31,11 @@ export function judgeUrl(slug: string, year: number): string {
   return `https://dmoj.ca/problem/${slug}/`;
 }
 
-const JUDGE_HOME: Record<Judge, string> = {
-  wmoj: "https://wmoj.ca/",
-  dmoj: "https://dmoj.ca/",
-};
-const JUDGE_SIGNUP: Record<Judge, string> = {
-  wmoj: "https://wmoj.ca/user/register",
-  dmoj: "https://dmoj.ca/register/",
-};
-
-/** Home or sign-up link for a judge, independent of any specific problem (for <JudgeLink>). */
-export function judgeLinkUrl(judge: Judge, kind: "home" | "signup"): string {
-  return kind === "home" ? JUDGE_HOME[judge] : JUDGE_SIGNUP[judge];
-}
+// Judge home/sign-up URLs deliberately do NOT live here (design-review.md A1-2): plan §4.7 says
+// they go through <JudgeLink> and content/registry/external-links.yaml (ids "wmoj-home",
+// "wmoj-signup", "dmoj-home", "dmoj-signup") via lib/content/registry.ts's getExternalLink() —
+// one source, so fixing a broken URL (A1-1) never means finding a second copy. This file only
+// ever builds a *problem* URL.
 
 /** Derives a slug from level/number/year: `ccc<YY><j|s><N>`, e.g. ccc23s1. */
 export function deriveSlug(year: number, level: "J" | "S", number: number): string {

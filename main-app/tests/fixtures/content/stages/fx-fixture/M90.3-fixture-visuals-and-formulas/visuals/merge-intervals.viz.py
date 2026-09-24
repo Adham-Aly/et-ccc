@@ -38,12 +38,12 @@ for i, (a, b) in enumerate(intervals):
         old = merged[-1][1]
         merged[-1][1] = max(old, b)
         what = (
-            f"[{a}, {b}] starts at {a}, before the current block ends at {old}, so it joins that block"
+            f"`[{a}, {b}]` starts at {a}, before the current block ends at {old}, so it joins that block"
             + (f", which now ends at {b}." if b > old else ", which already covers it.")
         )
     else:
         merged.append([a, b])
-        what = f"[{a}, {b}] starts after every block so far ends, so it opens a new block."
+        what = f"`[{a}, {b}]` starts after every block so far ends, so it opens a new block."
     rec.step(what, a=frame(i, (a, f"x = {a}")))
 total = sum(b - a for a, b in merged)
 rec.step(

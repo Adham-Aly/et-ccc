@@ -1,0 +1,11 @@
+{"schema":1,
+"kind":"frames",
+"id":"ends",
+"layout":"single",
+"panels":[{"id":"a","viz":"ArrayViz"}],
+"alt":"Two numbers with a pointer on each end, whose long names are drawn on top of each other.",
+"presets":[
+{"id":"main","label":"Two numbers","steps":[
+{"caption":"The pointers `left_end` and `right_end` start on neighbouring cells.","panels":{"a":{"values":[3,4],"pointers":[{"name":"left_end","at":0},{"name":"right_end","at":1}]}}}
+]}
+]}

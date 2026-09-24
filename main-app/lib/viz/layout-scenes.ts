@@ -1,5 +1,5 @@
 // Layouts for the scene panels (components/viz/scenes): stdin flow and how judging works.
-import { PAD, textWidth, type VizItem, type VizScene } from "./geometry";
+import { PAD, textAdvance, textWidth, type VizItem, type VizScene } from "./geometry";
 import type { JudgeSceneFrame, StdinSceneFrame } from "./schema";
 
 const ROW = 30;
@@ -185,17 +185,21 @@ export function layoutJudgeScene(frames: JudgeSceneFrame[]): VizScene[] {
   const n = Math.max(...frames.map((f) => f.tests.length));
   const tw = 48;
   const tgap = 8;
-  const boxW = 96;
+  const PIPE = ["Test input", "Your program", "Its output"];
+  // Each box fits its step name with at least 6 units clear on each side (G-VIZ collision).
+  const boxWs = PIPE.map((t) => Math.max(84, Math.ceil(textAdvance(t, "label")) + 20));
+  const boxW = (i: number) => boxWs[i] as number;
   const boxH = 36;
-  const arrowGap = 22;
-  const width = PAD * 2 + Math.max(n * (tw + tgap) - tgap, 3 * boxW + 2 * arrowGap);
+  const arrowGap = 20;
+  const width =
+    PAD * 2 + Math.max(n * (tw + tgap) - tgap, boxW(0) + boxW(1) + boxW(2) + 2 * arrowGap);
   const yTestsTitle = PAD + 8;
   const yTests = PAD + 22;
   const yVerdicts = yTests + 36 + 12;
   const yPipe = yVerdicts + 30;
   const yCheck = yPipe + boxH + 30;
   const height = yCheck + boxH + PAD;
-  const bx = (i: number) => PAD + i * (boxW + arrowGap);
+  const bx = (i: number) => PAD + boxWs.slice(0, i).reduce((a, b) => a + b, 0) + i * arrowGap;
   return frames.map((f) => {
     const items: VizItem[] = [
       {
@@ -241,24 +245,24 @@ export function layoutJudgeScene(frames: JudgeSceneFrame[]): VizScene[] {
       t: "cell",
       x: bx(i),
       y: yPipe,
-      w: boxW,
+      w: boxW(i),
       h: boxH,
       state: on ? "current" : "none",
       text: label,
       textRole: "label",
     });
-    items.push(box(0, "bin", "Test input", active === "input"));
-    items.push(box(1, "bprog", "Your program", active === "run"));
-    items.push(box(2, "bout", "Its output", active === "compare"));
+    items.push(box(0, "bin", PIPE[0] as string, active === "input"));
+    items.push(box(1, "bprog", PIPE[1] as string, active === "run"));
+    items.push(box(2, "bout", PIPE[2] as string, active === "compare"));
     for (let i = 0; i < 2; i += 1) {
       items.push({
         key: `pa${i}`,
         t: "arrow",
-        d: `M ${bx(i) + boxW + 3} ${yPipe + boxH / 2} L ${bx(i + 1) - 4} ${yPipe + boxH / 2}`,
+        d: `M ${bx(i) + boxW(i) + 3} ${yPipe + boxH / 2} L ${bx(i + 1) - 4} ${yPipe + boxH / 2}`,
         state: "none",
       });
     }
-    const checkW = 2 * boxW + arrowGap;
+    const checkW = boxW(0) + boxW(1) + arrowGap;
     items.push({
       key: "bcheck",
       t: "cell",
@@ -270,8 +274,8 @@ export function layoutJudgeScene(frames: JudgeSceneFrame[]): VizScene[] {
       text: "Compare with expected",
       textRole: "label",
     });
-    const xo = bx(2) + boxW / 2;
-    const xc = bx(1) + boxW / 2;
+    const xo = bx(2) + boxW(2) / 2;
+    const xc = bx(1) + boxW(1) / 2;
     const ymid = yPipe + boxH + 15;
     items.push({
       key: "pdown",
@@ -292,7 +296,7 @@ export function layoutJudgeScene(frames: JudgeSceneFrame[]): VizScene[] {
       t: "cell",
       x: bx(2),
       y: yCheck,
-      w: boxW,
+      w: boxW(2),
       h: boxH,
       state: verdict === null ? "unvisited" : verdict === "AC" ? "path" : "invalid",
       text: verdict === null ? "Verdict" : verdict,

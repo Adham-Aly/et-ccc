@@ -49,7 +49,7 @@ def frame(current=None, edge=None, edge_state=None, heap_state=None, final=False
     items = []
     for d, u in sorted(heap):
         s = heap_state.get((d, u)) if heap_state else None
-        items.append((f"{d},{names[u]}", s))
+        items.append((f"{d}, {names[u]}", s))
     return {
         "g": vz.graph(nodes, edges, node_states=node_states, edge_states=edge_states,
                       values=values, value_label="distance"),
@@ -58,22 +58,22 @@ def frame(current=None, edge=None, edge_state=None, heap_state=None, final=False
 
 
 rec.step(
-    f"{names[0]} starts with distance 0, and the entry (0,{names[0]}) goes into the heap. Heap "
-    "entries are (distance,node) pairs. Every other node is at ∞: no route to it is known yet.",
+    f"{names[0]} starts with distance 0, and the entry `(0, {names[0]})` goes into the heap. Heap "
+    "entries are `(distance, node)` pairs. Every other node is at ∞: no route to it is known yet.",
     **frame()
 )
 while heap:
     d, u = heap[0]
     if dist[u] != -1:
         rec.step(
-            f"The smallest entry is ({d},{names[u]}), but {names[u]} is already done with distance "
+            f"The smallest entry is `({d}, {names[u]})`, but {names[u]} is already done with distance "
             f"{dist[u]}. This entry is out of date, so it is thrown away.",
             **frame(heap_state={(d, u): "invalid"})
         )
         heapq.heappop(heap)
         continue
     rec.step(
-        f"The smallest entry is ({d},{names[u]}). No shorter route to {names[u]} can appear later, "
+        f"The smallest entry is `({d}, {names[u]})`. No shorter route to {names[u]} can appear later, "
         f"because every other entry is at least {d}: {names[u]} is done with distance {d}.",
         **frame(current=u, heap_state={(d, u): "current"})
     )
@@ -90,7 +90,7 @@ while heap:
             heapq.heappush(heap, (d + w, v))
             rec.step(
                 f"Through {names[u]}, {names[v]} is {d} + {w} = {d + w} away, better than {before}. "
-                f"({d + w},{names[v]}) goes into the heap.",
+                f"`({d + w}, {names[v]})` goes into the heap.",
                 **frame(current=u, edge=edge, edge_state="frontier",
                         heap_state={(d + w, v): "frontier"})
             )

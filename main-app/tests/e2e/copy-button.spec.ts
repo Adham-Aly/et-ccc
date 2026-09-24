@@ -36,17 +36,13 @@ test("copies the file-based code block's exact text, indentation included", asyn
   await page.goto("/learn/fx/M90.1/components-one");
   await page.waitForLoadState("networkidle");
 
-  const frameCount = await page.locator("[data-code-frame]").count();
-  console.log("DEBUG frameCount", frameCount);
   const frame = page.locator("[data-code-frame]").first();
-  console.log("DEBUG frame filename-ish", await frame.locator("pre code").innerText());
   await frame.getByRole("button", { name: "Copy" }).click();
   await expect(frame.locator('[aria-live="polite"]')).toContainText("Copied");
 
   const copiedTexts = await page.evaluate(
     () => (window as unknown as { __copiedTexts: string[] }).__copiedTexts,
   );
-  console.log("DEBUG copiedTexts", JSON.stringify(copiedTexts));
   const shownCode = await frame.locator("pre code").innerText();
   expect(copiedTexts).toHaveLength(1);
   const [copied] = copiedTexts;

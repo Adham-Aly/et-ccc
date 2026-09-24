@@ -3,6 +3,7 @@ import type { KeyboardEvent, ReactNode, Ref } from "react";
 import type { PlayerAction, SpeedId } from "@/lib/viz/player-state";
 import { SPEEDS } from "@/lib/viz/player-state";
 import type { VizState } from "@/lib/viz/schema";
+import { CaptionText } from "../CaptionText";
 import { Legend } from "./Legend";
 
 export interface PlayerViewProps {
@@ -217,7 +218,7 @@ export function PlayerView(props: PlayerViewProps) {
       </div>
       <div className="vz-caption" aria-live="polite" aria-atomic="true">
         {skipped ? <span className="vz-skip">Skip ahead</span> : null}
-        {caption}
+        <CaptionText text={caption} />
       </div>
       <Legend states={legend} />
     </div>

@@ -28,6 +28,8 @@ export const MIN_RENDERED = { value: 14, label: 12, title: 12 } as const;
  */
 export const MAX_SCALE = 1.25;
 export const PHONE_STAGE = 316;
+/** The smallest scale at which every text still meets MIN_RENDERED (14/16 = 12/14 = 0.875). */
+export const MIN_RATIO = Math.max(MIN_RENDERED.value / FONT.value, MIN_RENDERED.label / FONT.label);
 /** Widest natural scene that still meets MIN_RENDERED on a phone. */
 export const MAX_NATURAL_WIDTH = Math.floor(
   PHONE_STAGE / Math.max(MIN_RENDERED.value / FONT.value, MIN_RENDERED.label / FONT.label),
@@ -47,11 +49,25 @@ const SANS_ADVANCES: Record<string, number> = {" ":0.293,"!":0.298,"\"":0.362,"#
 /** Safety margin on the text face so a label never measures narrower than it renders. */
 const SANS_MARGIN = 1.03;
 
+/**
+ * Characters whose Mono glyph misreads at value size (Mono's ∞ is a narrow, light figure that
+ * reads as a sideways 8). Inside Mono text they are drawn from the text face instead
+ * (primitives: `glyphRuns`), and measured with its advance.
+ */
+export const SANS_IN_MONO = new Set(["∞"]);
+
 /** The measured advance of a text run in user units (drawing: knockouts that hug the glyphs). */
 export function textAdvance(text: string, role: TextRole, mono = role === "value"): number {
   const size = FONT[role];
   const chars = [...text];
-  if (mono) return chars.length * size * MONO_ADVANCE;
+  if (mono) {
+    let em = 0;
+    for (const ch of chars) {
+      // Drawn at 1.15 em (viz.css .vz-glyph-sans) so it matches the digits' visual size.
+      em += SANS_IN_MONO.has(ch) ? (SANS_ADVANCES[ch] ?? SANS_ADVANCE) * 1.15 : MONO_ADVANCE;
+    }
+    return em * size;
+  }
   let em = 0;
   for (const ch of chars) em += SANS_ADVANCES[ch] ?? SANS_ADVANCE;
   return em * size;
@@ -59,7 +75,8 @@ export function textAdvance(text: string, role: TextRole, mono = role === "value
 
 /** A text run's width for layout: the measured advance plus a safety margin, rounded up. */
 export function textWidth(text: string, role: TextRole, mono = role === "value"): number {
-  return Math.ceil(textAdvance(text, role, mono) * (mono ? 1 : SANS_MARGIN));
+  const margin = mono && ![...text].some((ch) => SANS_IN_MONO.has(ch)) ? 1 : SANS_MARGIN;
+  return Math.ceil(textAdvance(text, role, mono) * margin);
 }
 
 export const PAD = 8;

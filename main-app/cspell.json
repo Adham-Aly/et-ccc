@@ -13,6 +13,8 @@
   "ignorePaths": [
     "node_modules/**",
     ".next/**",
+    ".next-local/**",
+    ".next-prod-check/**",
     "out/**",
     "playwright-report/**",
     "test-results/**",
