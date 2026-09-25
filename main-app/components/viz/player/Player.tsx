@@ -1,5 +1,6 @@
 "use client";
 
+import { MotionConfig } from "motion/react";
 import {
   type KeyboardEvent,
   type ReactNode,
@@ -11,7 +12,7 @@ import {
   useRef,
   useState,
 } from "react";
-import type { VizItem, VizScene } from "@/lib/viz/geometry";
+import type { VizScene } from "@/lib/viz/geometry";
 import {
   initialPlayerState,
   keyAction,
@@ -24,26 +25,6 @@ import type { PlayerProps } from "./PlayerMount";
 import { PlayerView } from "./PlayerView";
 import { prepareFrames, prepareTrace, stepLabel } from "./prepare";
 import { TraceStage } from "./TraceStage";
-
-function reducedMotion(): boolean {
-  return (
-    typeof window !== "undefined" && window.matchMedia("(prefers-reduced-motion: reduce)").matches
-  );
-}
-
-/** Items that appeared and items that left between two scenes of one panel. */
-function presence(
-  prev: VizScene | undefined,
-  next: VizScene,
-): { entering: Set<string>; exiting: VizItem[] } {
-  if (!prev) return { entering: new Set(), exiting: [] };
-  const before = new Set(prev.items.map((i) => i.key));
-  const after = new Set(next.items.map((i) => i.key));
-  return {
-    entering: new Set(next.items.filter((i) => !before.has(i.key)).map((i) => i.key)),
-    exiting: prev.items.filter((i) => !after.has(i.key)),
-  };
-}
 
 const ACTIONS: Record<string, PlayerAction> = {
   restart: { type: "restart" },
@@ -66,8 +47,6 @@ export function Player({ data, focusCtl, pendingCtl }: PlayerProps) {
   const frameRef = useRef<HTMLDivElement>(null);
   const lastChange = useRef(0);
   const snapNext = useRef(false);
-  const prevScenes = useRef<VizScene[] | null>(null);
-  const [exiting, setExiting] = useState<VizItem[][]>([]);
   const speed = SPEEDS.find((s) => s.id === state.speed) ?? SPEEDS[1];
 
   const act = useCallback(
@@ -100,15 +79,8 @@ export function Player({ data, focusCtl, pendingCtl }: PlayerProps) {
     return [];
   }, [frames, trace, state.preset, state.step]);
 
-  // Items new at this step fade in (second phase); items that left fade out.
-  const entering = useMemo(() => {
-    const prev = prevScenes.current;
-    return scenes.map((s, i) => presence(prev?.[i], s).entering);
-  }, [scenes]);
-
+  // biome-ignore lint/correctness/useExhaustiveDependencies: must run when step or preset changes to record transition time and reset snap
   useLayoutEffect(() => {
-    const prev = prevScenes.current;
-    prevScenes.current = scenes;
     lastChange.current = performance.now();
     if (snapNext.current) {
       snapNext.current = false;
@@ -117,17 +89,8 @@ export function Player({ data, focusCtl, pendingCtl }: PlayerProps) {
         void el.offsetWidth;
         el.classList.remove("vz-snap");
       }
-      setExiting([]);
-    } else if (prev && prev !== scenes && live) {
-      setExiting(scenes.map((s, i) => presence(prev[i], s).exiting));
     }
-  }, [scenes, live]);
-
-  useEffect(() => {
-    if (exiting.every((e) => e.length === 0)) return;
-    const t = setTimeout(() => setExiting([]), reducedMotion() ? 0 : speed.transitionMs + 40);
-    return () => clearTimeout(t);
-  }, [exiting, speed.transitionMs]);
+  }, [state.preset, state.step]);
 
   // Playback: one step every stepMs; the reducer stops it on the last step (no loops).
   useEffect(() => {
@@ -181,8 +144,6 @@ export function Player({ data, focusCtl, pendingCtl }: PlayerProps) {
         scenes={scenes}
         boxes={frames.map((p) => p.box)}
         stepLabel={label}
-        entering={live ? entering : undefined}
-        exiting={live ? exiting : undefined}
       />
     );
   } else if (data.kind === "trace" && trace) {
@@ -198,33 +159,33 @@ export function Player({ data, focusCtl, pendingCtl }: PlayerProps) {
           box={trace.box}
           outputLines={trace.outputLines}
           stepLabel={label}
-          entering={live ? entering[0] : undefined}
-          exiting={live ? exiting[0] : undefined}
         />
       );
     }
   }
 
   return (
-    <PlayerView
-      uid={data.uid}
-      label={data.label}
-      presets={data.presets.map((p) => ({ id: p.id, label: p.label }))}
-      preset={state.preset}
-      step={state.step}
-      total={total}
-      playing={state.playing}
-      speed={state.speed}
-      caption={caption}
-      skipped={skipped}
-      stage={stage}
-      legend={data.legend}
-      act={act}
-      onKeyDown={onKeyDown}
-      onKeyUp={onKeyUp}
-      frameRef={frameRef}
-      live={live}
-      reducedMotion={data.demo?.reducedMotion}
-    />
+    <MotionConfig reducedMotion="user">
+      <PlayerView
+        uid={data.uid}
+        label={data.label}
+        presets={data.presets.map((p) => ({ id: p.id, label: p.label }))}
+        preset={state.preset}
+        step={state.step}
+        total={total}
+        playing={state.playing}
+        speed={state.speed}
+        caption={caption}
+        skipped={skipped}
+        stage={stage}
+        legend={data.legend}
+        act={act}
+        onKeyDown={onKeyDown}
+        onKeyUp={onKeyUp}
+        frameRef={frameRef}
+        live={live}
+        reducedMotion={data.demo?.reducedMotion}
+      />
+    </MotionConfig>
   );
 }

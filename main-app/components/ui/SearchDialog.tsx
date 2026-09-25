@@ -224,8 +224,10 @@ function Highlight({ text, q }: { text: string; q: string }) {
 /** Header search trigger + dialog (DESIGN.md → Search dialog). `/` opens it. */
 export function SearchDialog({ labels }: { labels: SearchLabels }) {
   const [open, setOpen] = useState(false);
+  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
+    setMounted(true);
     function onKey(e: KeyboardEvent) {
       if (e.key !== "/" || e.metaKey || e.ctrlKey || e.altKey) return;
       const t = e.target as HTMLElement | null;
@@ -246,6 +248,7 @@ export function SearchDialog({ labels }: { labels: SearchLabels }) {
     <Dialog.Root open={open} onOpenChange={setOpen}>
       <Dialog.Trigger
         aria-label={labels.open}
+        data-mounted={mounted ? "" : undefined}
         className={cn(
           buttonClass("ghost", "icon"),
           "lg:h-9 lg:w-64 lg:justify-start lg:gap-2 lg:border lg:border-rule-strong lg:bg-paper lg:px-3 lg:font-normal lg:text-ink-3 lg:hover:bg-board",

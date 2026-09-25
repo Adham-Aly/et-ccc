@@ -30,6 +30,7 @@ test.describe("search dialog", () => {
 
   test("opens on the `/` shortcut, closes on Escape without navigating", async ({ page }) => {
     await page.goto("/");
+    await page.locator('button[aria-label="Open search"][data-mounted]').waitFor();
     await page.keyboard.press("/");
     const dialog = page.getByRole("dialog");
     await expect(dialog).toBeVisible();

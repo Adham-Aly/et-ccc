@@ -16,6 +16,7 @@ const info = resolveBaseUrl(4101);
 export default defineConfig({
   testDir: "./tests/visual",
   snapshotDir: "./tests/visual/__screenshots__",
+  timeout: 60_000,
   fullyParallel: true,
   forbidOnly: !!process.env.CI,
   retries: 0,

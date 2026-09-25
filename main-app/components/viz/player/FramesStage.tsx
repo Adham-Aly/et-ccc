@@ -1,7 +1,6 @@
-import type { VizItem, VizScene } from "@/lib/viz/geometry";
-import { MIN_RATIO } from "@/lib/viz/geometry";
+import { MIN_RATIO, type VizScene } from "@/lib/viz/geometry";
 import type { PanelSpec } from "@/lib/viz/schema";
-import { SceneSvg } from "../SceneSvg";
+import { MotionSceneSvg } from "./MotionSceneSvg";
 
 export interface FramesStageProps {
   layout: "single" | "row";
@@ -10,8 +9,6 @@ export interface FramesStageProps {
   scenes: VizScene[];
   boxes: { width: number; height: number }[];
   stepLabel: string;
-  entering?: Set<string>[] | undefined;
-  exiting?: VizItem[][] | undefined;
 }
 
 const NAMES: Record<string, string> = {
@@ -59,15 +56,7 @@ export function rowAt(boxes: { width: number }[]): string {
   return bucket === undefined ? "never" : String(bucket);
 }
 
-export function FramesStage({
-  layout,
-  panels,
-  scenes,
-  boxes,
-  stepLabel,
-  entering,
-  exiting,
-}: FramesStageProps) {
+export function FramesStage({ layout, panels, scenes, boxes, stepLabel }: FramesStageProps) {
   return (
     <div className="vz-stage">
       <div
@@ -84,12 +73,10 @@ export function FramesStage({
           return (
             <div className="vz-panel" key={p.id}>
               {p.title ? <div className="vz-panel-title">{p.title}</div> : null}
-              <SceneSvg
+              <MotionSceneSvg
                 scene={scene}
                 box={box}
                 title={stepLabel ? `${name}, ${stepLabel}` : name}
-                entering={entering?.[i]}
-                exiting={exiting?.[i]}
               />
             </div>
           );

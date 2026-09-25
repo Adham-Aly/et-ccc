@@ -1,9 +1,9 @@
 import { ArrowUpFromLine } from "lucide-react";
 import type { CodeToken } from "@/components/content/highlight";
-import { MIN_RATIO, type VizItem, type VizScene } from "@/lib/viz/geometry";
+import { MIN_RATIO, type VizScene } from "@/lib/viz/geometry";
 import type { TraceState } from "@/lib/viz/trace";
-import { SceneSvg } from "../SceneSvg";
 import { syntaxVar } from "../syntax";
+import { MotionSceneSvg } from "./MotionSceneSvg";
 
 export interface TraceStageProps {
   lines: CodeToken[][];
@@ -13,8 +13,6 @@ export interface TraceStageProps {
   /** Reserved output lines (largest across the steps): the panel never grows. */
   outputLines: number;
   stepLabel: string;
-  entering?: Set<string> | undefined;
-  exiting?: VizItem[] | undefined;
 }
 
 function Caret({ hollow }: { hollow: boolean }) {
@@ -30,16 +28,7 @@ function Caret({ hollow }: { hollow: boolean }) {
 }
 
 /** Code pane + frames/objects panel + output so far (DESIGN.md → Code trace layout). */
-export function TraceStage({
-  lines,
-  state,
-  scene,
-  box,
-  outputLines,
-  stepLabel,
-  entering,
-  exiting,
-}: TraceStageProps) {
+export function TraceStage({ lines, state, scene, box, outputLines, stepLabel }: TraceStageProps) {
   const out = state.output.replace(/\n$/, "");
   const reserved = Math.max(1, outputLines);
   return (
@@ -112,13 +101,7 @@ export function TraceStage({
           </div>
         </div>
         <div className="vz-trace-state">
-          <SceneSvg
-            scene={scene}
-            box={box}
-            title={`Frames and objects, ${stepLabel}`}
-            entering={entering}
-            exiting={exiting}
-          />
+          <MotionSceneSvg scene={scene} box={box} title={`Frames and objects, ${stepLabel}`} />
         </div>
       </div>
     </div>

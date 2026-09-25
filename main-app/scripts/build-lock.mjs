@@ -21,6 +21,12 @@ if (command.length === 0) {
   process.exit(1);
 }
 
+// On Vercel, builds are already single-tenant and isolated in ephemeral containers.
+if (process.env.VERCEL) {
+  const res = spawnSync(command[0], command.slice(1), { stdio: "inherit", shell: true });
+  process.exit(res.status ?? 0);
+}
+
 fs.mkdirSync(lockDir, { recursive: true });
 
 const POLL_MS = 2000;

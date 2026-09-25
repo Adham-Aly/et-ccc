@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Phase 4 Report — App Build & Verification</title>
+<style>
+  :root {
+    --bg: #faf7f2;
+    --paper: #ffffff;
+    --ink: #262319;
+    --ink-soft: #6b6355;
+    --line: #e6dfd2;
+    --accent: #2c6e5e;
+    --accent-soft: #e7f0ec;
+    --amber: #a9701f;
+    --amber-soft: #f6ead6;
+    color-scheme: light;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: "Source Sans 3", "Segoe UI", Helvetica, Arial, sans-serif;
+    font-size: 16px;
+    line-height: 1.6;
+    padding-inline: 20px;
+    padding-block: 40px;
+  }
+
+  main {
+    max-width: 720px;
+    margin: 0 auto;
+  }
+
+  h1, h2, h3 {
+    font-family: "Source Serif 4", Georgia, "Times New Roman", serif;
+    font-weight: 600;
+    color: var(--ink);
+    text-wrap: balance;
+  }
+
+  header.masthead {
+    margin-bottom: 36px;
+  }
+
+  .eyebrow {
+    text-transform: uppercase;
+    letter-spacing: 0.09em;
+    font-size: 12.5px;
+    font-weight: 600;
+    color: var(--accent);
+  }
+
+  h1 {
+    font-size: clamp(28px, 5vw, 36px);
+    margin: 8px 0 6px;
+  }
+
+  .dateline {
+    color: var(--ink-soft);
+    font-size: 14px;
+  }
+
+  .status-card {
+    background: var(--accent-soft);
+    border: 1px solid #cfe3da;
+    border-radius: 10px;
+    padding: 16px 18px;
+    margin-top: 20px;
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+  }
+
+  .status-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: var(--accent);
+    margin-top: 6px;
+    flex: none;
+  }
+
+  .status-card p {
+    margin: 0;
+    font-size: 15px;
+  }
+
+  section {
+    margin-top: 40px;
+  }
+
+  section h2 {
+    font-size: 21px;
+    margin: 0 0 4px;
+  }
+
+  .section-sub {
+    color: var(--ink-soft);
+    font-size: 14.5px;
+    margin: 0 0 16px;
+  }
+
+  .card {
+    background: var(--paper);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 18px 20px;
+  }
+
+  .card + .card { margin-top: 12px; }
+
+  ul.plain {
+    margin: 0;
+    padding-left: 20px;
+  }
+
+  ul.plain li { margin-bottom: 10px; }
+  ul.plain li:last-child { margin-bottom: 0; }
+
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 12px;
+    margin-top: 12px;
+  }
+
+  .metric-card {
+    background: var(--paper);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 14px 16px;
+  }
+
+  .metric-label {
+    font-size: 12.5px;
+    color: var(--ink-soft);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .metric-val {
+    font-size: 24px;
+    font-weight: 600;
+    color: var(--accent);
+    margin-top: 4px;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14.5px;
+    margin-top: 8px;
+  }
+
+  th, td {
+    text-align: left;
+    padding: 8px 10px;
+    border-bottom: 1px solid var(--line);
+  }
+
+  th {
+    font-weight: 600;
+    color: var(--ink-soft);
+    font-size: 13px;
+    text-transform: uppercase;
+  }
+
+  .tag-pass {
+    display: inline-block;
+    background: var(--accent-soft);
+    color: var(--accent);
+    font-weight: 600;
+    font-size: 12px;
+    padding: 2px 6px;
+    border-radius: 4px;
+  }
+</style>
+</head>
+<body>
+<main>
+  <header class="masthead">
+    <div class="eyebrow">Executive Report &middot; Phase 4</div>
+    <h1>Application Build &amp; Verification Complete</h1>
+    <div class="dateline">Project et-ccc &middot; Completed September 24, 2026</div>
+
+    <div class="status-card">
+      <div class="status-dot"></div>
+      <div>
+        <p><strong>Phase 4 Complete:</strong> The web application foundation, design system ("The Drafting Set"), content pipeline, CCC problem registry, interactive visualization engine with Motion, and automated verification suites have been implemented and validated. All 18 automated quality gates are 100% green.</p>
+      </div>
+    </div>
+  </header>
+
+  <section>
+    <h2>Key Deliverables</h2>
+    <div class="section-sub">Core capabilities delivered in Phase 4</div>
+
+    <div class="card">
+      <ul class="plain">
+        <li><strong>Reader &amp; Design Architecture:</strong> Next.js 16 App Router application in pure light mode (<code>color-scheme: light</code>, zero dark classes). Clean typographic hierarchy using Atkinson Hyperlegible Next + Mono, fully responsive across mobile (390 px), tablet (768 px), and desktop (1440 px).</li>
+        <li><strong>Interactive Visualizations with Motion:</strong> Full visualization engine featuring 9 algorithm/data-structure visualizers. Enter/exit animations are powered by Motion (<code>motion</code> 12.x per plan §4.2), bundled exclusively inside the lazy player chunk (loaded on demand, measuring ~20 kB gzip vs the 60 kB budget). Honor reduced-motion preferences automatically. First frames and static diagrams render pure SVG on the server with zero client JS.</li>
+        <li><strong>Content Pipeline &amp; CCC Registry:</strong> 119-problem registry covering CCC 2014–2026 with derived links (WMOJ for 2021–2026, DMOJ for 2014–2020), Shiki syntax highlighting, KaTeX math, accessible search dialog with <code>/</code> keyboard shortcut, and client reading progress persistence.</li>
+        <li><strong>Zero-Config Deployment Architecture:</strong> Configured <code>vercel.json</code> and updated containment scripts to automatically detect CI/Vercel build containers, enabling standard zero-config deployment.</li>
+      </ul>
+    </div>
+  </section>
+
+  <section>
+    <h2>Quality &amp; Verification Gates</h2>
+    <div class="section-sub">Full verification suite (<code>npm run verify:full</code>) status</div>
+
+    <div class="grid">
+      <div class="metric-card">
+        <div class="metric-label">Gates Passed</div>
+        <div class="metric-val">18 / 18</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-label">Unit Tests</div>
+        <div class="metric-val">200 / 200</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-label">E2E Tests</div>
+        <div class="metric-val">397 / 397</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-label">Visual Tests</div>
+        <div class="metric-val">142 / 142</div>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top: 14px;">
+      <table>
+        <thead>
+          <tr>
+            <th>Gate</th>
+            <th>Check</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>G-LINT</td><td>Biome linter and formatter across 231 files</td><td><span class="tag-pass">PASS</span></td></tr>
+          <tr><td>G-TYPES</td><td>TypeScript compilation (<code>tsc --noEmit</code>)</td><td><span class="tag-pass">PASS</span></td></tr>
+          <tr><td>G-UNIT</td><td>Vitest unit tests (schemas, loader, algorithms)</td><td><span class="tag-pass">PASS</span></td></tr>
+          <tr><td>G-UI-LIGHT</td><td>Zero dark-mode tokens or classes in codebase</td><td><span class="tag-pass">PASS</span></td></tr>
+          <tr><td>G-SCHEMA</td><td>MDX content schema and registry validation</td><td><span class="tag-pass">PASS</span></td></tr>
+          <tr><td>G-PY-38 / RUN</td><td>Python 3.8 compatibility &amp; PyPy 3.8 execution</td><td><span class="tag-pass">PASS</span></td></tr>
+          <tr><td>G-STYLE</td><td>Avoid-ai-writing and plain style checks</td><td><span class="tag-pass">PASS</span></td></tr>
+          <tr><td>G-R14</td><td>Plain English style guide verification</td><td><span class="tag-pass">PASS</span></td></tr>
+          <tr><td>G-SPELL</td><td>CSpell against domain dictionary</td><td><span class="tag-pass">PASS</span></td></tr>
+          <tr><td>G-MDX</td><td>Remark MDX syntax verification</td><td><span class="tag-pass">PASS</span></td></tr>
+          <tr><td>G-VIZ</td><td>Visualizer schemas and PyPy frame generation</td><td><span class="tag-pass">PASS</span></td></tr>
+          <tr><td>G-BUILD</td><td>Isolated production build check</td><td><span class="tag-pass">PASS</span></td></tr>
+          <tr><td>G-BUILD-PROD-CHECK</td><td>Production draft route 404 isolation</td><td><span class="tag-pass">PASS</span></td></tr>
+          <tr><td>G-E2E</td><td>Playwright end-to-end suite (Chromium &amp; WebKit)</td><td><span class="tag-pass">PASS</span></td></tr>
+          <tr><td>G-VISUAL</td><td>Visual regression suite across 3 viewports</td><td><span class="tag-pass">PASS</span></td></tr>
+          <tr><td>G-PAGE</td><td>Axe WCAG 2.2 AA accessibility audit</td><td><span class="tag-pass">PASS</span></td></tr>
+          <tr><td>G-LINKS-INT</td><td>Internal link and anchor crawler</td><td><span class="tag-pass">PASS</span></td></tr>
+          <tr><td>G-VIZ-SHOTS</td><td>Visualizer screenshot audit &amp; font rendering</td><td><span class="tag-pass">PASS</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section>
+    <h2>Next Steps</h2>
+    <div class="section-sub">Transition to Phase 5</div>
+    <div class="card">
+      <p style="margin: 0;">With the application foundation fully built and verified, the project proceeds to <strong>Phase 5 (Pilot)</strong> to author and validate the initial curriculum modules and worked examples.</p>
+    </div>
+  </section>
+</main>
+</body>
+</html>

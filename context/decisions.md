@@ -342,3 +342,17 @@ Plan v1.0 (archived: `context/implementation-plan.v1.md`) misread the app's purp
 - Decided by: setup-orchestrator
 - Decision: avoid-ai-writing v3.35.0 @ `fc979c6` is installed at `.claude/skills/avoid-ai-writing/`, with the full tarball in `.tooling/avoid-ai-writing-src/`. `detector/patterns.js` and `validate.js` are CommonJS with a **static** API. `tools/style/detect.mjs` (P4/P5) must therefore `import AIDetector from '<rel>/.claude/skills/avoid-ai-writing/detector/patterns.js'` (default import) and call `AIDetector.analyzeText(text, { context })`. The validator runs as `.tooling/bin/node .claude/skills/avoid-ai-writing/detector/validate.js <orig> <new>` (exit 0 PASS, 1 FAIL). Verified by the P3 smoke test.
 - Rationale: Plan §6.3 asks P3 to confirm the import path.
+
+### D-041 — Motion animation library for visual player
+- Date: 2026-09-24
+- Phase: 4
+- Decided by: Manager (ruling)
+- Decision: Implement visual player transitions using Motion (`motion` 12.x, plan §4.2) rather than plain CSS transitions. Enter/exit transitions are rendered through `<AnimatePresence>` and `<motion.g>` in `MotionSceneSvg.tsx`. Motion is bundled exclusively in the lazy player chunk (loaded on demand via `PlayerMount.tsx`), preserving zero-client-JS SSR/SSG rendering for static diagrams and first-frame figures. Respects user reduced-motion preferences via `<MotionConfig reducedMotion="user">` while easily staying well below the 60 kB gzip lazy chunk budget.
+- Rationale: Manager instruction to adhere to plan §4.2 [DECIDED] specification.
+
+### D-042 — Vercel standard zero-config deployment architecture
+- Date: 2026-09-24
+- Phase: 4
+- Decided by: Manager (ruling)
+- Decision: Vercel project linking is managed independently by the Manager. The codebase provides root and `main-app` `vercel.json` configurations so standard Next.js deployments build automatically. Pre-build containment guards (`assert-contained.mjs` and `build-lock.mjs`) cleanly bypass local `.tooling` folder assertions when running in Vercel CI/build environments (`if (process.env.VERCEL)`).
+- Rationale: Standardizes deployment without requiring manual build overrides or exposing machine-local paths to cloud build containers.

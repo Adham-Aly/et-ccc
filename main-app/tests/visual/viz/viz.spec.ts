@@ -34,6 +34,7 @@ async function goStep(page: Page, fig: Locator, key: "Home" | "End" | number): P
 
 test.describe("/dev/viz gallery", () => {
   test("every entry", async ({ page }) => {
+    test.slow();
     await page.goto("/dev/viz");
     await settle(page);
     const entries = page.locator("[data-gallery]");

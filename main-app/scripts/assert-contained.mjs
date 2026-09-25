@@ -14,6 +14,11 @@ const scriptDir = path.dirname(fileURLToPath(import.meta.url));
 const workspaceRoot = path.resolve(scriptDir, "..", "..");
 const toolingRoot = path.join(workspaceRoot, ".tooling");
 
+// On Vercel (or any CI/ephemeral container), containment of local developer folders does not apply.
+if (process.env.VERCEL) {
+  process.exit(0);
+}
+
 const failures = [];
 
 function insideTooling(p) {

@@ -25,6 +25,7 @@ const CLIENT = [
   "components/viz/tokens.ts",
   "components/viz/player/FramesStage.tsx",
   "components/viz/player/Legend.tsx",
+  "components/viz/player/MotionSceneSvg.tsx",
   "components/viz/player/Player.tsx",
   "components/viz/player/PlayerMount.tsx",
   "components/viz/player/PlayerView.tsx",

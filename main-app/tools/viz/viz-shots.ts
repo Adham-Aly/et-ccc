@@ -296,7 +296,12 @@ async function shootPage(browser: Browser, base: string, url: string, problems: 
     });
     const logs: string[] = [];
     page.on("console", (m) => {
-      if (m.type() === "error" || m.type() === "warning") logs.push(m.text());
+      if (m.type() === "error" || m.type() === "warning") {
+        const text = m.text();
+        if (text.includes("You have Reduced Motion enabled on your device")) return;
+        console.log(`[FULL CONSOLE ${m.type().toUpperCase()}]:`, text);
+        logs.push(text);
+      }
     });
     page.on("pageerror", (e) => logs.push(String(e)));
     try {

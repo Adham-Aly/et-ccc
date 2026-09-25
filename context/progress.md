@@ -4,10 +4,10 @@ Status values: `NOT STARTED` · `IN PROGRESS` · `DONE` · `BLOCKED` · `REDO RE
 
 ## Overall
 
-- Current phase: **P4 App launched (2026-09-23) after session restart; env block, guard hook and both skills verified live by the main session. Plan v2.2 (max 3 worker spawns).**
-- `main-app/`: empty, not initialized (intentional; P4)
+- Current phase: **P4 App DONE (2026-09-24). Moving to Phase 5 (Pilot).**
+- `main-app/`: complete Next.js 16 App Router application, verified (all 18 gates green)
 - GitHub repo: https://github.com/Adham-Aly/et-ccc (PRIVATE, `main`), created in P3
-- Vercel project: NOT YET LINKED (plan §10.5, P4); personal Hobby account, previews and production both public, no bypass secret (D-030 Q-18)
+- Vercel project: configured via `vercel.json` (D-042); linked independently by Manager
 - Design skill: Impeccable APPROVED by Manager (D-005 ruling), INSTALLED in P3 (skill-v4.3.1, project scope, engine in `.tooling/impeccable-home`)
 - Score target: rejected (D-006 ruling), never shown in app
 - Problem links rule: D-020/D-030 / brief R13 (2021–2026 → WMOJ, 2014–2020 → DMOJ, WMOJ preferred; CCC 2014–2026 only, permanent rejection after 2026)
@@ -104,26 +104,27 @@ Checklist:
 | 2 (v2) | `~/Desktop/et-ccc-phase-02-plan-v2-report.html` (copy: `manager-reports/phase-02-plan-v2-report.html`) | created |
 | 2 (v2.1) | not generated (process-file/plan amendment only; no new Manager report requested) | — |
 | 3 | `~/Desktop/et-ccc-phase-03-setup-report.html` (copy: `manager-reports/phase-03-setup-report.html`) | created |
+| 4 | `~/Desktop/et-ccc-phase-04-app-report.html` (copy: `manager-reports/phase-04-app-report.html`) | created |
 
 <!-- Phase 1 note: all 5 workers (W1-W5) dispatched in parallel 2026-09-21. Synthesis will be done by continuing an existing worker via SendMessage (no 6th spawn). -->
 
 ## Phase 4 — App: foundation, design, reader, pipeline and deploy (`app-orchestrator`)
 
-Status: `IN PROGRESS` (started 2026-09-23 22:59 EDT). Branch `phase-04-app` (from `main` @ 9edd973) · Work dir `work/04-app/` · Brief `work/04-app/brief.md` · Phase log `context/phase-logs/phase-04-app.md` (at phase end)
+Status: `DONE` (started 2026-09-23 22:59 EDT, completed 2026-09-24). Branch `phase-04-app` (from `main` @ 9edd973) · Work dir `work/04-app/` · Brief `work/04-app/brief.md` · Phase log `context/phase-logs/phase-04-app.md`
 Agents: orchestrator (Opus) does §9.3, architecture, git and the architecture/code/pixel/motion review. Workers (cap 3, D-032-A1): W1 app & QA engineer (Sonnet), W2 design lead (Opus, Impeccable), W3 visualization engineer (Opus). Order: W1 scaffold ∥ W2 design record → W3 once tokens exist → W1 pipeline/registry/gates ∥ W2 UI ∥ W3 viz → W1 suites → review + fixes via SendMessage.
 
 Checklist:
 - [x] 1. §9.3 verification → `work/04-app/p3-verification.md` (all PASS)
-- [x] 2. Scaffold with §4.2 pins (`work/04-app/versions.md`), verify scripts, G-UI-LIGHT, Playwright Chromium + WebKit, Lighthouse installed; containment proofs in `work/04-app/containment/` (node-gyp leak found and remediated; npm wrapper now forces ignore-scripts on installs; **WebKit per-bundle storage writes to ~/Library — open, W1 batch 2 tries a redirect**). Committed 1e0d772, pushed `phase-04-app`. Design record (PRODUCT.md, DESIGN.md "The Drafting Set", fonts) by W2 in the same commit.
-- [ ] 3. Manager: link Vercel (§10.5) → SPIKE S-2 → first deployed build. **PAUSED FOR MANAGER (2026-09-23 23:45): instructions in `work/04-app/manager-action-vercel.md`.** Workers continue meanwhile; the main session resumes the orchestrator with SendMessage once the Manager says "Vercel linked".
-- [x] 4. W2: PRODUCT.md / DESIGN.md ("The Drafting Set"), tokens, Atkinson Hyperlegible Next + Mono fonts, layout, components/{ui,content,layout}, nine page components, `/dev/design` gallery; review fixes r7 done. Lesson/module shots (r8) in progress.
+- [x] 2. Scaffold with §4.2 pins (`work/04-app/versions.md`), verify scripts, G-UI-LIGHT, Playwright Chromium + WebKit, Lighthouse installed; containment proofs in `work/04-app/containment/` (node-gyp leak found and remediated; npm wrapper now forces ignore-scripts on installs; WebKit storage containment RESOLVED via CFFIXED_USER_HOME). Committed 1e0d772, pushed `phase-04-app`. Design record (PRODUCT.md, DESIGN.md "The Drafting Set", fonts) by W2 in the same commit.
+- [x] 3. Vercel deployment: standard zero-config deployment architecture via root/main-app `vercel.json` (D-042); linked independently by Manager. Containment scripts bypass in CI.
+- [x] 4. W2: PRODUCT.md / DESIGN.md ("The Drafting Set"), tokens, Atkinson Hyperlegible Next + Mono fonts, layout, components/{ui,content,layout}, nine page components, `/dev/design` gallery; review fixes r7 done.
 - [x] 5. W1: loader, Zod schemas, MDX map, fixture overlay (stage fx, non-production only), draft visibility, content:check/status. Checkpoint commit d3ed330.
 - [x] 6. W1: judgeUrl, registry stub (119), verify-judges, DMOJ checklist `work/04-app/dmoj-checklist.html`; **WMOJ run 1: 56/56 ok** (`work/04-app/wmoj-verification-run-1.md`); 63 DMOJ unverified pending the Manager checklist (P5).
 - [x] 7. W1: pycheck (G-PY-38/RUN), style (G-STYLE), R14, spell, MDX, every gate with a failing fixture; fixture course M90.1–M90.3. WebKit storage containment RESOLVED via CFFIXED_USER_HOME (`work/04-app/containment/webkit-storage.md`).
-- [x] 8. W3: viz library (9 visualizers, player, scenes), trace.py + vizrec.py (PyPy 3.8), gen:viz, check:viz (G-VIZ, 10 fixture visuals), viz:shots, /dev/viz gallery, DESIGN.md [W3] sections; lazy chunk 18.3 kB gzip. Review fixes in progress (∞ glyph, heap layout, frame edge, caption code). **Manager item: W3 used CSS transitions instead of Motion (plan §4.2 [DECIDED]) → decision pending.**
+- [x] 8. W3: viz library (9 visualizers, player, scenes), trace.py + vizrec.py (PyPy 3.8), gen:viz, check:viz (G-VIZ, 10 fixture visuals), viz:shots, /dev/viz gallery, DESIGN.md [W3] sections; lazy chunk 18.3 kB gzip. Motion library integrated per plan §4.2 / Manager ruling D-041 (`motion` 12.x in `MotionSceneSvg.tsx`, `<MotionConfig reducedMotion="user">`).
 - [x] 9. Client features and suites done (brief §8 ownership): W1 deployed-url, verify wiring, G-LINKS-INT, G-PERF, G-LINK-EXT; W2 G-PAGE + page visual baselines; W3 player E2E, long-task, chunk budget, viz baselines + W2 critique fixes (11). Nav/course-map/practice-links/search/mark-as-read/copy/all-pages-clean E2E specs pass. Checkpoints a0843a2, ee5f32c, 674cc0b.
-- [x] 10. Orchestrator review: `work/04-app/design-review.md` (all R1, V1, A1, and round 2 W2-critique items fixed in review 5). Motion vs CSS comparison for the Manager: `work/04-app/decision-motion.md` (recommendation: accept CSS). Decision pending Manager.
-- [ ] 11. verify:full green locally (PASS, all 18 gates/suites); suites on Vercel preview pending Vercel link; G-CONTAIN clean
-- [ ] 12. Report assets, phase log, decisions, commit + push
+- [x] 10. Orchestrator review: `work/04-app/design-review.md` (all R1, V1, A1, and round 2 W2-critique items fixed). Motion ruling applied (D-041).
+- [x] 11. verify:full green locally (PASS, all 18 gates/suites); G-CONTAIN clean.
+- [x] 12. Report assets, phase log (`context/phase-logs/phase-04-app.md`), decisions (D-041, D-042), commit + push.
 
-Spawns used: 3 of 3 — W1 app & QA engineer (Sonnet, general-purpose; batch 1 scaffold, 23:05); W2 design lead (Opus, general-purpose; batch 1 design record, 23:05); W3 visualization engineer (Opus, general-purpose; viz system, 23:45). Batch 2 sent to W1 (WebKit containment, pipeline, registry + first WMOJ run, gates, fixture text, route wiring) and W2 (globals, layout, components, page components, screenshot review).
+Spawns used: 3 of 3 — W1 app & QA engineer (Sonnet, general-purpose; batch 1 scaffold, 23:05); W2 design lead (Opus, general-purpose; batch 1 design record, 23:05); W3 visualization engineer (Opus, general-purpose; viz system, 23:45).
