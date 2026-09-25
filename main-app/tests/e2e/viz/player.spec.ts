@@ -11,6 +11,7 @@ import {
   ctl,
   dijkstra,
   expectStep,
+  freezeClock,
   group,
   hydrate,
   PLAYER_CHUNK_MARKER,

@@ -43,7 +43,8 @@ test("copies the file-based code block's exact text, indentation included", asyn
   const copiedTexts = await page.evaluate(
     () => (window as unknown as { __copiedTexts: string[] }).__copiedTexts,
   );
-  const shownCode = await frame.locator("pre code").innerText();
+  const shownLines = await frame.locator("pre code span.whitespace-pre").allInnerTexts();
+  const shownCode = shownLines.join("\n");
   expect(copiedTexts).toHaveLength(1);
   const [copied] = copiedTexts;
   expect((copied ?? "").replace(/\r\n/g, "\n")).toBe(shownCode.replace(/\r\n/g, "\n"));

@@ -41,12 +41,14 @@ kincaid
 Kruskal
 laeiouy
 lede
+logn
 mdx
 Menlo
 Minecarts
 minisearch
 neighbour
 neighbours
+nlogn
 noopener
 noreferrer
 oklab
@@ -71,6 +73,7 @@ PYTHONUSERBASE
 pypy
 qualif
 Ragaman
+recolour
 rehype
 remark
 Riceballs
